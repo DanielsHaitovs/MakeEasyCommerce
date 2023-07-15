@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductDto } from './create-product.dto';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export class UpdateProductDto extends ProductDto {
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty()
     id: number;
 }
