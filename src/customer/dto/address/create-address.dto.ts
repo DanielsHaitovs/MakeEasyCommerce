@@ -6,6 +6,7 @@ import {
     IsNumber,
     IsNotEmpty,
 } from 'class-validator';
+import { CustomerDto } from '../create-customer.dto';
 
 export class AddressDto {
     @ApiProperty()
@@ -50,6 +51,15 @@ export class DetailsDto {
 }
 
 export class CreateAddressDto extends AddressDto {
+    @ApiProperty({ type: DetailsDto })
+    @ValidateNested()
+    details: DetailsDto;
+}
+
+export class CreateAddressRelationDto extends AddressDto {
+    @ApiProperty({ type: CustomerDto })
+    @ValidateNested()
+    customer: CustomerDto;
     @ApiProperty({ type: DetailsDto })
     @ValidateNested()
     details: DetailsDto;

@@ -9,23 +9,19 @@ import {
     Query,
 } from '@nestjs/common';
 import { CustomerService } from '../services/customer.service';
-// import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
-    ApiParam,
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
+import { GetCustomerDto } from '../dto/get-customer.dto';
 import {
-    GetCustomerAddressDetailsDto,
-    GetCustomerAddressDto,
-    GetCustomerDto,
-} from '../dto/get-customer.dto';
-import { DeleteCustomerAddressRelation, UpdateCustomerAddressDetailsDto, UpdateCustomerAddressDto, UpdateCustomerDto } from '../dto/update-customer.dto';
-import { UpdateAddressDetailsDto } from '../dto/address/update-address.dto';
+    UpdateCustomerAddressDetailsDto,
+    UpdateCustomerDto,
+} from '../dto/update-customer.dto';
 
 @ApiTags('Customer')
 @Controller('customer')
@@ -179,5 +175,15 @@ export class CustomerController {
             id: +id,
             address_ids: address_ids,
         });
+    }
+
+    @Delete(':id')
+    @ApiOperation({
+        summary: 'Delete Customer by ID',
+        description:
+            'This will remove everything what is related to this customer',
+    })
+    async removeBasket(@Param('id') id: number): Promise<number> {
+        return await this.customerService.delete({ id: +id });
     }
 }

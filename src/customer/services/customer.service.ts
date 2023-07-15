@@ -23,6 +23,8 @@ import { AddressService } from './address.service';
 import { Details } from '../entities/details.entity';
 import { IsEmail, isEmpty } from 'class-validator';
 import { CustomerEntity } from '../interfaces/customer.interface';
+import { CreateAddressDto } from '../dto/address/create-address.dto';
+import { AddressEntity } from '../interfaces/address.interface';
 
 @Injectable()
 export class CustomerService {
@@ -169,11 +171,6 @@ export class CustomerService {
         // New Address + update customer
         if (current.address_ids.length === 0) {
             console.log('We created new address record and update customer');
-            // const customer_entity: GetCustomerAddressDetailsDto = {
-            //     ...updateCustomer,
-            // };
-
-            // delete customer_entity.address;
             const addresses: GetAddressDetailsDto[] =
                 await this.entityManager.save(Address, updateCustomer.address);
 
@@ -218,35 +215,23 @@ export class CustomerService {
             ).slice(-1);
         }
 
-        // To update current customer together with
-        // it's existing Address together or separate from Details record
-        // I need to have at least address_index record id
-        // hope one day I'll wake up with genius solution
-        // address_id is mandatory for now...
-        if (
-            (updateCustomer.address_ids === undefined ||
-                updateCustomer.address_ids.shift() === 0) &&
-            current.address_ids.length > 0
-        ) {
-            await Promise.all([
-                updateCustomer.address.map(async (address) => {
-                    if (address.id != undefined) {
-                        await this.addressService.update({
-                            id: address.id,
-                            updateAddressDto: address,
-                        });
-                    }
-                }),
-                await this.update({
-                    id: id,
-                    updateCustomerDto: customer_entity,
-                }),
-            ]);
-            return;
+        console.log('customer already has address');
+        if (updateCustomer.address_ids === undefined) {
+            updateCustomer.address_ids = current.address_ids;
+            // if address body has id then we will update it
+            updateCustomer.address.map(async (address) => {
+                if (address.id != undefined) {
+                    await this.addressService.update({
+                        id: address.id,
+                        updateAddressDto: address,
+                    });
+                }
+            });
+            return await this.update({
+                id: id,
+                updateCustomerDto: customer_entity,
+            });
         }
-
-        console.log('none');
-        return null;
     }
 
     async deleteCustomerAddressRelation({
@@ -317,6 +302,22 @@ export class CustomerService {
         } catch (e) {
             return res;
         }
+    }
+
+    async delete({ id }: { id: number }): Promise<any> {
+        const customer = await this.entityManager
+            .getRepository(Customer)
+            .createQueryBuilder('customer')
+            .leftJoinAndSelect('customer.address', 'address')
+            .leftJoinAndSelect('address.details', 'details')
+            .select(['customer.id', 'address.id', 'details.id'])
+            .where('address.id = :id', { id: id })
+            .getOne();
+
+        if (customer.address != undefined) {
+            console.log(customer.address);
+        }
+        console.log('none');
     }
 
     protected async findCustomerQuery({
@@ -402,10 +403,6 @@ export class CustomerService {
         updated_relation: any[];
         current_relation: any[];
     }): Promise<any> {
-        console.log('updated_relation');
-        console.log(updated_relation);
-        console.log('current_relation');
-        console.log(current_relation);
         try {
             return await this.entityManager
                 .getRepository(Customer)
@@ -418,3 +415,49 @@ export class CustomerService {
         }
     }
 }
+
+// // To update current customer together with
+// // it's existing Address (together or separately) from Details record
+// // I need to have at least address_index record id
+// // hope one day I'll wake up with genius solution
+// // address_id is mandatory for now...
+// if (current.address_ids.length > 0) {
+//     const test = updateCustomer.address.map(async (address) => {
+//         if (address.id != undefined) {
+//             await this.addressService.update({
+//                 id: address.id,
+//                 updateAddressDto: address,
+//             });
+//         }
+//         const address_entity: CreateAddressDto = {
+//             ...address,
+//         };
+//         const new_addresses = await this.entityManager.save(
+//             Address,
+//             address_entity,
+//         );
+
+//         return new_addresses;
+//     });
+
+//     console.log(await Promise.all(test));
+//     const res = await Promise.all([
+//         // await this.updateCustomerRelations({
+//         //     id,
+//         //     relation: 'address',
+//         //     updated_relation: test,
+//         //     current_relation: current.address,
+//         // }),
+
+//         await this.update({
+//             id: id,
+//             updateCustomerDto: customer_entity,
+//         }),
+//     ]);
+
+//     console.log(res);
+//     return;
+// }
+
+// console.log('none');
+// return null;

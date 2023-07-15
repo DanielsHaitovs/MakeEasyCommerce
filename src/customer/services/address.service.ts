@@ -23,10 +23,14 @@ export class AddressService {
     }: {
         createAddressDto: CreateAddressDto;
     }): Promise<GetAddressDetailsDto> {
-        console.log('here');
-        const test = this.entityManager.create(Address, createAddressDto);
-        console.log(test);
-        return await this.entityManager.save(Address, test);
+        try {
+            return await this.entityManager.save(
+                Address,
+                this.entityManager.create(Address, createAddressDto),
+            );
+        } catch (e) {
+            return e.message;
+        }
     }
 
     async findAll(): Promise<GetAddressDto[]> {
