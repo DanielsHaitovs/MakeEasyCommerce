@@ -174,8 +174,8 @@ export class CustomerService {
         delete customer_entity.address;
 
         // New Address + update customer
+        // We created new address record and updated customer
         if (current.address_ids.length === 0) {
-            console.log('We created new address record and update customer');
             const addresses: GetAddressDetailsDto[] =
                 await this.entityManager.save(Address, updateCustomer.address);
 
@@ -220,7 +220,7 @@ export class CustomerService {
             ).slice(-1);
         }
 
-        console.log('customer already has address');
+        // Customer already has address
         if (updateCustomer.address_ids === undefined) {
             updateCustomer.address_ids = current.address_ids;
             // if address body has id then we will update it
@@ -246,12 +246,8 @@ export class CustomerService {
         id: number;
         address_ids: number[];
     }): Promise<any> {
-        console.log(id);
-        console.log(address_ids);
-        const res = [];
-
         // this will delete all customer addresses
-        if (address_ids === undefined) {
+        if (address_ids.length === undefined) {
             const customer_address = await this.entityManager
                 .getRepository(Address)
                 .createQueryBuilder('address')
@@ -270,43 +266,28 @@ export class CustomerService {
             // at some point this supposed to be helpful for debugging
             // to see actual state of address body under this id
             try {
-                customer_address.map(async (address_id) => {
-                    console.log(`Lets delete address with id ->${address_id}`);
-                    // await Promise.all([
-                    const result = await this.addressService.remove({
-                        id: address_id.id,
+                customer_address.map(async (address) => {
+                    await this.addressService.remove({
+                        id: address.id,
                     });
-                    if (!result) {
-                        res.push(address_id);
-                    }
                 });
-
-                if (res.length === 0) {
-                    return true;
-                }
             } catch (e) {
-                return res;
+                return e.message;
             }
         }
 
-        try {
-            address_ids.map(async (address_id) => {
-                console.log(`Lets delete address with id ->${address_id}`);
-                // await Promise.all([
-                const result = await this.addressService.remove({
-                    id: address_id,
+        if (address_ids.length > 0) {
+            try {
+                address_ids.map(async (address_id) => {
+                    await this.addressService.remove({
+                        id: address_id,
+                    });
                 });
-                if (!result) {
-                    res.push(address_id);
-                }
-            });
-
-            if (res.length === 0) {
-                return true;
+            } catch (e) {
+                return e.message;
             }
-        } catch (e) {
-            return res;
         }
+        return null;
     }
 
     async delete({ id }: { id: number }): Promise<any> {
@@ -317,7 +298,6 @@ export class CustomerService {
         });
         customer.address.map(async (address) => {
             if (address.details != undefined) {
-                console.log(address.id);
                 await this.entityManager.delete(Details, address.details.id);
             }
         });

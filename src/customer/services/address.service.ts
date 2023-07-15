@@ -69,8 +69,6 @@ export class AddressService {
             .select(['address.id', 'details'])
             .where('address.id = :id', { id: id })
             .getOne();
-        console.log('address.details');
-        console.log(address.details);
         const new_entity: GetAddressDetailsDto = {
             ...this.entityManager.create(Address, {
                 id: id,
@@ -90,25 +88,20 @@ export class AddressService {
     }
 
     async remove({ id }: { id: number }): Promise<any> {
+        const address = await this.entityManager
+            .getRepository(Address)
+            .createQueryBuilder('address')
+            .leftJoinAndSelect('address.details', 'details')
+            .select(['address.id', 'details.id'])
+            .where('address.id = :id', { id: id })
+            .getOne();
+
         try {
-            const address = await this.entityManager
-                .getRepository(Address)
-                .createQueryBuilder('address')
-                .leftJoinAndSelect('address.details', 'details')
-                .select(['address.id', 'details.id'])
-                .where('address.id = :id', { id: id })
-                .getOne();
-
             if (address.details != undefined) {
-                return await this.entityManager.delete(
-                    Details,
-                    address.details.id,
-                );
+                await this.entityManager.delete(Details, address.details.id);
             }
-
-            return true;
         } catch (e) {
-            return false;
+            return e.message;
         }
     }
 }

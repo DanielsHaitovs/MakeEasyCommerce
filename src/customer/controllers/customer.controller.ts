@@ -194,7 +194,7 @@ export class CustomerController {
     @ApiBody({
         type: [Number],
         description: 'Update Of Customer Relation',
-        required: true,
+        required: false,
     })
     async deleteAddressRelation(
         @Param('id') id: string,

@@ -55,25 +55,25 @@
     "address": 
     [
         {
-            "country": "United States",
+            "country": "Latvia",
             "postal_code": "QQ-1234",
             "address_type": 2,
             "details": {
-                "city": "DC",
-                "street_name": "Roosevelt",
+                "city": "Riga",
+                "street_name": "Brivibas",
                 "house_number": "10",
                 "phone_number": "898989",
-                "company": "some Company",
+                "company": "SIA LV",
                 "tax_id": "1234"
             }
         },
         {
-            "country": "England",
+            "country": "Lithuania",
             "postal_code": "QQ-1234",
             "address_type": 2,
             "details": {
-                "city": "London",
-                "street_name": "somewhere in the capital of Great Britain",
+                "city": "Vilnus",
+                "street_name": "somewhere in Vilnus",
                 "house_number": "15",
                 "phone_number": "898989",
                 "company": "some Company",
@@ -81,12 +81,12 @@
             }
         },
         {
-            "country": "Germany",
+            "country": "Estonia",
             "postal_code": "AA-1234",
             "address_type": 2,
             "details": {
-                "city": "Berlin",
-                "street_name": "some beer street",
+                "city": "Tartu",
+                "street_name": "some AHA center street",
                 "house_number": "15",
                 "phone_number": "05055055",
                 "company": "some Wurst",
