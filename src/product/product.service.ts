@@ -15,7 +15,11 @@ export class ProductService {
     ) {}
 
     // Create Product with main entity schema
-    async create(createProductDto: CreateProductDto): Promise<GetProductDto> {
+    async create({
+        createProductDto,
+    }: {
+        createProductDto: CreateProductDto;
+    }): Promise<GetProductDto> {
         const exist = await this.entityManager.findOne(Product, {
             where: {
                 sku: createProductDto.sku,
@@ -46,11 +50,48 @@ export class ProductService {
     }
 
     // Find one Product with main entity schema
-    async findOne(id: number): Promise<GetProductShortDto> {
+    async findOne({ id }: { id: number }): Promise<GetProductShortDto> {
         try {
             return await this.entityManager.findOneOrFail(Product, {
                 where: { id: id },
             });
+        } catch (e) {
+            return e.message;
+        }
+    }
+
+    // Update Customer
+    async update({
+        id,
+        updateProductDto,
+    }: {
+        id: number;
+        updateProductDto: UpdateProductDto;
+    }): Promise<GetProductShortDto> {
+        const partialEntityProduct: UpdateProductDto = {
+            id: id,
+            ...updateProductDto,
+        };
+
+        const product: GetProductShortDto = await this.entityManager.preload(
+            Product,
+            partialEntityProduct,
+        );
+
+        try {
+            if (this.entityManager.hasId(product)) {
+                return (await this.entityManager.update(Product, id, product))
+                    .raw;
+            }
+        } catch (e) {
+            return e.message;
+        }
+    }
+
+    // Delete Product
+    async remove({ id }: { id: number }): Promise<number> {
+        try {
+            return (await this.entityManager.delete(Product, id)).affected;
         } catch (e) {
             return e.message;
         }
@@ -67,43 +108,5 @@ export class ProductService {
             final_price: Number(DefaultOrderProductDto.final_price),
             store_id: Number(DefaultOrderProductDto.store_id),
         };
-    }
-
-    // Update Customer
-    async update(
-        updateProductDto: UpdateProductDto,
-    ): Promise<GetProductShortDto> {
-        const partialEntityProduct: UpdateProductDto = {
-            id: updateProductDto.id,
-            ...updateProductDto,
-        };
-
-        const product: GetProductShortDto = await this.entityManager.preload(
-            Product,
-            partialEntityProduct,
-        );
-
-        try {
-            if (this.entityManager.hasId(product)) {
-                return (
-                    await this.entityManager.update(
-                        Product,
-                        updateProductDto.id,
-                        product,
-                    )
-                ).raw;
-            }
-        } catch (e) {
-            return e.message;
-        }
-    }
-
-    // Delete Product
-    async remove(id: number): Promise<number> {
-        try {
-            return (await this.entityManager.delete(Product, id)).affected;
-        } catch (e) {
-            return e.message;
-        }
     }
 }

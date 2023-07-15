@@ -1,3 +1,4 @@
+[
 {
     "first_name": "Customer 2",
     "last_name": "Customer Last Name",
@@ -45,8 +46,7 @@
             }
         }
     ]
-}
-
+},
 {
     "first_name": "Daniel",
     "last_name": "Daniel Last Name",
@@ -95,3 +95,4 @@
         }
     ]
 }
+]
