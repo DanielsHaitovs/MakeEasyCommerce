@@ -15,11 +15,11 @@ import { Order } from './order/entities/order.entity';
 
 @Module({
     imports: [
-        CustomerModule,
-        BasketModule,
-        ProductModule,
-        OrderModule,
         AttributesModule,
+        CustomerModule,
+        ProductModule,
+        BasketModule,
+        OrderModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.TYPEORM_HOST,

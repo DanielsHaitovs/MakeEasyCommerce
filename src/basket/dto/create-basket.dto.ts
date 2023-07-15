@@ -7,6 +7,9 @@ export class BasketDto {
     @IsNumber()
     @ApiProperty()
     store_id: number;
+    @ApiProperty()
+    @IsNumber()
+    status: number;
     product_count: number;
     basket_final_price: number;
     @IsNotEmpty()

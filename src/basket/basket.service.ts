@@ -405,6 +405,7 @@ export class BasketService {
             customer_ids: [Number(DefaultOrderBasketDto.customer_ids)],
             store_id: Number(DefaultOrderBasketDto.store_id),
             product_count: Number(DefaultOrderBasketDto.product_count),
+            status: Number(DefaultOrderBasketDto.status),
             products: null,
             customers: null,
         };

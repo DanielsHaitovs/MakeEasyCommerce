@@ -19,6 +19,9 @@ export class Basket {
     store_id: number;
     @IsNumber()
     @Column()
+    status: number;
+    @IsNumber()
+    @Column()
     product_count: number;
     @Column({
         type: 'numeric',
