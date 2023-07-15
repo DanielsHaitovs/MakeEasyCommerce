@@ -5,7 +5,6 @@ import { CreateAddressDto } from '../dto/address/create-address.dto';
 import {
     GetAddressDetailsDto,
     GetAddressDto,
-    GetDetailsDto,
 } from '../dto/address/get-address.dto';
 import { Address } from '../entities/address.entity';
 import { UpdateAddressDetailsDto } from '../dto/address/update-address.dto';

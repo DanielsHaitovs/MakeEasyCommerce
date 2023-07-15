@@ -87,6 +87,7 @@ export class AddressController {
         summary: 'Update Address&details by ID',
         description: 'Update address data and its details by id',
     })
+    @ApiParam({ name: 'id', description: 'address id' })
     @ApiBody({
         type: UpdateAddressDetailsDto,
         description: 'Address details',
@@ -107,6 +108,7 @@ export class AddressController {
         summary: 'Delete Address by ID',
         description: 'Delete address data and its details by id',
     })
+    @ApiParam({ name: 'id', description: 'address id' })
     async removeBasket(@Param('id') id: string): Promise<number> {
         return await this.addressService.remove({ id: +id });
     }

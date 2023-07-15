@@ -5,7 +5,6 @@ import {
     IsNotEmpty,
     IsEmail,
     IsNumber,
-    IsOptional,
 } from 'class-validator';
 import { CreateAddressDto } from './address/create-address.dto';
 
@@ -26,7 +25,6 @@ export class CustomerDto {
     @IsNumber()
     @IsNotEmpty()
     store_id: number;
-    // @ApiProperty({ type: [Number] })
     address_ids: number[];
 }
 

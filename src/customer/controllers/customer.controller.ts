@@ -17,6 +17,7 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
+    ApiParam,
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
@@ -109,6 +110,7 @@ export class CustomerController {
     @ApiOperation({
         description: 'Finds Specifically Customer data by ID.',
     })
+    @ApiParam({ name: 'id', description: 'customer id' })
     @ApiQuery({
         name: 'details',
         description: 'include address details data',
@@ -146,6 +148,7 @@ export class CustomerController {
         summary: 'Update Customer by ID',
         description: 'Update specifically customer data by id',
     })
+    @ApiParam({ name: 'id', description: 'customer id' })
     @ApiBody({
         type: UpdateCustomerDto,
         description: 'Customer',
@@ -166,6 +169,7 @@ export class CustomerController {
         summary: 'Update Customer and its address&details by ID',
         description: 'Update all customer data by id',
     })
+    @ApiParam({ name: 'id', description: 'customer id' })
     @ApiBody({
         type: UpdateCustomerAddressDetailsDto,
         description: 'Update customer body with address and its detail',
@@ -186,6 +190,7 @@ export class CustomerController {
         summary: 'Clean Update Customer of Address Relation',
         description: 'Update & Remove specific customer address by id',
     })
+    @ApiParam({ name: 'id', description: 'customer id' })
     @ApiBody({
         type: [Number],
         description: 'Update Of Customer Relation',
@@ -207,6 +212,7 @@ export class CustomerController {
         description:
             'This will remove everything what is related to this customer',
     })
+    @ApiParam({ name: 'id', description: 'customer id' })
     async removeCustomer(@Param('id') id: number): Promise<number> {
         return await this.customerService.delete({ id: +id });
     }

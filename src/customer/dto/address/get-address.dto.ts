@@ -22,9 +22,3 @@ export class GetAddressDetailsDto extends GetAddressDto {
     @ValidateNested()
     details: GetDetailsDto;
 }
-
-export class GetDetailedAddressDto extends GetDetailsDto {
-    @ApiProperty({ type: GetAddressDto })
-    @ValidateNested()
-    address: GetAddressDto;
-}

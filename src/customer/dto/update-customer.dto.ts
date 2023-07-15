@@ -29,13 +29,3 @@ export class UpdateCustomerAddressDetailsDto extends CustomerDto {
     @ValidateNested()
     address: UpdateAddressDetailsDto[];
 }
-
-export class DeleteCustomerAddressRelation {
-    @ApiProperty()
-    @IsOptional()
-    @IsNumber()
-    id: number;
-    @ApiProperty({ type: [Number] })
-    @IsNotEmpty()
-    address_ids: number[];
-}
