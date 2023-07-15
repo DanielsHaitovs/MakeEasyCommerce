@@ -7,9 +7,9 @@ import {
     Param,
     Delete,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductService } from './../product.service';
+import { CreateProductDto } from './../dto/create-product.dto';
+import { UpdateProductDto } from './../dto/update-product.dto';
 import {
     ApiBody,
     ApiOkResponse,
@@ -17,7 +17,7 @@ import {
     ApiParam,
     ApiTags,
 } from '@nestjs/swagger';
-import { GetProductDto, GetProductShortDto } from './dto/get-product.dto';
+import { GetProductDto, GetProductShortDto } from './../dto/get-product.dto';
 
 @ApiTags('Product')
 @Controller('product')
@@ -37,7 +37,9 @@ export class ProductController {
     async create(
         @Body() createProductDto: CreateProductDto,
     ): Promise<GetProductDto> {
-        return await this.productService.create(createProductDto);
+        return await this.productService.create({
+            createProductDto: createProductDto,
+        });
     }
 
     @Get('get/all')
@@ -64,7 +66,7 @@ export class ProductController {
     })
     @ApiParam({ name: 'id', description: 'product id' })
     async findOne(@Param('id') id: string): Promise<GetProductShortDto> {
-        return await this.productService.findOne(+id);
+        return await this.productService.findOne({ id: +id });
     }
 
     @Patch('update/:id')
@@ -72,20 +74,25 @@ export class ProductController {
         summary: 'Update Product by id',
         description: 'Update (specifically) product data',
     })
+    @ApiParam({ name: 'id', description: 'product id' })
     @ApiBody({
         type: UpdateProductDto,
         description: 'product',
         required: true,
     })
     async update(
+        @Param('id') id: number,
         @Body() updateProductDto: UpdateProductDto,
     ): Promise<GetProductShortDto> {
-        return await this.productService.update(updateProductDto);
+        return await this.productService.update({
+            id: id,
+            updateProductDto: updateProductDto,
+        });
     }
 
     @Delete(':id')
     remove(@Param('id') id: string): Promise<number> {
-        return this.productService.remove(+id);
+        return this.productService.remove({ id: +id });
     }
 
     @Get('defaultProduct')
