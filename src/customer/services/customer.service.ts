@@ -1,30 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, IsNull } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import {
     GetCustomerAddressDetailsDto,
-    GetCustomerAddressDto,
     GetCustomerDto,
 } from '../dto/get-customer.dto';
-import { CreateCustomerDto } from '../dto/create-customer.dto';
+import {
+    CreateCustomerAddressDto,
+    CreateCustomerDto,
+} from '../dto/create-customer.dto';
 import { Customer } from '../entities/customer.entity';
 import { Address } from '../entities/address.entity';
-import {
-    GetAddressDetailsDto,
-    GetAddressDto,
-} from '../dto/address/get-address.dto';
+import { GetAddressDetailsDto } from '../dto/address/get-address.dto';
 import {
     UpdateCustomerAddressDetailsDto,
-    UpdateCustomerAddressDto,
     UpdateCustomerDto,
 } from '../dto/update-customer.dto';
-import { UpdateAddressDetailsDto } from '../dto/address/update-address.dto';
 import { AddressService } from './address.service';
 import { Details } from '../entities/details.entity';
-import { IsEmail, isEmpty } from 'class-validator';
-import { CustomerEntity } from '../interfaces/customer.interface';
-import { CreateAddressDto } from '../dto/address/create-address.dto';
-import { AddressEntity } from '../interfaces/address.interface';
 
 @Injectable()
 export class CustomerService {
@@ -44,6 +37,18 @@ export class CustomerService {
         // I'm saving all emails and
         // I don't have unique indicators
         const customer = this.entityManager.create(Customer, createCustomerDto);
+        return await this.entityManager.save(Customer, customer);
+    }
+
+    async createCustomerAddress({
+        createCustomerDto,
+    }: {
+        createCustomerDto: CreateCustomerAddressDto;
+    }): Promise<GetCustomerAddressDetailsDto> {
+        const customer = await this.entityManager.save(
+            Customer,
+            this.entityManager.create(Customer, createCustomerDto),
+        );
         return await this.entityManager.save(Customer, customer);
     }
 
@@ -305,19 +310,20 @@ export class CustomerService {
     }
 
     async delete({ id }: { id: number }): Promise<any> {
-        const customer = await this.entityManager
-            .getRepository(Customer)
-            .createQueryBuilder('customer')
-            .leftJoinAndSelect('customer.address', 'address')
-            .leftJoinAndSelect('address.details', 'details')
-            .select(['customer.id', 'address.id', 'details.id'])
-            .where('address.id = :id', { id: id })
-            .getOne();
+        const customer: GetCustomerAddressDetailsDto = await this.findOne({
+            id: id,
+            address: true,
+            details: true,
+        });
+        customer.address.map(async (address) => {
+            if (address.details != undefined) {
+                console.log(address.id);
+                await this.entityManager.delete(Details, address.details.id);
+            }
+        });
 
-        if (customer.address != undefined) {
-            console.log(customer.address);
-        }
-        console.log('none');
+        delete customer.address;
+        await this.entityManager.delete(Customer, customer.id);
     }
 
     protected async findCustomerQuery({

@@ -9,7 +9,10 @@ import {
     Query,
 } from '@nestjs/common';
 import { CustomerService } from '../services/customer.service';
-import { CreateCustomerDto } from '../dto/create-customer.dto';
+import {
+    CreateCustomerAddressDto,
+    CreateCustomerDto,
+} from '../dto/create-customer.dto';
 import {
     ApiBody,
     ApiOkResponse,
@@ -17,7 +20,10 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { GetCustomerDto } from '../dto/get-customer.dto';
+import {
+    GetCustomerAddressDetailsDto,
+    GetCustomerDto,
+} from '../dto/get-customer.dto';
 import {
     UpdateCustomerAddressDetailsDto,
     UpdateCustomerDto,
@@ -42,6 +48,24 @@ export class CustomerController {
         @Body() createCustomerDto: CreateCustomerDto,
     ): Promise<GetCustomerDto> {
         return await this.customerService.create({ createCustomerDto });
+    }
+
+    @Post('new/detailed')
+    @ApiOperation({
+        summary: 'Create Customer with Address',
+        description: 'Create customer and address entity',
+    })
+    @ApiBody({
+        type: CreateCustomerAddressDto,
+        description: 'Create Customer and Address Entity',
+        required: true,
+    })
+    async createCustomerAddress(
+        @Body() createCustomerDto: CreateCustomerAddressDto,
+    ): Promise<GetCustomerAddressDetailsDto> {
+        return await this.customerService.createCustomerAddress({
+            createCustomerDto: createCustomerDto,
+        });
     }
 
     // This one in future MUST have option
@@ -157,14 +181,14 @@ export class CustomerController {
         });
     }
 
-    @Patch('delete/address/:id')
+    @Patch('update/addresses/:id')
     @ApiOperation({
-        summary: 'Delete Customer Relation Address by ID',
-        description: 'Delete specific customer address by id',
+        summary: 'Clean Update Customer of Address Relation',
+        description: 'Update & Remove specific customer address by id',
     })
     @ApiBody({
         type: [Number],
-        description: 'Remove Customer Relation',
+        description: 'Update Of Customer Relation',
         required: true,
     })
     async deleteAddressRelation(
@@ -183,7 +207,7 @@ export class CustomerController {
         description:
             'This will remove everything what is related to this customer',
     })
-    async removeBasket(@Param('id') id: number): Promise<number> {
+    async removeCustomer(@Param('id') id: number): Promise<number> {
         return await this.customerService.delete({ id: +id });
     }
 }

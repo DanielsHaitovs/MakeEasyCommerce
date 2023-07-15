@@ -33,5 +33,8 @@ export class CustomerDto {
 export class CreateCustomerDto extends CustomerDto {}
 
 export class CreateCustomerAddressDto extends CustomerDto {
+    @ApiProperty({ type: [CreateAddressDto] })
+    @ValidateNested()
+    @IsNotEmpty()
     address: CreateAddressDto[];
 }
