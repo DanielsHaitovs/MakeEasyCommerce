@@ -1,6 +1,5 @@
 [
     {
-        "id": 4,
         "sku": "#red-shoe#",
         "product_type": 1,
         "visibility": 1,
@@ -9,7 +8,6 @@
         "store_id": 1
     },
     {
-        "id": 2,
         "sku": "#la-sos#",
         "product_type": 1,
         "visibility": 1,
@@ -18,7 +16,6 @@
         "store_id": 1
     },
     {
-        "id": 1,
         "sku": "#test-sku#",
         "product_type": 1,
         "visibility": 1,
@@ -27,7 +24,6 @@
         "store_id": 1
     },
     {
-        "id": 3,
         "sku": "#lbx#",
         "product_type": 1,
         "visibility": 1,

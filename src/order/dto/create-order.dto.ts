@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateCustomerDto } from '@src/customer/dto/create-customer.dto';
+import {
+    CreateCustomerAddressDto,
+    CreateCustomerDto,
+} from '@src/customer/dto/create-customer.dto';
 import {
     IsNotEmpty,
     IsNumber,
@@ -23,10 +26,20 @@ export class CreateOrderDto extends OrderDto {
     @IsNotEmpty()
     baskets_ids: number[];
     @ApiProperty({ type: () => [Number] })
-    @IsOptional()
+    @IsNotEmpty()
     customers_ids: number[];
-    @ApiProperty({ type: [CreateCustomerDto] })
-    @IsOptional()
-    @ValidateNested()
-    customers: CreateCustomerDto[];
+    // @ApiProperty({ type: [CreateCustomerDto] })
+    // @IsNotEmpty()
+    // @ValidateNested({ each: true })
+    // customers: CreateCustomerDto[];
+}
+
+export class CreateGuestOrderDto extends OrderDto {
+    @ApiProperty({ type: () => [Number] })
+    @IsNotEmpty()
+    baskets_ids: number[];
+    @ApiProperty({ type: [CreateCustomerAddressDto] })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    customers: CreateCustomerAddressDto[];
 }

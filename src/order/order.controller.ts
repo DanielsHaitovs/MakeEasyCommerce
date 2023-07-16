@@ -8,7 +8,7 @@ import {
     Delete,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateGuestOrderDto, CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetOrderDto } from './dto/get-order.dto';
@@ -30,6 +30,24 @@ export class OrderController {
     })
     async create(@Body() createOrderDto: CreateOrderDto): Promise<GetOrderDto> {
         return await this.orderService.create({ createOrderDto });
+    }
+
+    @Post('guest/new')
+    @ApiOperation({
+        summary: 'Create Guest Order',
+        description: 'Create guest order with new customer entity',
+    })
+    @ApiBody({
+        type: CreateGuestOrderDto,
+        description: 'Create Guest Order',
+        required: true,
+    })
+    async createGuestOrder(
+        @Body() createOrderDto: CreateGuestOrderDto,
+    ): Promise<GetOrderDto> {
+        return await this.orderService.createGuestOrder({
+            createGuestOrderDto: createOrderDto,
+        });
     }
 
     // @Get()

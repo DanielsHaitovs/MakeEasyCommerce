@@ -45,11 +45,11 @@ export class CustomerService {
     }: {
         createCustomerDto: CreateCustomerAddressDto;
     }): Promise<GetCustomerAddressDetailsDto> {
-        const customer = await this.entityManager.save(
+        // const customer = this.entityManager.create(Customer, createCustomerDto);
+        return await this.entityManager.save(
             Customer,
             this.entityManager.create(Customer, createCustomerDto),
         );
-        return await this.entityManager.save(Customer, customer);
     }
 
     async findAll({
