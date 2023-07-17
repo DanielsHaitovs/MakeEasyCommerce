@@ -26,7 +26,7 @@ export class CreateOrderDto extends OrderDto {
     @IsNotEmpty()
     baskets_ids: number[];
     @ApiProperty({ type: () => [Number] })
-    @IsNotEmpty()
+    @IsOptional()
     customers_ids: number[];
     // @ApiProperty({ type: [CreateCustomerDto] })
     // @IsNotEmpty()

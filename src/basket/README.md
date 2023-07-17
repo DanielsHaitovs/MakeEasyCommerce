@@ -17,6 +17,9 @@ Personalization is more described in Personalization 'Readme.md' file.
 Basket -> 
 It's an entity that contains main basket data to maintain customer activity with products and personalizations, marketing promo conditions, 
 
+#Assign to customer
+Goal of this feature is to when user will register, we could check at least by email
+if this customer did place order before so in this case this basket can appear for customer
 #Merge multiple baskets into 1
 
 The goal of this feature is to make future life easier

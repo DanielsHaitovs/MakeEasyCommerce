@@ -50,10 +50,10 @@ export class OrderController {
         });
     }
 
-    // @Get()
-    // findAll() {
-    //     return this.orderService.findAll();
-    // }
+    @Get()
+    async findAll(): Promise<GetOrderDto> {
+        return await this.orderService.findAll();
+    }
 
     // @Get('defaultOrder')
     // @ApiOperation({
