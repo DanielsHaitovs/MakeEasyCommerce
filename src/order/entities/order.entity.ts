@@ -10,7 +10,7 @@ import {
     RelationId,
 } from 'typeorm';
 
-@Entity()
+@Entity('order_index')
 export class Order {
     @PrimaryGeneratedColumn()
     id: number;
@@ -25,7 +25,7 @@ export class Order {
         eager: true,
     })
     @JoinTable({
-        name: 'order_baskets',
+        name: 'order_baskets_index',
         joinColumn: {
             name: 'order_id',
             referencedColumnName: 'id',
@@ -41,14 +41,14 @@ export class Order {
     baskets: Basket[];
 
     @RelationId((order: Order) => order.baskets)
-    basket_ids: number[];
+    baskets_ids: number[];
 
     @ManyToMany(() => Customer, {
         cascade: true,
         eager: true,
     })
     @JoinTable({
-        name: 'order_customer',
+        name: 'order_customers_address',
         joinColumn: {
             name: 'order_id',
             referencedColumnName: 'id',

@@ -10,7 +10,7 @@ import {
     RelationId,
 } from 'typeorm';
 
-@Entity()
+@Entity('basket_index')
 export class Basket {
     @PrimaryGeneratedColumn()
     id: number;
@@ -35,7 +35,7 @@ export class Basket {
         cascade: true,
     })
     @JoinTable({
-        name: 'basket_products',
+        name: 'basket_products_index',
         joinColumn: {
             name: 'basket_id',
             referencedColumnName: 'id',
@@ -59,14 +59,14 @@ export class Basket {
     // due to feature of splitted order
     // where one order has two customers
     // @Column('simple-array')
-    // customer_ids: number[];
+    // customers_ids: number[];
 
     @ManyToMany(() => Customer, {
         eager: true,
         cascade: true,
     })
     @JoinTable({
-        name: 'basket_customers',
+        name: 'basket_customers_index',
         joinColumn: {
             name: 'basket_id',
             referencedColumnName: 'id',
@@ -82,7 +82,7 @@ export class Basket {
     customers: Customer[];
 
     @RelationId((basket: Basket) => basket.customers)
-    customer_ids: number[];
+    customers_ids: number[];
 }
 
 // In future -> after will appear eav solution

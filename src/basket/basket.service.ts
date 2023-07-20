@@ -41,11 +41,11 @@ export class BasketService {
             throw 'Basket is empty';
         }
 
-        if (createBasketDto.customer_ids.length > 0) {
+        if (createBasketDto.customers_ids.length > 0) {
             const customers = await this.entityManager
                 .createQueryBuilder(Customer, 'customer')
                 .where('id IN (:...ids)', {
-                    ids: createBasketDto.customer_ids,
+                    ids: createBasketDto.customers_ids,
                 })
                 .getMany();
 
@@ -112,8 +112,8 @@ export class BasketService {
     }: {
         id: number;
         updateBasketDto: UpdateBasketDto;
-    }): Promise<GetBasketDto> {
-        const current = await this.findOne({ id });
+    }): Promise<any> {
+        const basket: GetBasketDto = await this.findOne({ id });
 
         const products: GetProductDto[] = await this.findProductsByIds({
             itemIds: updateBasketDto.product_ids,
@@ -122,119 +122,43 @@ export class BasketService {
             groupBy: 'id',
         });
 
-        // IMPORTANT START
-
-        // I want to do speed test using Promise.all()
-        // Current understanding tells me that if there
-        // will be smth in return I won't spend time on loading
-        // customer entities later cuz they might will work
-        // in parallel request in Promise.all
-
-        // Also can be implemented for updating relations
-        // In case if in same function exists more then 1
-        // await this.updateBasketRelations
-
-        // IMPORTANT END
-        // const test = await Promise.all([
-        //     await this.findProductsByIds({
-        //         itemIds: updateBasketDto.product_ids,
-        //         selectValues: null,
-        //         relationAlias: 'product',
-        //         groupBy: 'id',
-        //     }),
-        //     await this.findCustomersByIds({
-        //         itemIds: updateBasketDto.customer_ids,
-        //         selectValues: null,
-        //         relationAlias: 'customer',
-        //         groupBy: 'id',
-        //     }),
-        // ]);
-
-        // console.log(
-        //     test.map((promise) => {
-        //         console.log(promise);
-        //     }),
-        // );
-
-        if (products.length > 0) {
-            await this.updateBasketRelations({
-                id,
-                relationsAlias: 'basket',
-                relation: 'products',
-                updated_relation: products,
-                current_relation: current.products,
-            });
-        }
-
-        const basket: BasketShort = await this.validateBasketData({
-            store_id: updateBasketDto.store_id,
-            products,
+        const customers: GetCustomerDto[] = await this.findCustomersByIds({
+            itemIds: updateBasketDto.customers_ids,
+            selectValues: null,
+            relationAlias: 'customer',
+            groupBy: 'id',
         });
 
-        if (updateBasketDto.customer_ids.length > 0) {
-            const customers: GetCustomerDto[] = await this.findCustomersByIds({
-                itemIds: updateBasketDto.customer_ids,
-                selectValues: null,
-                relationAlias: 'customer',
-                groupBy: 'id',
-            });
+        const basket_entity = await this.validateBasketData({
+            store_id: updateBasketDto.store_id,
+            products: products,
+        });
 
-            // If customers_ids length is 1 and arr[0] is equal to 0
-            // let's delete customers relation for this basket
-            if (
-                customers.length > 0 &&
-                updateBasketDto.customer_ids.length === 1 &&
-                updateBasketDto.customer_ids[0] === 0
-            ) {
-                await this.deleteBasketRelations({
-                    id,
-                    relationsAlias: 'basket',
-                    relation: 'customers',
-                    current_relation: customers,
-                });
-            }
+        const basket_data: UpdateBasketDto = {
+            ...basket,
+            ...updateBasketDto,
+            products: products,
+            customers: customers,
+            basket_final_price: basket_entity.basket_final_price,
+            product_count: basket_entity.product_count,
+        };
 
-            if (
-                customers.length > 0 &&
-                updateBasketDto.customer_ids.length > 0
-            ) {
-                await this.updateBasketRelations({
-                    id,
-                    relationsAlias: 'basket',
-                    relation: 'customers',
-                    updated_relation: customers,
-                    current_relation: current.customers,
-                });
-            }
+        await this.updateBasketRelations({
+            id,
+            relationsAlias: 'basket',
+            relation: 'products',
+            updated_relation: products,
+            current_relation: basket.products,
+        });
+        await this.updateBasketRelations({
+            id,
+            relationsAlias: 'basket',
+            relation: 'customers',
+            updated_relation: customers,
+            current_relation: basket.customers,
+        });
 
-            try {
-                await this.entityManager
-                    .getRepository(Basket)
-                    .createQueryBuilder('basket')
-                    .update()
-                    .set(basket)
-                    .where('basket.id = :id', { id: id })
-                    .execute();
-
-                return await this.findOne({ id });
-            } catch (e) {
-                return e.message;
-            }
-        }
-
-        try {
-            await this.entityManager
-                .getRepository(Basket)
-                .createQueryBuilder('basket')
-                .update()
-                .set(basket)
-                .where('basket.id = :id', { id: id })
-                .execute();
-
-            return await this.findOne({ id });
-        } catch (e) {
-            return e.message;
-        }
+        return await this.entityManager.save(Basket, basket_data);
     }
 
     async remove({ id }: { id: number }): Promise<number> {
@@ -276,6 +200,9 @@ export class BasketService {
         };
     }
 
+    // This supposed to be updated
+    // To handle promo rules and other
+    // Marketing features
     private async getTotalProductPrice({
         products,
     }: {
@@ -402,7 +329,7 @@ export class BasketService {
                 DefaultOrderBasketDto.basket_final_price,
             ),
             product_ids: [Number(DefaultOrderBasketDto.product_ids)],
-            customer_ids: [Number(DefaultOrderBasketDto.customer_ids)],
+            customers_ids: [Number(DefaultOrderBasketDto.customers_ids)],
             store_id: Number(DefaultOrderBasketDto.store_id),
             product_count: Number(DefaultOrderBasketDto.product_count),
             status: Number(DefaultOrderBasketDto.status),

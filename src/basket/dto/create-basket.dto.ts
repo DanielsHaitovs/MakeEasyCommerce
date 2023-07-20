@@ -17,7 +17,7 @@ export class BasketDto {
     product_ids: number[];
     @IsNotEmpty()
     @ApiProperty({ type: [Number] })
-    customer_ids: number[];
+    customers_ids: number[];
     // @IsArray()
     // @ApiProperty()
     // personalization: number[];

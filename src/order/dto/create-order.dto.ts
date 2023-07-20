@@ -1,8 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    CreateCustomerAddressDto,
-    CreateCustomerDto,
-} from '@src/customer/dto/create-customer.dto';
+import { CreateCustomerAddressDto } from '@src/customer/dto/create-customer.dto';
 import {
     IsNotEmpty,
     IsNumber,
