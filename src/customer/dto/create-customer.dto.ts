@@ -24,6 +24,10 @@ export class CustomerDto {
     @ApiProperty()
     @IsNumber()
     @IsNotEmpty()
+    customer_type: number;
+    @ApiProperty()
+    @IsNumber()
+    @IsNotEmpty()
     store_id: number;
     address_ids: number[];
 }

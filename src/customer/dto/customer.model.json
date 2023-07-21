@@ -1,9 +1,33 @@
 [
 {
+    "first_name": "Customer 3",
+    "last_name": "Customer 3 Last Name",
+    "email": "customer3@mec.com",
+    "store_id": 10,
+    "customer_type": 1,
+    "address": 
+    [
+        {
+            "country": "United States",
+            "postal_code": "QQ-1234",
+            "address_type": 2,
+            "details": {
+                "city": "DC",
+                "street_name": "Roosevelt",
+                "house_number": "10",
+                "phone_number": "898989",
+                "company": "some Company",
+                "tax_id": "1234"
+            }
+        }
+    ]
+},
+{
     "first_name": "Customer 2",
     "last_name": "Customer Last Name",
     "email": "customer2@mec.com",
     "store_id": 10,
+    "customer_type": 1,
     "address": 
     [
         {
@@ -52,6 +76,7 @@
     "last_name": "Daniel Last Name",
     "email": "daniel@mec.com",
     "store_id": 10,
+    "customer_type": 1,
     "address": 
     [
         {

@@ -25,6 +25,9 @@ export class Customer {
     @IsNumber()
     @Column()
     store_id: number;
+    @IsNumber()
+    @Column()
+    customer_type: number;
     @OneToMany(() => Address, (address) => address.customer, {
         cascade: true,
         eager: true,

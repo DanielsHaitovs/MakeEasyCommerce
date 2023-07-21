@@ -50,6 +50,7 @@ export class DetailsDto {
 
 export class CreateAddressDto extends AddressDto {
     @ApiProperty({ type: DetailsDto })
+    @IsNotEmpty()
     @ValidateNested()
     details: DetailsDto;
 }
