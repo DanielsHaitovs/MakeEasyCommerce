@@ -1,5 +1,13 @@
+import { Attribute } from '@src/attributes/entities/attribute.entity';
 import { IsNumber, IsString } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    PrimaryGeneratedColumn,
+    Unique,
+} from 'typeorm';
 
 @Entity()
 @Unique(['sku'])
@@ -27,4 +35,7 @@ export class Product {
     @IsNumber()
     @Column()
     store_id: number;
+    @ManyToMany(() => Attribute, (attribute) => attribute.products)
+    @JoinTable()
+    attributes: Attribute[];
 }
