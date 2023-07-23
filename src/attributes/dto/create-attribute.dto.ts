@@ -1,1 +1,3 @@
-export class CreateAttributeDto {}
+export class CreateAttributeDto {
+    
+}

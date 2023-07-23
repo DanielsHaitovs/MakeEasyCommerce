@@ -1,10 +1,11 @@
-import { Attribute } from '@src/attributes/entities/attribute.entity';
+import { EAVAttribute } from '@src/eav/entities/eav-attribute.entity';
+import { EAV } from '@src/eav/entities/eav.entity';
 import { IsNumber, IsString } from 'class-validator';
 import {
     Column,
     Entity,
     JoinTable,
-    ManyToMany,
+    ManyToOne,
     PrimaryGeneratedColumn,
     Unique,
 } from 'typeorm';
@@ -35,7 +36,20 @@ export class Product {
     @IsNumber()
     @Column()
     store_id: number;
-    @ManyToMany(() => Attribute, (attribute) => attribute.products)
-    @JoinTable()
-    attributes: Attribute[];
+    @ManyToOne(() => EAV, (attribute) => attribute.products)
+    @JoinTable({
+        name: 'products_eav_index',
+        joinColumn: {
+            name: 'product_id',
+            referencedColumnName: 'id',
+            foreignKeyConstraintName: 'fk_product_eav_productId',
+        },
+        inverseJoinColumn: {
+            name: 'eav_id',
+            referencedColumnName: 'id',
+            foreignKeyConstraintName: 'fk_product_eav_eavId',
+        },
+        synchronize: true,
+    })
+    eav: EAVAttribute[];
 }

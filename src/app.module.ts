@@ -4,7 +4,6 @@ import { OrderModule } from './order/order.module';
 import { CustomerModule } from './customer/customer.module';
 import { BasketModule } from './basket/basket.module';
 import { ProductModule } from './product/product.module';
-import { AttributesModule } from './attributes/attributes.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from './customer/entities/customer.entity';
 import { Address } from './customer/entities/address.entity';
@@ -12,9 +11,12 @@ import { Details } from './customer/entities/details.entity';
 import { Product } from './product/entities/product.entity';
 import { Basket } from './basket/entities/basket.entity';
 import { Order } from './order/entities/order.entity';
-import { Attribute } from './attributes/entities/attribute.entity';
 import { CategoryModule } from './category/category.module';
 import { Category } from './category/entities/category.entity';
+import { EavModule } from './eav/eav.module';
+import { EAV } from './eav/entities/eav.entity';
+import { EAVAttribute } from './eav/entities/eav-attribute.entity';
+import { EAVAttributeOption } from './eav/entities/eav-attribute-option.entity';
 
 @Module({
     imports: [
@@ -32,7 +34,9 @@ import { Category } from './category/entities/category.entity';
                 Product,
                 Basket,
                 Order,
-                Attribute,
+                EAV,
+                EAVAttribute,
+                EAVAttributeOption,
                 Category,
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
@@ -45,7 +49,7 @@ import { Category } from './category/entities/category.entity';
         BasketModule,
         ProductModule,
         OrderModule,
-        AttributesModule,
+        EavModule,
     ],
     controllers: [],
     providers: [AppService],

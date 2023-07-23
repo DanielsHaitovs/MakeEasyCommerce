@@ -19,7 +19,9 @@ export class AttributesController {
 
     @Post()
     create(@Body() createAttributeDto: CreateAttributeDto) {
-        return this.attributesService.create(createAttributeDto);
+        return this.attributesService.create({
+            createAttributeDto: createAttributeDto,
+        });
     }
 
     @Get()

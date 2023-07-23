@@ -35,4 +35,23 @@ export class Customer {
 
     @RelationId((customer: Customer) => customer.address)
     address_ids: number[];
+
+    // Specifically for EAV
+    // Customer settings are defined per store
+    // @ManyToOne(() => EAV, (eav) => eav.customers)
+    // @JoinTable({
+    //     name: 'customer_eav_index',
+    //     joinColumn: {
+    //         name: 'customer_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_customer_eav_customerId',
+    //     },
+    //     inverseJoinColumn: {
+    //         name: 'eav_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_customer_eav_eavId',
+    //     },
+    //     synchronize: true,
+    // })
+    // eav: EAV[];
 }

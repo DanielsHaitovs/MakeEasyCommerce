@@ -1,11 +1,13 @@
 import { Basket } from '@src/basket/entities/basket.entity';
 import { Customer } from '@src/customer/entities/customer.entity';
+import { EAV } from '@src/eav/entities/eav.entity';
 import { IsNumber } from 'class-validator';
 import {
     Column,
     Entity,
     JoinTable,
     ManyToMany,
+    ManyToOne,
     PrimaryGeneratedColumn,
     RelationId,
 } from 'typeorm';
@@ -65,4 +67,21 @@ export class Order {
 
     @RelationId((order: Order) => order.customers)
     customers_ids: number[];
+
+    @ManyToOne(() => EAV, (eav) => eav.orders)
+    @JoinTable({
+        name: 'order_eav_index',
+        joinColumn: {
+            name: 'order_id',
+            referencedColumnName: 'id',
+            foreignKeyConstraintName: 'fk_order_eav_orderId',
+        },
+        inverseJoinColumn: {
+            name: 'eav_id',
+            referencedColumnName: 'id',
+            foreignKeyConstraintName: 'fk_order_eav_eavId',
+        },
+        synchronize: true,
+    })
+    eav: EAV[];
 }

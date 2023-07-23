@@ -1,11 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
+import { GetAttributeDto } from './dto/get-attribute.dto';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { Attribute } from './entities/attribute.entity';
 
 @Injectable()
 export class AttributesService {
-    create(createAttributeDto: CreateAttributeDto) {
-        return 'This action adds a new attribute';
+    constructor(
+        @InjectEntityManager()
+        private readonly entityManager: EntityManager,
+    ) {}
+    async create({
+        createAttributeDto,
+    }: {
+        createAttributeDto: CreateAttributeDto;
+    }): Promise<GetAttributeDto> {
+        const new_tree = this.entityManager.create(
+            Attribute,
+            createAttributeDto,
+        );
+
+        return null;
+        // return await this.entityManager.save(Attribute, new_tree);
     }
 
     findAll() {
