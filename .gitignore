@@ -34,3 +34,15 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 .env
+ref/attributes.controller.spec.ts
+ref/attributes.controller.ts
+ref/attributes.module.ts
+ref/attributes.service.spec.ts
+ref/attributes.service.ts
+ref/dto/create-attribute.dto.ts
+ref/dto/get-attribute.dto.ts
+ref/dto/update-attribute.dto.ts
+ref/dto/enum/enum-attribute.dto.ts
+ref/entities/attribute.entity.ts
+ref/entities/Inheritance/eav-rule.entity.ts
+ref/entities/Inheritance/options.entity.ts

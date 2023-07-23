@@ -11,8 +11,8 @@ import { Details } from './customer/entities/details.entity';
 import { Product } from './product/entities/product.entity';
 import { Basket } from './basket/entities/basket.entity';
 import { Order } from './order/entities/order.entity';
-import { CategoryModule } from './category/category.module';
-import { Category } from './category/entities/category.entity';
+import { CatalogModule } from './catalog/catalog.module';
+import { Catalog } from './catalog/entities/catalog.entity';
 import { EavModule } from './eav/eav.module';
 import { EAV } from './eav/entities/eav.entity';
 import { EAVAttribute } from './eav/entities/eav-attribute.entity';
@@ -37,14 +37,14 @@ import { EAVAttributeOption } from './eav/entities/eav-attribute-option.entity';
                 EAV,
                 EAVAttribute,
                 EAVAttributeOption,
-                Category,
+                Catalog,
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        CategoryModule,
+        CatalogModule,
         CustomerModule,
         BasketModule,
         ProductModule,

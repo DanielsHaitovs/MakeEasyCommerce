@@ -8,9 +8,9 @@ import {
     TreeLevelColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('catalog_index')
 @Tree('nested-set')
-export class Category {
+export class Catalog {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -18,8 +18,8 @@ export class Category {
     name: string;
 
     @TreeChildren()
-    children: Category[];
+    children: Catalog[];
 
     @TreeParent()
-    parent: Category;
+    parent: Catalog;
 }
