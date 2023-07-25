@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
 import { Catalog } from './entities/catalog.entity';
 import { CreateCatalogDto } from './dto/create-catalog.dto';
 
@@ -20,8 +20,31 @@ export class CatalogService {
             Catalog,
             createCatalogDto,
         );
+        const a1 = new Catalog();
+        a1.name = 'a1';
+        await this.entityManager.save(Catalog, a1);
 
-        return await this.entityManager.save(Catalog, new_catalog);
+        const a11 = new Catalog();
+        a11.name = 'a11';
+        a11.parent = a1;
+        await this.entityManager.save(Catalog, a11);
+
+        const a12 = new Catalog();
+        a12.name = 'a12';
+        a12.parent = a1;
+        await this.entityManager.save(Catalog, a12);
+
+        const a111 = new Catalog();
+        a111.name = 'a111';
+        a111.parent = a11;
+        await this.entityManager.save(Catalog, a111);
+
+        const a112 = new Catalog();
+        a112.name = 'a112';
+        a112.parent = a11;
+        await this.entityManager.save(Catalog, a112);
+        return null;
+        // return await this.entityManager.save(Catalog, new_catalog);
     }
 
     async getAllCatalogs(): Promise<Catalog[]> {

@@ -36,20 +36,20 @@ export class Product {
     @IsNumber()
     @Column()
     store_id: number;
-    @ManyToOne(() => EAV, (attribute) => attribute.products)
-    @JoinTable({
-        name: 'products_eav_index',
-        joinColumn: {
-            name: 'product_id',
-            referencedColumnName: 'id',
-            foreignKeyConstraintName: 'fk_product_eav_productId',
-        },
-        inverseJoinColumn: {
-            name: 'eav_id',
-            referencedColumnName: 'id',
-            foreignKeyConstraintName: 'fk_product_eav_eavId',
-        },
-        synchronize: true,
-    })
-    eav: EAVAttribute[];
+    // @ManyToOne(() => EAV, (attribute) => attribute.products)
+    // @JoinTable({
+    //     name: 'products_eav_index',
+    //     joinColumn: {
+    //         name: 'product_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_product_eav_productId',
+    //     },
+    //     inverseJoinColumn: {
+    //         name: 'eav_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_product_eav_eavId',
+    //     },
+    //     synchronize: true,
+    // })
+    // eav: EAVAttribute[];
 }

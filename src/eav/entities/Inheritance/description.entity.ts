@@ -1,18 +1,21 @@
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Column } from 'typeorm';
 
 // Duplicated params related to
 // each level of EAV entity
 export class Description {
-    @Column({ default: true })
+    @Column()
+    @IsNotEmpty()
     @IsString()
     name: string;
 
     @Column()
+    @IsNotEmpty()
     @IsString()
     code: string;
 
-    @Column({ default: true })
+    @Column()
+    @IsNotEmpty()
     @IsString()
     description: string;
 }

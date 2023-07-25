@@ -1,26 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEavDto } from './dto/create-eav.dto';
+import { CreateChildEavDto, CreateEavDto } from './dto/create-eav.dto';
 import { UpdateEavDto } from './dto/update-eav.dto';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { EAV } from './entities/eav.entity';
+import { GetParentEavDto } from './dto/get-eav.dto';
 
 @Injectable()
 export class EavService {
-  create(createEavDto: CreateEavDto) {
-    return 'This action adds a new eav';
-  }
+    constructor(
+        @InjectEntityManager()
+        private readonly entityManager: EntityManager,
+    ) {}
+    async create({ createEavDto }: { createEavDto: CreateEavDto }) {
+        if (createEavDto.parent != undefined) {
+            const parent: GetParentEavDto = await this.entityManager.findOne(
+                EAV,
+                {
+                    where: {
+                        id: createEavDto.parent,
+                    },
+                },
+            );
+            // There is no parent catalog id
+            if (parent.id === undefined) {
+                const root = { ...createEavDto.description };
+                console.log(root);
+                const new_root = await this.entityManager.save(EAV, {
+                    children: [],
+                    description: root,
+                });
+                console.log(new_root);
+            }
 
-  findAll() {
-    return `This action returns all eav`;
-  }
+            const test: CreateChildEavDto = this.entityManager.create(EAV, {
+                parent: parent,
+                description: createEavDto.description,
+                children: createEavDto.children,
+            });
 
-  findOne(id: number) {
-    return `This action returns a #${id} eav`;
-  }
+            console.log('test', test);
 
-  update(id: number, updateEavDto: UpdateEavDto) {
-    return `This action updates a #${id} eav`;
-  }
+            const res = await this.entityManager.save(EAV, test);
 
-  remove(id: number) {
-    return `This action removes a #${id} eav`;
-  }
+            return res;
+        }
+    }
+
+    async findAll() {
+        return await this.entityManager.find(EAV);
+    }
+
+    findOne(id: number) {
+        return `This action returns a #${id} eav`;
+    }
+
+    update(id: number, updateEavDto: UpdateEavDto) {
+        return `This action updates a #${id} eav`;
+    }
+
+    remove(id: number) {
+        return `This action removes a #${id} eav`;
+    }
 }

@@ -83,22 +83,22 @@ export class Basket {
     @RelationId((basket: Basket) => basket.customers)
     customer_ids: number[];
 
-    @ManyToOne(() => EAV, (eav) => eav.orders)
-    @JoinTable({
-        name: 'basket_eav_index',
-        joinColumn: {
-            name: 'basket_id',
-            referencedColumnName: 'id',
-            foreignKeyConstraintName: 'fk_basket_eav_basketId',
-        },
-        inverseJoinColumn: {
-            name: 'eav_id',
-            referencedColumnName: 'id',
-            foreignKeyConstraintName: 'fk_basket_eav_eavId',
-        },
-        synchronize: true,
-    })
-    eav: EAV[];
+    // @ManyToOne(() => EAV, (eav) => eav.orders)
+    // @JoinTable({
+    //     name: 'basket_eav_index',
+    //     joinColumn: {
+    //         name: 'basket_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_basket_eav_basketId',
+    //     },
+    //     inverseJoinColumn: {
+    //         name: 'eav_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_basket_eav_eavId',
+    //     },
+    //     synchronize: true,
+    // })
+    // eav: EAV[];
 }
 
 // In future -> after will appear eav solution

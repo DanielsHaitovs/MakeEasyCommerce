@@ -44,12 +44,12 @@ import { EAVAttributeOption } from './eav/entities/eav-attribute-option.entity';
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
+        EavModule,
         CatalogModule,
         CustomerModule,
         BasketModule,
         ProductModule,
         OrderModule,
-        EavModule,
     ],
     controllers: [],
     providers: [AppService],

@@ -11,9 +11,10 @@ import {
 } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { Catalog } from './entities/catalog.entity';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateCatalogDto } from './dto/create-catalog.dto';
 
+@ApiTags('Catalog')
 @Controller('catalog')
 export class CatalogController {
     constructor(private readonly catalogService: CatalogService) {}

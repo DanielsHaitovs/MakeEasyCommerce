@@ -25,8 +25,8 @@ export class EAVAttribute {
     @Column(() => EAVAttributeRule)
     rule: EAVAttributeRule;
 
-    @ManyToOne(() => EAV, (eav) => eav.attributes)
-    eav: EAV;
+    // @ManyToOne(() => EAV, (eav) => eav.attributes)
+    // eav: EAV;
 
     @OneToMany(() => EAVAttributeOption, (option) => option.attribute)
     options: EAVAttributeOption[];

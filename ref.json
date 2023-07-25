@@ -1,9 +1,48 @@
-const basket = await this.entityManager
-.getRepository(Basket)
-.createQueryBuilder()
-.relation(Basket, 'products')
-.of(1)
-.add(3);
-
-this will add record to already existing relation
-it won't update main entity
+{
+    "description": {
+        "name": "a1",
+        "code": "a1_code",
+        "description": "a1_description"
+    },
+    "children": [
+        {
+            "description": {
+                "name": "a1-1",
+                "code": "a1-1_code",
+                "description": "a1-1_description"
+            },
+            "children": [
+                {
+                    "description": {
+                        "name": "a1-1-1",
+                        "code": "a1-1-1_code",
+                        "description": "a1-1-1_description"
+                    }
+                },
+                {
+                    "description": {
+                        "name": "a1-1-2",
+                        "code": "a1-1-2_code",
+                        "description": "a1-1-2_description"
+                    }
+                }
+            ]
+        },
+        {
+            "description": {
+                "name": "a1-2",
+                "code": "a1-2_code",
+                "description": "a1-2_description"
+            },
+            "children": [
+                {
+                    "description": {
+                        "name": "a1-2-1",
+                        "code": "a1-2-1_code",
+                        "description": "a1-2-1_description"
+                    }
+                }
+            ]
+        }
+    ]
+}

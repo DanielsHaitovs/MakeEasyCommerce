@@ -68,20 +68,20 @@ export class Order {
     @RelationId((order: Order) => order.customers)
     customers_ids: number[];
 
-    @ManyToOne(() => EAV, (eav) => eav.orders)
-    @JoinTable({
-        name: 'order_eav_index',
-        joinColumn: {
-            name: 'order_id',
-            referencedColumnName: 'id',
-            foreignKeyConstraintName: 'fk_order_eav_orderId',
-        },
-        inverseJoinColumn: {
-            name: 'eav_id',
-            referencedColumnName: 'id',
-            foreignKeyConstraintName: 'fk_order_eav_eavId',
-        },
-        synchronize: true,
-    })
-    eav: EAV[];
+    // @ManyToOne(() => EAV, (eav) => eav.orders)
+    // @JoinTable({
+    //     name: 'order_eav_index',
+    //     joinColumn: {
+    //         name: 'order_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_order_eav_orderId',
+    //     },
+    //     inverseJoinColumn: {
+    //         name: 'eav_id',
+    //         referencedColumnName: 'id',
+    //         foreignKeyConstraintName: 'fk_order_eav_eavId',
+    //     },
+    //     synchronize: true,
+    // })
+    // eav: EAV[];
 }

@@ -2,9 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrderDto } from './dto/get-order.dto';
-import { DefaultOrderDto } from './dto/enum/enum-order.dto';
-import { BasketService } from 'src/basket/basket.service';
-import { CustomerService } from '@src/customer/services/customer.service';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { GetBasketDto } from '@src/basket/dto/get-basket.dto';
@@ -47,7 +44,7 @@ export class OrderService {
             });
 
             const customerIds: number[] = customers.map((el) => {
-                return 1;
+                return el.id;
             });
 
             if (customerIds.length != createOrderDto.customers_ids.length) {

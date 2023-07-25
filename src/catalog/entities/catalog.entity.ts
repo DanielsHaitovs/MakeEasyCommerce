@@ -5,7 +5,6 @@ import {
     PrimaryGeneratedColumn,
     TreeChildren,
     TreeParent,
-    TreeLevelColumn,
 } from 'typeorm';
 
 @Entity('catalog_index')
