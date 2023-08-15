@@ -12,6 +12,8 @@ import { Product } from './product/entities/product.entity';
 import { Basket } from './basket/entities/basket.entity';
 import { Order } from './order/entities/order.entity';
 import { EavModule } from './eav/eav.module';
+import { EAV } from './eav/entities/eav.entity';
+import { AttributeEAV } from './eav/entities/inheritance/attribute/eav-attribute.entity';
 
 @Module({
     imports: [
@@ -23,11 +25,20 @@ import { EavModule } from './eav/eav.module';
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.TYPEORM_HOST,
-            port: 5432,
+            port: Number(process.env.TYPEORM_PORT),
             database: process.env.TYPEORM_DATABASE,
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
-            entities: [Customer, Address, Details, Product, Basket, Order],
+            entities: [
+                Customer,
+                Address,
+                Details,
+                Product,
+                Basket,
+                Order,
+                EAV,
+                AttributeEAV,
+            ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
