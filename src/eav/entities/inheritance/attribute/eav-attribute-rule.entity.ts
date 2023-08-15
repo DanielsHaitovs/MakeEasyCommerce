@@ -1,31 +1,41 @@
+import { IsBoolean } from 'class-validator';
 import { Column } from 'typeorm';
 
-export class EAVAttributeRule {
+export class AttributeEAVRule {
     @Column({ default: true })
+    @IsBoolean()
     useInCatalog: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInListing: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInLayeredNavigation: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInFilter: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInOptionFilter: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInSort: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInSearch: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInPromo: boolean;
 
     @Column({ default: true })
+    @IsBoolean()
     useInReport: boolean;
 
     // Other properties specific to your app's requirements (e.g., description, units, etc.)
