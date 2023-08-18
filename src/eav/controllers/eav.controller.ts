@@ -9,8 +9,9 @@ import {
 } from '@nestjs/common';
 import { EavService } from '../services/eav.service';
 import { UpdateEavDto } from '../dto/update-eav.dto';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateEavDto } from '../dto/create-eav.dto';
+import { GetEavParentDto } from '../dto/get-eav.dto';
 
 @ApiTags('EAV')
 @Controller('eav')
@@ -39,8 +40,12 @@ export class EavController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.eavService.findOne(+id);
+    @ApiOkResponse({
+        description: 'All Basket and theirs customers',
+        type: [GetEavParentDto],
+    })
+    async findOne(@Param('id') id: string): Promise<GetEavParentDto> {
+        return await this.eavService.findOne(+id);
     }
 
     @Patch(':id')

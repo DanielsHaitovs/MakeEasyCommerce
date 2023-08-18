@@ -39,8 +39,12 @@ export class EavService {
         return `This action returns all eav`;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} eav`;
+    async findOne(id: number): Promise<GetEavParentDto> {
+        return await this.entityManager.findOne(EAV, {
+            where: {
+                id: id,
+            },
+        });
     }
 
     update(id: number, updateEavDto: UpdateEavDto) {

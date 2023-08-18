@@ -19,7 +19,7 @@ export class AttributeEAV {
     rule: AttributeEAVRule;
 
     @ManyToOne(() => EAV, (eav) => eav.attributes)
-    eav: EAV;
+    parent_eav: EAV;
 
     // @OneToMany(() => EAVAttributeOption, (option) => option.attribute)
     // options: EAVAttributeOption[];

@@ -2,39 +2,39 @@ import { IsBoolean } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class AttributeEAVRule {
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInCatalog: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInListing: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInLayeredNavigation: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInFilter: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInOptionFilter: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInSort: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInSearch: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInPromo: boolean;
 
-    @Column({ default: true })
+    @Column()
     @IsBoolean()
     useInReport: boolean;
 

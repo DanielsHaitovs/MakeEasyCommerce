@@ -1,0 +1,10 @@
+[
+{
+    "attribute": {
+        "name": "test attr",
+        "code": "test_attr",
+        "description": "test",
+    },
+    "parent_eav": 2
+}
+]
