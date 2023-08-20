@@ -6,12 +6,20 @@ import {
     Patch,
     Param,
     Delete,
+    Query,
+    ParseIntPipe,
 } from '@nestjs/common';
 import { EavService } from '../services/eav.service';
 import { UpdateEavDto } from '../dto/update-eav.dto';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBody,
+    ApiOkResponse,
+    ApiOperation,
+    ApiQuery,
+    ApiTags,
+} from '@nestjs/swagger';
 import { CreateEavDto } from '../dto/create-eav.dto';
-import { GetEavParentDto } from '../dto/get-eav.dto';
+import { GetEavParentAttributesDto, GetEavParentDto } from '../dto/get-eav.dto';
 
 @ApiTags('EAV')
 @Controller('eav')
@@ -34,18 +42,129 @@ export class EavController {
         });
     }
 
-    @Get()
-    findAll() {
-        return this.eavService.findAll();
-    }
-
-    @Get(':id')
-    @ApiOkResponse({
-        description: 'All Basket and theirs customers',
-        type: [GetEavParentDto],
+    // This one in future MUST have option
+    // filter by page number and amount on page
+    // Most likely this will be separate route
+    // But this I'll keep for fun (Once I'll generate 1 million baskets) hehe
+    @Get('get/all')
+    @ApiOperation({
+        summary: 'Find All EAVs',
+        description: 'Get data of all Eav, good luck!',
     })
-    async findOne(@Param('id') id: string): Promise<GetEavParentDto> {
-        return await this.eavService.findOne(+id);
+    @ApiQuery({
+        name: 'attributes',
+        description: 'include eav attributes data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'products',
+        description: 'include eav products data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'customers',
+        description: 'include eav customers data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'baskets',
+        description: 'include eav baskets data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'orders',
+        description: 'include eav orders data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'Filtered EAV Data',
+        type: [GetEavParentAttributesDto],
+    })
+    async findAll(
+        @Query('attributes') attributes: boolean,
+        @Query('products') products: boolean,
+        @Query('customers') customers: boolean,
+        @Query('baskets') baskets: boolean,
+        @Query('orders') orders: boolean,
+    ): Promise<GetEavParentAttributesDto[]> {
+        return await this.eavService.findAll({
+            attributes: attributes,
+            products: products,
+            customers: customers,
+            baskets: baskets,
+            orders: orders,
+        });
+    }
+    @Get('get/:id')
+    @ApiOperation({
+        summary: 'Find EAV by Id',
+        description: 'Get data Eav',
+    })
+    @ApiQuery({
+        name: 'attributes',
+        description: 'include eav attributes data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'products',
+        description: 'include eav products data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'customers',
+        description: 'include eav customers data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'baskets',
+        description: 'include eav baskets data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'orders',
+        description: 'include eav orders data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'Filtered EAV Data',
+        type: [GetEavParentAttributesDto],
+    })
+    async findOne(
+        @Param('id', ParseIntPipe) id: number,
+        @Query('attributes') attributes: boolean,
+        @Query('products') products: boolean,
+        @Query('customers') customers: boolean,
+        @Query('baskets') baskets: boolean,
+        @Query('orders') orders: boolean,
+    ): Promise<GetEavParentAttributesDto> {
+        return await this.eavService.findOne({
+            id: id,
+            attributes: attributes,
+            products: products,
+            customers: customers,
+            baskets: baskets,
+            orders: orders,
+        });
     }
 
     @Patch(':id')

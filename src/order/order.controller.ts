@@ -85,7 +85,7 @@ export class OrderController {
         description: 'All Basket and theirs customers',
         type: [GetOrderDto],
     })
-    async findAllCustomers(
+    async findAll(
         @Query('baskets') baskets: boolean,
         @Query('customers') customers: boolean,
     ): Promise<GetOrderDto[]> {

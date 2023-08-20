@@ -15,7 +15,7 @@ export class GetEavParentAttributesDto extends EavDto {
     @IsNotEmpty()
     @IsNumber()
     id: number;
-    @ApiProperty({ type: [GetEavAttributeDto] })
+    @ApiProperty()
     @ValidateNested()
     attributes: GetEavAttributeDto[];
 }

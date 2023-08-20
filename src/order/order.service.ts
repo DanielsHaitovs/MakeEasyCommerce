@@ -100,7 +100,8 @@ export class OrderService {
         throw 'baskets ids were not specified';
     }
 
-    // Create Guest Order with saving customer for it
+    // Create Guest Order
+    // By saving new customer for it
     async createGuestOrder({
         createGuestOrderDto,
     }: {

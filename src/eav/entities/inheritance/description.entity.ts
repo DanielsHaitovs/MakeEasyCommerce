@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Column } from 'typeorm';
+import { Column, Unique } from 'typeorm';
 
 // Duplicated params related to
 // each level of EAV entity
+@Unique(['name', 'code'])
 export class Description {
     @Column()
     @IsNotEmpty()

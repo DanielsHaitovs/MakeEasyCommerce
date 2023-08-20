@@ -30,7 +30,7 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('MakeEasyCommerce')
-        .setDescription('AllCommerceInOneCentralizedSystem')
+        .setDescription('All Commerce In One Centralized System')
         .setVersion('1.0')
         .build();
 
