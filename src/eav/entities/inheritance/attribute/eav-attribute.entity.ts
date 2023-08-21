@@ -2,14 +2,14 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { EAV } from '../../eav.entity';
 import { Description } from '../description.entity';
 import { AttributeEAVRule } from './eav-attribute-rule.entity';
-// import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('eav_attributes_index')
 export class AttributeEAV {
     @PrimaryGeneratedColumn()
     id: number;
 
-    // @ApiProperty({ type: () => Description })
+    @ApiProperty({ type: () => Description })
     @Column(() => Description)
     attribute: Description;
 

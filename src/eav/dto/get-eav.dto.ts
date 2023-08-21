@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
 import { EavDto } from './create-eav.dto';
-import { GetEavAttributeDto } from './attribute/get-eav-attribute.dto';
+import { GetAttributeDto } from './attribute/get-eav-attribute.dto';
 
 export class GetEavParentDto extends EavDto {
     @ApiProperty()
@@ -10,14 +10,14 @@ export class GetEavParentDto extends EavDto {
     id: number;
 }
 
-export class GetEavParentAttributesDto extends EavDto {
+export class GetParentEavAttributesDto extends EavDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
     id: number;
     @ApiProperty()
     @ValidateNested()
-    attributes: GetEavAttributeDto[];
+    attributes: GetAttributeDto[];
 }
 
 export class GetEavChildDto extends EavDto {

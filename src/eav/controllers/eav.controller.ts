@@ -19,7 +19,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { CreateEavDto } from '../dto/create-eav.dto';
-import { GetEavParentAttributesDto, GetEavParentDto } from '../dto/get-eav.dto';
+import { GetParentEavAttributesDto } from '../dto/get-eav.dto';
 
 @ApiTags('EAV')
 @Controller('eav')
@@ -88,7 +88,7 @@ export class EavController {
     })
     @ApiOkResponse({
         description: 'Filtered EAV Data',
-        type: [GetEavParentAttributesDto],
+        type: [GetParentEavAttributesDto],
     })
     async findAll(
         @Query('attributes') attributes: boolean,
@@ -96,7 +96,7 @@ export class EavController {
         @Query('customers') customers: boolean,
         @Query('baskets') baskets: boolean,
         @Query('orders') orders: boolean,
-    ): Promise<GetEavParentAttributesDto[]> {
+    ): Promise<GetParentEavAttributesDto[]> {
         return await this.eavService.findAll({
             attributes: attributes,
             products: products,
@@ -105,6 +105,7 @@ export class EavController {
             orders: orders,
         });
     }
+
     @Get('get/:id')
     @ApiOperation({
         summary: 'Find EAV by Id',
@@ -147,7 +148,7 @@ export class EavController {
     })
     @ApiOkResponse({
         description: 'Filtered EAV Data',
-        type: [GetEavParentAttributesDto],
+        type: [GetParentEavAttributesDto],
     })
     async findOne(
         @Param('id', ParseIntPipe) id: number,
@@ -156,7 +157,7 @@ export class EavController {
         @Query('customers') customers: boolean,
         @Query('baskets') baskets: boolean,
         @Query('orders') orders: boolean,
-    ): Promise<GetEavParentAttributesDto> {
+    ): Promise<GetParentEavAttributesDto> {
         return await this.eavService.findOne({
             id: id,
             attributes: attributes,

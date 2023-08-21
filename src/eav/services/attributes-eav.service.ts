@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { AttributeEAV } from '../entities/inheritance/attribute/eav-attribute.entity';
-import { EavAttributeRuleDto } from '../dto/attribute/create-eav-attribute.dto';
+import { AttributeRuleDto } from '../dto/attribute/create-eav-attribute.dto';
 import { EAV } from '../entities/eav.entity';
-import { GetEavAttributeDto } from '../dto/attribute/get-eav-attribute.dto';
+import { GetAttributeDto } from '../dto/attribute/get-eav-attribute.dto';
+import { UpdateAttributeDto } from '../dto/attribute/update-eav-attribute.dto';
 
 @Injectable()
 export class AttributeEavService {
@@ -17,9 +18,9 @@ export class AttributeEavService {
         rule,
         newAttribute,
     }: {
-        rule: EavAttributeRuleDto;
+        rule: AttributeRuleDto;
         newAttribute: any;
-    }): Promise<GetEavAttributeDto> {
+    }): Promise<GetAttributeDto> {
         console.log(newAttribute.parent_eav);
         // here we need to find(determine) eav instance where attribute should be assigned.
         const parent_eav = await this.entityManager.findOne(EAV, {
@@ -28,7 +29,7 @@ export class AttributeEavService {
             },
         });
 
-        const new_attribute: GetEavAttributeDto = this.entityManager.create(
+        const new_attribute: GetAttributeDto = this.entityManager.create(
             AttributeEAV,
             {
                 rule: rule,
@@ -37,28 +38,193 @@ export class AttributeEavService {
             },
         );
 
-        console.log(new_attribute);
-
         return await this.entityManager.save(AttributeEAV, new_attribute);
     }
 
-    findAll() {
-        return `This action returns all eav`;
+    async findAll({
+        parent,
+        rule,
+    }: {
+        parent: boolean;
+        rule: boolean;
+    }): Promise<any> {
+        const where = {
+            filter: '',
+            value: null,
+        };
+        const relations = {
+            rule: rule,
+            parent: parent,
+        };
+        try {
+            return await this.findAttributeEAVQuery({
+                where,
+                relations,
+                many: true,
+            });
+        } catch (e) {
+            return e.message;
+        }
     }
 
-    async findOne(id: number): Promise<any> {
-        return await this.entityManager.findOne(AttributeEAV, {
-            where: {
-                id: id,
-            },
-        });
+    async findOne({
+        id,
+        parent,
+        rule,
+    }: {
+        id: number;
+        parent: boolean;
+        rule: boolean;
+    }): Promise<any> {
+        const where = {
+            filter: 'id',
+            value: id,
+        };
+        const relations = {
+            parent: parent,
+            rule: rule,
+        };
+        try {
+            return (
+                await this.findAttributeEAVQuery({
+                    where,
+                    relations,
+                    many: false,
+                })
+            ).shift();
+        } catch (e) {
+            return e.message;
+        }
     }
 
-    update(id: number) {
-        return `This action updates a #${id} eav`;
+    async update({
+        id,
+        updateAttributeDto,
+        rule,
+    }: {
+        id: number;
+        updateAttributeDto: UpdateAttributeDto;
+        rule: AttributeRuleDto;
+    }) {
+        console.log(id);
+        console.log(updateAttributeDto);
+        console.log(rule);
+        return updateAttributeDto;
     }
 
     remove(id: number) {
         return `This action removes a #${id} eav`;
+    }
+
+    protected async findAttributeEAVQuery({
+        where,
+        relations,
+        many,
+    }: {
+        where: {
+            filter: string;
+            value: any;
+        };
+        relations: {
+            parent: boolean;
+            rule: boolean;
+        };
+        many: boolean;
+    }): Promise<any[]> {
+        let condition = '';
+        let query = null;
+        if (where.filter && where.value) {
+            condition = 'attributeEav.' + where.filter + ' = :' + where.filter;
+            query = {};
+            query[where.filter] = where.value;
+        }
+
+        if (!many && relations.parent && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(AttributeEAV)
+                    .createQueryBuilder('attributeEav')
+                    .leftJoinAndSelect('attributeEav.parent_eav', 'eav')
+                    .where(condition, query)
+                    .getOne(),
+            ];
+        }
+
+        if (!many && relations.parent && !relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(AttributeEAV)
+                    .createQueryBuilder('attributeEav')
+                    .select([
+                        'attributeEav.id',
+                        'attributeEav.attribute.name',
+                        'attributeEav.attribute.code',
+                        'attributeEav.attribute.description',
+                    ])
+                    .leftJoinAndSelect('attributeEav.parent_eav', 'eav')
+                    .where(condition, query)
+                    .getOne(),
+            ];
+        }
+
+        if (!many && !relations.parent && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(AttributeEAV)
+                    .createQueryBuilder('attributeEav')
+                    .where(condition, query)
+                    .getOne(),
+            ];
+        }
+
+        if (many && relations.parent && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(AttributeEAV)
+                    .createQueryBuilder('attributeEav')
+                    .leftJoinAndSelect('attributeEav.parent_eav', 'eav')
+                    .where(condition, query)
+                    .getMany(),
+            ];
+        }
+
+        if (many && relations.parent && !relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(AttributeEAV)
+                    .createQueryBuilder('attributeEav')
+                    .select([
+                        'attributeEav.id',
+                        'attributeEav.attribute.name',
+                        'attributeEav.attribute.code',
+                        'attributeEav.attribute.description',
+                    ])
+                    .leftJoinAndSelect('attributeEav.parent_eav', 'eav')
+                    .where(condition, query)
+                    .getMany(),
+            ];
+        }
+
+        if (many && !relations.parent && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(AttributeEAV)
+                    .createQueryBuilder('attributeEav')
+                    .where(condition, query)
+                    .getMany(),
+            ];
+        }
+
+        return await this.entityManager
+            .getRepository(AttributeEAV)
+            .createQueryBuilder('attributeEav')
+            .select([
+                'attributeEav.id',
+                'attributeEav.attribute.name',
+                'attributeEav.attribute.code',
+                'attributeEav.attribute.description',
+            ])
+            .where(condition, query)
+            .getMany();
     }
 }

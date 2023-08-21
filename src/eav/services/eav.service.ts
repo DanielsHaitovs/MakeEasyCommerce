@@ -4,7 +4,7 @@ import { CreateChildEavDto, CreateEavDto } from '../dto/create-eav.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { EAV } from '../entities/eav.entity';
-import { GetEavParentAttributesDto, GetEavParentDto } from '../dto/get-eav.dto';
+import { GetParentEavAttributesDto, GetEavParentDto } from '../dto/get-eav.dto';
 
 @Injectable()
 export class EavService {
@@ -47,7 +47,7 @@ export class EavService {
         customers: boolean;
         baskets: boolean;
         orders: boolean;
-    }): Promise<GetEavParentAttributesDto[]> {
+    }): Promise<GetParentEavAttributesDto[]> {
         const where = {
             filter: '',
             value: null,
@@ -84,7 +84,7 @@ export class EavService {
         customers: boolean;
         baskets: boolean;
         orders: boolean;
-    }): Promise<GetEavParentAttributesDto> {
+    }): Promise<GetParentEavAttributesDto> {
         const where = {
             filter: 'id',
             value: id,
@@ -110,6 +110,7 @@ export class EavService {
     }
 
     update(id: number, updateEavDto: UpdateEavDto) {
+        console.log(updateEavDto);
         return `This action updates a #${id} eav`;
     }
 

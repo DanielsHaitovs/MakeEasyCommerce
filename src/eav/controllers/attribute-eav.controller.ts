@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+} from '@nestjs/common';
 import {
     ApiBody,
     ApiOkResponse,
@@ -7,12 +16,12 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { AttributeEavService } from '../services/attributes-eav.service';
-import { GetEavParentDto } from '../dto/get-eav.dto';
 import {
-    CreateEavAttributeDto,
-    EavAttributeRuleDto,
+    CreateAttributeDto,
+    AttributeRuleDto,
 } from '../dto/attribute/create-eav-attribute.dto';
-import { GetEavAttributeDto } from '../dto/attribute/get-eav-attribute.dto';
+import { GetAttributeDto } from '../dto/attribute/get-eav-attribute.dto';
+import { UpdateAttributeDto } from '../dto/attribute/update-eav-attribute.dto';
 
 @ApiTags('EAV Attributes')
 @Controller('attributes')
@@ -23,125 +32,121 @@ export class AttributeEavController {
     @ApiQuery({
         name: 'rule',
         description: 'include order customers data',
-        type: EavAttributeRuleDto,
+        type: AttributeRuleDto,
         required: true,
     })
     @ApiBody({
-        type: CreateEavAttributeDto,
+        type: CreateAttributeDto,
         description: 'Create Attribute',
         required: true,
     })
     async create(
-        @Query() rule: EavAttributeRuleDto,
-        @Body() createAttributeDto: CreateEavAttributeDto,
-    ): Promise<GetEavAttributeDto> {
+        @Query() rule: AttributeRuleDto,
+        @Body() createAttributeDto: CreateAttributeDto,
+    ): Promise<GetAttributeDto> {
         return await this.attributeService.create({
             rule: rule,
             newAttribute: createAttributeDto,
         });
     }
 
-    @Get(':id')
-    @ApiOkResponse({
-        description: 'All Basket and theirs customers',
-        type: [GetEavParentDto],
+    // This one in future MUST have option
+    // filter by page number and amount on page
+    // Most likely this will be separate route
+    // But this I'll keep for fun (Once I'll generate 1 million baskets) hehe
+    @Get('get/all')
+    @ApiOperation({
+        summary: 'Find All Attributes',
+        description: 'Get data of all attributes, good luck!',
     })
-    async findOne(@Param('id') id: string): Promise<GetEavParentDto> {
-        return await this.attributeService.findOne(+id);
+    @ApiQuery({
+        name: 'rule',
+        description: 'include attribute rules data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'parent',
+        description: 'include eav orders data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'Filtered EAV Data',
+        // type: [GetParentEavAttributesDto],
+    })
+    async findAll(
+        @Query('rule') rule: boolean,
+        @Query('parent') parent: boolean,
+    ): Promise<any[]> {
+        return await this.attributeService.findAll({
+            rule: rule,
+            parent: parent,
+        });
+    }
+
+    @Get('get/:id')
+    @ApiOperation({
+        summary: 'Find Attribute by ID',
+        description: 'Get data for attribute',
+    })
+    @ApiQuery({
+        name: 'rule',
+        description: 'include attribute rule data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'parent',
+        description: 'include parent eav data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'Filtered EAV Data',
+        // type: [GetParentEavAttributesDto],
+    })
+    async findOne(
+        @Param('id', ParseIntPipe) id: number,
+        @Query('rule') rule: boolean,
+        @Query('parent') parent: boolean,
+    ): Promise<any> {
+        return await this.attributeService.findOne({
+            id: id,
+            rule: rule,
+            parent: parent,
+        });
+    }
+
+    @Patch('update/description/:id')
+    @ApiOperation({
+        summary: 'Update Attribute description by ID',
+        description: 'Update specifically attribute description data by id',
+    })
+    @ApiBody({
+        type: UpdateAttributeDto,
+        description: 'Attribute',
+        required: true,
+    })
+    @ApiQuery({
+        name: 'rule',
+        description: 'include attribute rules data',
+        type: AttributeRuleDto,
+        required: true,
+    })
+    async updateBasket(
+        @Param('id') id: string,
+        @Query() rule: AttributeRuleDto,
+        @Body() updateAttributeDto: UpdateAttributeDto,
+    ): Promise<any> {
+        return await this.attributeService.update({
+            id: +id,
+            updateAttributeDto: updateAttributeDto,
+            rule: rule,
+        });
     }
 }
-
-// All Attribute ApiQuery can be done via custom decorator
-// @ApiQuery({
-//     name: 'Apply for catalog',
-//     description: 'Should be used in catalog',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for Listing',
-//     description: 'Should be used in Listing',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for Layered Navigation',
-//     description: 'Should be used in Layered Navigation',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for filters',
-//     description: 'Should be used in filtering',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for options filters',
-//     description: 'Should be used in options filter',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for sorting',
-//     description: 'Should be used in sorting',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for search',
-//     description: 'Should be used in search',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for promo',
-//     description: 'Should be used in Promo',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiQuery({
-//     name: 'Apply for report',
-//     description: 'Should be used in report',
-//     type: 'boolean',
-//     example: false,
-//     required: false,
-// })
-// @ApiBody({
-//     type: CreateEavAttributeShortDto,
-//     description: 'Create Attribute',
-//     required: true,
-// })
-// async create(
-//     @Query('useInCatalog') useInCatalog: boolean,
-//     @Query('useInListing') useInListing: boolean,
-//     @Query('useInLayeredNavigation') useInLayeredNavigation: boolean,
-//     @Query('useInFilter') useInFilter: boolean,
-//     @Query('useInOptionFilter') useInOptionFilter: boolean,
-//     @Query('useInSort') useInSort: boolean,
-//     @Query('useInSearch') useInSearch: boolean,
-//     @Query('useInPromo') useInPromo: boolean,
-//     @Query('useInReport') useInReport: boolean,
-//     @Body() createAttributeDto: CreateEavAttributeShortDto,
-// ): Promise<any> {
-//     return await this.attributeService.create({
-//         createAttributeEavShortDto: createAttributeDto,
-//         useInCatalog: useInCatalog,
-//         useInListing: useInListing,
-//         useInLayeredNavigation: useInLayeredNavigation,
-//         useInFilter: useInFilter,
-//         useInOptionFilter: useInOptionFilter,
-//         useInSort: useInSort,
-//         useInSearch: useInSearch,
-//         useInPromo: useInPromo,
-//         useInReport: useInReport,
-//     });
-// }

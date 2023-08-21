@@ -83,11 +83,11 @@ export class BasketController {
     })
     async updateBasket(
         @Param('id') id: string,
-        @Body() updateCustomerDto: UpdateBasketDto,
+        @Body() updateBasketDto: UpdateBasketDto,
     ): Promise<GetBasketDto> {
         return await this.basketService.update({
             id: +id,
-            updateBasketDto: updateCustomerDto,
+            updateBasketDto: updateBasketDto,
         });
     }
 
