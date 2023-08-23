@@ -69,7 +69,7 @@ export class OrderController {
     })
     @ApiQuery({
         name: 'customers',
-        description: 'include baskets customers data',
+        description: 'include customers data',
         type: 'boolean',
         example: false,
         required: false,
@@ -82,7 +82,7 @@ export class OrderController {
         required: false,
     })
     @ApiOkResponse({
-        description: 'All Basket and theirs customers',
+        description: 'All Orders and theirs customers',
         type: [GetOrderDto],
     })
     async findAllCustomers(
@@ -102,14 +102,14 @@ export class OrderController {
     @ApiParam({ name: 'id', description: 'order id' })
     @ApiQuery({
         name: 'baskets',
-        description: 'include order baskets data',
+        description: 'include baskets data',
         type: 'boolean',
         example: false,
         required: false,
     })
     @ApiQuery({
         name: 'customers',
-        description: 'include order customers data',
+        description: 'include customers data',
         type: 'boolean',
         example: false,
         required: false,
@@ -140,7 +140,7 @@ export class OrderController {
         description: 'Order',
         required: true,
     })
-    async updateBasket(
+    async updateOrder(
         @Param('id') id: string,
         @Body() updateOrderDto: UpdateOrderDto,
     ): Promise<GetOrderDto> {
@@ -155,7 +155,7 @@ export class OrderController {
         summary: 'Delete Order by ID',
         description: 'Delete specifically order data by id',
     })
-    async removeBasket(@Param('id') id: string): Promise<number> {
+    async removeOrder(@Param('id') id: string): Promise<number> {
         return await this.orderService.delete({ id: +id });
     }
 }

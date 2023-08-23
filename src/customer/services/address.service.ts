@@ -87,6 +87,31 @@ export class AddressService {
         }
     }
 
+    async findOneById({
+        id,
+        details,
+        customer,
+    }: {
+        id: number;
+        details: boolean;
+        customer: boolean;
+    }): Promise<GetAddressDetailsDto> {
+        try {
+            return await this.findAddressQuery({
+                where: {
+                    filter: 'id',
+                    value: id,
+                },
+                relations: {
+                    customer: customer,
+                    details: details,
+                },
+            });
+        } catch (e) {
+            return e.message;
+        }
+    }
+
     async remove({ id }: { id: number }): Promise<any> {
         const address = await this.entityManager
             .getRepository(Address)
@@ -103,5 +128,61 @@ export class AddressService {
         } catch (e) {
             return e.message;
         }
+    }
+
+    protected async findAddressQuery({
+        where,
+        relations,
+    }: {
+        where: {
+            filter: string;
+            value: any;
+        };
+        relations: {
+            customer: boolean;
+            details: boolean;
+        };
+    }): Promise<any> {
+        let condition = '';
+        let query = null;
+        if (where.filter && where.value) {
+            condition = 'address.' + where.filter + ' = :' + where.filter;
+            query = {};
+            query[where.filter] = where.value;
+        }
+
+        if (relations.customer === true && relations.details === true) {
+            return await this.entityManager
+                .getRepository(Address)
+                .createQueryBuilder('address')
+                .leftJoinAndSelect('address.details', 'details')
+                .leftJoinAndSelect('address.customer', 'customer')
+                .where(condition, query)
+                .getMany();
+        }
+
+        if (relations.customer === true && relations.details === false) {
+            return await this.entityManager
+                .getRepository(Address)
+                .createQueryBuilder('address')
+                .leftJoinAndSelect('address.customer', 'customer')
+                .where(condition, query)
+                .getMany();
+        }
+
+        if (relations.customer === false && relations.details === true) {
+            return await this.entityManager
+                .getRepository(Address)
+                .createQueryBuilder('address')
+                .leftJoinAndSelect('address.details', 'details')
+                .where(condition, query)
+                .getMany();
+        }
+
+        return await this.entityManager
+            .getRepository(Address)
+            .createQueryBuilder('address')
+            .where(condition, query)
+            .getMany();
     }
 }

@@ -6,12 +6,14 @@ import {
     Param,
     Delete,
     Post,
+    Query,
 } from '@nestjs/common';
 import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
     ApiParam,
+    ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
 import { CreateAddressDto } from '../dto/address/create-address.dto';
@@ -78,6 +80,41 @@ export class AddressController {
     })
     async findAllAddressDetails(): Promise<GetAddressDetailsDto[]> {
         return await this.addressService.findAllAddressesDetails();
+    }
+
+    @Get('get/by/:id')
+    @ApiOperation({
+        description: 'Finds Specifically Address data by ID.',
+    })
+    @ApiParam({ name: 'id', description: 'address id' })
+    @ApiQuery({
+        name: 'details',
+        description: 'include address details data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'customer',
+        description: 'include customers data',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'Customer entity and its details if selected',
+        type: GetAddressDetailsDto,
+    })
+    async findAddressBy(
+        @Param('id') id: number,
+        @Query('customer') customer: boolean,
+        @Query('details') details: boolean,
+    ): Promise<GetAddressDetailsDto> {
+        return await this.addressService.findOneById({
+            id: +id,
+            customer: customer,
+            details: details,
+        });
     }
 
     // Missing proper response body
