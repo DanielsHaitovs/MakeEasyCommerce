@@ -4,7 +4,6 @@ import { OrderModule } from './order/order.module';
 import { CustomerModule } from './customer/customer.module';
 import { BasketModule } from './basket/basket.module';
 import { ProductModule } from './product/product.module';
-import { AttributesModule } from './attributes/attributes.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from './customer/entities/customer.entity';
 import { Address } from './customer/entities/address.entity';
@@ -16,7 +15,6 @@ import { Order } from './order/entities/order.entity';
 @Module({
     imports: [
         OrderModule,
-        AttributesModule,
         CustomerModule,
         ProductModule,
         BasketModule,

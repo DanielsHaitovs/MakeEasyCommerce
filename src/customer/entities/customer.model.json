@@ -4,6 +4,7 @@
     "last_name": "Customer Last Name",
     "email": "customer2@mec.com",
     "store_id": 10,
+    "customer_type": 1,
     "address": 
     [
         {
@@ -52,6 +53,7 @@
     "last_name": "Daniel Last Name",
     "email": "daniel@mec.com",
     "store_id": 10,
+    "customer_type": 1,
     "address": 
     [
         {

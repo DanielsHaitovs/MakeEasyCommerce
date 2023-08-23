@@ -142,7 +142,7 @@ export class CustomerController {
     }
 
     // Missing proper response body
-    // I'm to laze to do that when I'm typing this...
+    // I was to lazy to do that when I was typing this...
     @Patch('update/:id')
     @ApiOperation({
         summary: 'Update Customer by ID',

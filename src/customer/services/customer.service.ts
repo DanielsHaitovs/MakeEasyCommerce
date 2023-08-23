@@ -157,6 +157,10 @@ export class CustomerService {
         id: number;
         updateCustomer: UpdateCustomerAddressDetailsDto;
     }): Promise<any> {
+        if (updateCustomer.address_ids != undefined) {
+            delete updateCustomer.address_ids;
+        }
+
         updateCustomer.id = id;
         const current: GetCustomerAddressDetailsDto = await this.findOne({
             id: id,
@@ -167,15 +171,15 @@ export class CustomerService {
             throw 'update customer dto body is empty';
         }
 
-        const customer_entity: GetCustomerAddressDetailsDto = {
+        const customer_entity: GetCustomerDto = {
             ...updateCustomer,
         };
-
-        delete customer_entity.address;
 
         // New Address + update customer
         // We created new address record and updated customer
         if (current.address_ids.length === 0) {
+            console.log(123);
+
             const addresses: GetAddressDetailsDto[] =
                 await this.entityManager.save(Address, updateCustomer.address);
 
