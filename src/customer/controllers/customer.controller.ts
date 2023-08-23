@@ -194,7 +194,8 @@ export class CustomerController {
     @Patch('update/addresses/:id')
     @ApiOperation({
         summary: 'Removes address from customer relation',
-        description: 'Removes address from customer relation and also deletes address and its details too!',
+        description:
+            'Removes address from customer relation and also deletes address and its details too!',
     })
     @ApiParam({ name: 'id', description: 'customer id' })
     @ApiBody({
