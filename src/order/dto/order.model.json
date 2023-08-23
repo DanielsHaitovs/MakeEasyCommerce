@@ -22,7 +22,7 @@
 {
     "order_type": 0,
     "order_status": 0,
-    "baskets_ids": [1],
+    "baskets_ids": [2],
     "customers": [
         {
             "first_name": "Test",
@@ -49,18 +49,4 @@
         }
     ] 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ]
