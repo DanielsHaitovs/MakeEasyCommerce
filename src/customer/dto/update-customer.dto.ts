@@ -25,7 +25,7 @@ export class UpdateCustomerAddressDetailsDto extends CustomerDto {
     @IsOptional()
     address_ids: number[];
     @ApiProperty({ type: [UpdateAddressDetailsDto] })
-    @ValidateNested()
+    @ValidateNested({ each: true })
     address: UpdateAddressDetailsDto[];
 }
 

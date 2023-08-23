@@ -58,7 +58,7 @@ export class CustomerService {
     }: {
         address: boolean;
         details: boolean;
-    }): Promise<GetCustomerDto[]> {
+    }): Promise<GetCustomerAddressDetailsDto[]> {
         const where = {
             filter: '',
             value: null,
@@ -152,16 +152,71 @@ export class CustomerService {
 
     async updateCustomerAddressDetails({
         id,
-        updateCustomer,
+        updateCustomerDto,
     }: {
         id: number;
-        updateCustomer: UpdateCustomerAddressDetailsDto;
-    }): Promise<any> {
-        if (updateCustomer.address_ids != undefined) {
-            delete updateCustomer.address_ids;
+        updateCustomerDto: UpdateCustomerAddressDetailsDto;
+    }): Promise<GetCustomerAddressDetailsDto> {
+        if (updateCustomerDto.address_ids != undefined) {
+            delete updateCustomerDto.address_ids;
         }
 
-        return updateCustomer;
+        if (updateCustomerDto.address === undefined) {
+            // then we only update customer
+            return (
+                await this.entityManager
+                    .getRepository(Customer)
+                    .createQueryBuilder('customer')
+                    .update(Customer)
+                    .where('id = :id', { id: id })
+                    .set(updateCustomerDto)
+                    .execute()
+            ).raw;
+        }
+
+        const currentCustomer: GetCustomerAddressDetailsDto =
+            await this.findOne({
+                id: id,
+                address: true,
+                details: true,
+            });
+
+        const newAddresses: GetAddressDetailsDto[] = [];
+        for (const value of updateCustomerDto.address) {
+            const address: GetAddressDetailsDto = { ...value };
+            if (
+                (address.id != undefined || address.id != null) &&
+                currentCustomer.address_ids.find((id) => id === address.id) !=
+                    undefined
+            ) {
+                const updatedAddress: GetAddressDetailsDto =
+                    await this.addressService.update({
+                        id: address.id,
+                        updateAddressDto: address,
+                    });
+                newAddresses.push(updatedAddress);
+            } else {
+                newAddresses.push(
+                    await this.addressService.create({
+                        createAddressDto: address,
+                    }),
+                );
+            }
+        }
+
+        delete updateCustomerDto.address;
+
+        await this.entityManager
+            .getRepository(Customer)
+            .createQueryBuilder('customer')
+            .update(Customer)
+            .where('id = :id', { id: id })
+            .set(updateCustomerDto)
+            .execute();
+
+        updateCustomerDto.address = newAddresses;
+
+        return updateCustomerDto;
     }
 
     async deleteCustomerAddressRelation({

@@ -99,7 +99,7 @@ export class CustomerController {
     async findAllCustomers(
         @Query('address') address: boolean,
         @Query('details') details: boolean,
-    ): Promise<GetCustomerDto[]> {
+    ): Promise<GetCustomerAddressDetailsDto[]> {
         return await this.customerService.findAll({
             address: address,
             details: details,
@@ -133,7 +133,7 @@ export class CustomerController {
         @Param('id') id: number,
         @Query('address') address: boolean,
         @Query('details') details: boolean,
-    ): Promise<GetCustomerDto> {
+    ): Promise<GetCustomerAddressDetailsDto> {
         return await this.customerService.findOne({
             id: +id,
             address: address,
@@ -154,10 +154,13 @@ export class CustomerController {
         description: 'Customer',
         required: true,
     })
+    @ApiOkResponse({
+        type: GetCustomerAddressDetailsDto,
+    })
     async updateCustomer(
         @Param('id') id: string,
         @Body() updateCustomerDto: UpdateCustomerDto,
-    ): Promise<any> {
+    ): Promise<GetCustomerAddressDetailsDto> {
         return await this.customerService.update({
             id: +id,
             updateCustomerDto: updateCustomerDto,
@@ -175,20 +178,23 @@ export class CustomerController {
         description: 'Update customer body with address and its detail',
         required: true,
     })
+    @ApiOkResponse({
+        type: GetCustomerAddressDetailsDto,
+    })
     async updateCustomerAddressDetails(
         @Param('id') id: string,
         @Body() updateBody: UpdateCustomerAddressDetailsDto,
-    ): Promise<any> {
+    ): Promise<GetCustomerAddressDetailsDto> {
         return await this.customerService.updateCustomerAddressDetails({
             id: +id,
-            updateCustomer: updateBody,
+            updateCustomerDto: updateBody,
         });
     }
 
     @Patch('update/addresses/:id')
     @ApiOperation({
-        summary: 'Clean Update Customer of Address Relation',
-        description: 'Update & Remove specific customer address by id',
+        summary: 'Removes address from customer relation',
+        description: 'Removes address from customer relation and also deletes address and its details too!',
     })
     @ApiParam({ name: 'id', description: 'customer id' })
     @ApiBody({

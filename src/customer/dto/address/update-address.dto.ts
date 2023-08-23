@@ -28,6 +28,6 @@ export class UpdateAddressDetailsDto extends UpdateAddressDto {
     id: number;
     @ApiProperty({ type: UpdateDetailsDto })
     @IsNotEmpty()
-    @ValidateNested()
+    @ValidateNested({ each: true })
     details: UpdateDetailsDto;
 }
