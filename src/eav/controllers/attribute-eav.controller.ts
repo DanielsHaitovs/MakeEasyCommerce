@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     ParseIntPipe,
@@ -29,19 +30,13 @@ export class AttributeEavController {
     constructor(private readonly attributeService: AttributeEavService) {}
 
     @Post('create/new')
-    @ApiQuery({
-        name: 'rule',
-        description: 'include order customers data',
-        type: AttributeRuleDto,
-        required: true,
-    })
     @ApiBody({
         type: CreateAttributeDto,
         description: 'Create Attribute',
         required: true,
     })
     async create(
-        @Query() rule: AttributeRuleDto,
+        @Query('rule') rule: AttributeRuleDto,
         @Body() createAttributeDto: CreateAttributeDto,
     ): Promise<GetAttributeDto> {
         return await this.attributeService.create({
@@ -60,7 +55,7 @@ export class AttributeEavController {
         description: 'Get data of all attributes, good luck!',
     })
     @ApiQuery({
-        name: 'rule',
+        name: 'findAllRule',
         description: 'include attribute rules data',
         type: 'boolean',
         example: false,
@@ -68,7 +63,7 @@ export class AttributeEavController {
     })
     @ApiQuery({
         name: 'parent',
-        description: 'include eav orders data',
+        description: 'include parent eav data',
         type: 'boolean',
         example: false,
         required: false,
@@ -78,7 +73,7 @@ export class AttributeEavController {
         // type: [GetParentEavAttributesDto],
     })
     async findAll(
-        @Query('rule') rule: boolean,
+        @Query('findAllRule') rule: boolean,
         @Query('parent') parent: boolean,
     ): Promise<any[]> {
         return await this.attributeService.findAll({
@@ -93,7 +88,7 @@ export class AttributeEavController {
         description: 'Get data for attribute',
     })
     @ApiQuery({
-        name: 'rule',
+        name: 'findOneRule',
         description: 'include attribute rule data',
         type: 'boolean',
         example: false,
@@ -112,7 +107,7 @@ export class AttributeEavController {
     })
     async findOne(
         @Param('id', ParseIntPipe) id: number,
-        @Query('rule') rule: boolean,
+        @Query('findOneRule') rule: boolean,
         @Query('parent') parent: boolean,
     ): Promise<any> {
         return await this.attributeService.findOne({
@@ -132,13 +127,13 @@ export class AttributeEavController {
         description: 'Attribute',
         required: true,
     })
-    @ApiQuery({
-        name: 'rule',
-        description: 'include attribute rules data',
-        type: AttributeRuleDto,
-        required: true,
-    })
-    async updateBasket(
+    // @ApiQuery({
+    //     name: 'updateRule',
+    //     description: 'include attribute rules data',
+    //     type: AttributeRuleDto,
+    //     required: true,
+    // })
+    async updateAttribute(
         @Param('id') id: string,
         @Query() rule: AttributeRuleDto,
         @Body() updateAttributeDto: UpdateAttributeDto,
@@ -148,5 +143,14 @@ export class AttributeEavController {
             updateAttributeDto: updateAttributeDto,
             rule: rule,
         });
+    }
+
+    @Delete(':id')
+    @ApiOperation({
+        summary: 'Delete Attribute by ID',
+        description: 'Delete specific attribute data by id',
+    })
+    async removeBasket(@Param('id', ParseIntPipe) id: number): Promise<number> {
+        return await this.attributeService.remove({ id: +id });
     }
 }

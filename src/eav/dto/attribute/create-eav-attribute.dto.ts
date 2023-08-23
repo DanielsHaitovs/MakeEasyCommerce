@@ -7,55 +7,46 @@ export class AttributeRuleDto {
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInCatalog: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInListing: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInLayeredNavigation: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInFilter: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInOptionFilter: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInSort: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInSearch: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInPromo: boolean;
 
     @ApiProperty({ default: true })
     @ToBoolean()
     @IsBoolean()
-    // @IsBoolean({ each: true })
     useInReport: boolean;
 }
 

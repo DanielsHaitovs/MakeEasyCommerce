@@ -6,6 +6,7 @@ import { AttributeRuleDto } from '../dto/attribute/create-eav-attribute.dto';
 import { EAV } from '../entities/eav.entity';
 import { GetAttributeDto } from '../dto/attribute/get-eav-attribute.dto';
 import { UpdateAttributeDto } from '../dto/attribute/update-eav-attribute.dto';
+import { GetEavParentDto, GetParentEavAttributesDto } from '../dto/get-eav.dto';
 
 @Injectable()
 export class AttributeEavService {
@@ -105,15 +106,60 @@ export class AttributeEavService {
         id: number;
         updateAttributeDto: UpdateAttributeDto;
         rule: AttributeRuleDto;
-    }) {
-        console.log(id);
-        console.log(updateAttributeDto);
-        console.log(rule);
-        return updateAttributeDto;
+    }): Promise<any> {
+        const where = {
+            filter: 'id',
+            value: id,
+        };
+        const relations = {
+            rule: true,
+            parent: true,
+        };
+        try {
+            const existing: GetAttributeDto = (
+                await this.findAttributeEAVQuery({
+                    where,
+                    relations,
+                    many: false,
+                })
+            ).shift();
+
+            if (existing === null) {
+                throw 'attribute with id ' + id + ' does not exist';
+            }
+
+            existing.rule = rule;
+            existing.attribute.description = updateAttributeDto.description;
+
+            return await this.entityManager.save(AttributeEAV, existing);
+        } catch (e) {
+            return e.message;
+        }
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} eav`;
+    async remove({ id }: { id: number }): Promise<number> {
+        const where = {
+            filter: 'id',
+            value: id,
+        };
+        const relations = {
+            rule: true,
+            parent: true,
+        };
+        const existing: GetAttributeDto = (
+            await this.findAttributeEAVQuery({
+                where,
+                relations,
+                many: false,
+            })
+        ).shift();
+
+        if (existing === null) {
+            throw 'attribute with id ' + id + ' does not exist';
+        }
+
+        return (await this.entityManager.delete(AttributeEAV, existing))
+            .affected;
     }
 
     protected async findAttributeEAVQuery({
