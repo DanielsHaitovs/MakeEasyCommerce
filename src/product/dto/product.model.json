@@ -1,0 +1,34 @@
+[
+    {
+        "sku": "#red-shoe#",
+        "product_type": 1,
+        "visibility": 1,
+        "quantity": 10,
+        "final_price": "100.34",
+        "store_id": 1
+    },
+    {
+        "sku": "#la-sos#",
+        "product_type": 1,
+        "visibility": 1,
+        "quantity": 10,
+        "final_price": "100.27",
+        "store_id": 1
+    },
+    {
+        "sku": "#test-sku#",
+        "product_type": 1,
+        "visibility": 1,
+        "quantity": 10,
+        "final_price": "100.73",
+        "store_id": 1
+    },
+    {
+        "sku": "#lbx#",
+        "product_type": 1,
+        "visibility": 1,
+        "quantity": 10,
+        "final_price": "100.95",
+        "store_id": 1
+    }
+]

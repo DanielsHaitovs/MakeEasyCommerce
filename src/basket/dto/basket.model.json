@@ -1,0 +1,45 @@
+[
+{
+    "store_id": 0,
+    "status": 0,
+    "product_ids": [
+    1,
+    2
+    ],
+    "customers_ids": [
+    1
+    ]
+},
+{
+    "store_id": 1,
+    "status": 1,
+    "product_ids": [
+    3,
+    4
+    ],
+    "customers_ids": [
+    1
+    ]
+},
+{
+    "store_id": 2,
+    "status": 3,
+    "product_ids": [
+    2,
+    3,
+    4,
+    5
+    ],
+    "customers_ids": [
+    2
+    ]
+},
+{
+    "store_id": 2,
+    "status": 3,
+    "product_ids": [
+    1
+    ],
+    "customers_ids": []
+}
+]
