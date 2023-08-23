@@ -161,86 +161,7 @@ export class CustomerService {
             delete updateCustomer.address_ids;
         }
 
-        updateCustomer.id = id;
-        const current: GetCustomerAddressDetailsDto = await this.findOne({
-            id: id,
-            address: true,
-            details: true,
-        });
-        if (updateCustomer === undefined) {
-            throw 'update customer dto body is empty';
-        }
-
-        const customer_entity: GetCustomerDto = {
-            ...updateCustomer,
-        };
-
-        // New Address + update customer
-        // We created new address record and updated customer
-        if (current.address_ids.length === 0) {
-            console.log(123);
-
-            const addresses: GetAddressDetailsDto[] =
-                await this.entityManager.save(Address, updateCustomer.address);
-
-            // SMTH For Uncle GOOGLE or Aunt GPT
-            // each next request relies on result of action of previous await
-            // except maybe for first one P.S. not sure
-            // They are running in parallel
-            // My preferable expectations ->
-            // order of Promise object, but looks like always the same
-            // I expect for "findOneBuy" to get updated data from "update"
-            // which also supposed by that time include updated
-            // relation ids from "updateCustomerRelations"
-            //
-            // Currently logical seems that this needs to
-            // separated from "Promise.all()"
-            // But so I would not forget to get answer's on my questions
-            // I'll just leave it here working with ".Promise.all()"
-            // With extremely big comment so it will annoy me every time I see it
-            // Simply because for current state of project works just fine
-            // also, according to what wrote before,
-            // I have no clue why it's working then...
-
-            return (
-                await Promise.all([
-                    await this.updateCustomerRelations({
-                        id,
-                        relation: 'address',
-                        updated_relation: addresses,
-                        current_relation: current.address,
-                    }),
-                    await this.update({
-                        id: id,
-                        updateCustomerDto: customer_entity,
-                    }),
-                    await this.findOneBy({
-                        filter: 'id',
-                        value: id,
-                        address: true,
-                        details: true,
-                    }),
-                ])
-            ).slice(-1);
-        }
-
-        // Customer already has address
-        if (updateCustomer.address_ids === undefined) {
-            updateCustomer.address_ids = current.address_ids;
-            // if address body has id then we will update it
-            updateCustomer.address.map(async (address) => {
-                if (address.id != undefined) {
-                    await this.addressService.update({
-                        id: address.id,
-                        updateAddressDto: address,
-                    });
-                }
-            });
-            return await this.update({
-                id: id,
-                updateCustomerDto: customer_entity,
-            });
-        }
+        return updateCustomer;
     }
 
     async deleteCustomerAddressRelation({
@@ -405,3 +326,97 @@ export class CustomerService {
         }
     }
 }
+
+//
+// async updateCustomerAddressDetails({
+// id,
+// updateCustomer,
+// }: {
+// id: number;
+// updateCustomer: UpdateCustomerAddressDetailsDto;
+// }): Promise<any> {
+// if (updateCustomer.address_ids != undefined) {
+// delete updateCustomer.address_ids;
+// }
+//
+// updateCustomer.id = id;
+// const current: GetCustomerAddressDetailsDto = await this.findOne({
+// id: id,
+// address: true,
+// details: true,
+// });
+// if (updateCustomer === undefined) {
+// throw 'update customer dto body is empty';
+// }
+//
+// const customer_entity: GetCustomerDto = {
+// ...updateCustomer,
+// };
+//
+// New Address + update customer
+// We created new address record and updated customer
+// if (current.address_ids.length === 0) {
+// console.log(123);
+//
+// const addresses: GetAddressDetailsDto[] =
+// await this.entityManager.save(Address, updateCustomer.address);
+//
+// SMTH For Uncle GOOGLE or Aunt GPT
+// each next request relies on result of action of previous await
+// except maybe for first one P.S. not sure
+// They are running in parallel
+// My preferable expectations ->
+// order of Promise object, but looks like always the same
+// I expect for "findOneBuy" to get updated data from "update"
+// which also supposed by that time include updated
+// relation ids from "updateCustomerRelations"
+
+// Currently logical seems that this needs to
+// separated from "Promise.all()"
+// But so I would not forget to get answer's on my questions
+// I'll just leave it here working with ".Promise.all()"
+// With extremely big comment so it will annoy me every time I see it
+// Simply because for current state of project works just fine
+// also, according to what wrote before,
+// I have no clue why it's working then...
+//
+// return (
+// await Promise.all([
+// await this.updateCustomerRelations({
+// id,
+// relation: 'address',
+// updated_relation: addresses,
+// current_relation: current.address,
+// }),
+// await this.update({
+// id: id,
+// updateCustomerDto: customer_entity,
+// }),
+// await this.findOneBy({
+// filter: 'id',
+// value: id,
+// address: true,
+// details: true,
+// }),
+// ])
+// ).slice(-1);
+// }
+//
+// Customer already has address
+// if (updateCustomer.address_ids === undefined) {
+// updateCustomer.address_ids = current.address_ids;
+// if address body has id then we will update it
+// updateCustomer.address.map(async (address) => {
+// if (address.id != undefined) {
+// await this.addressService.update({
+// id: address.id,
+// updateAddressDto: address,
+// });
+// }
+// });
+// return await this.update({
+// id: id,
+// updateCustomerDto: customer_entity,
+// });
+// }
+// }
