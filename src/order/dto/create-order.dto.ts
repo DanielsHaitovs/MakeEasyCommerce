@@ -1,56 +1,42 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
-import { GetBasketDto } from "src/basket/dto/get-basket.dto";
-import { UserDto } from "src/user/dto/create-user.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { CreateCustomerAddressDto } from '@src/customer/dto/create-customer.dto';
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    ValidateNested,
+} from 'class-validator';
 
-export class CreateOrderDto {
+export class OrderDto {
     @IsNotEmpty()
-    @IsString()
+    @IsNumber()
     @ApiProperty()
-        order_type: string
+    order_type: number;
     @IsNotEmpty()
-    @ApiProperty({ type: () => CreateAddressDto })
-	@ValidateNested()
-		shipping_address: CreateAddressDto[];
-    @IsNotEmpty()
-    @ApiProperty({ type: () => CreateAddressDto })
-    @ValidateNested()
-        payment_address: CreateAddressDto[];
-    @IsNotEmpty()
-    @IsArray()
-    @ApiProperty({ type: () => GetBasketDto })
-    @ValidateNested()
-        basket: GetBasketDto[];
+    @IsNumber()
+    @ApiProperty()
+    order_status: number;
 }
 
-export class CreateAddressDto {
+export class CreateOrderDto extends OrderDto {
+    @ApiProperty({ type: () => [Number] })
     @IsNotEmpty()
-    @IsArray()
-    @ApiProperty({ type: () => UserDto })
-    @ValidateNested()
-        user: UserDto[];
-	@IsString()
-    @IsNotEmpty()
-	@ApiProperty()
-		city: string;
-	@IsString()
-    @IsNotEmpty()
-	@ApiProperty()
-		zipCode: string;
-	@IsString()
-    @IsNotEmpty()
-	@ApiProperty()
-		streetName: string;
-	@IsString()
-    @IsNotEmpty()
-	@ApiProperty()
-		houseNumber: string;
+    baskets_ids: number[];
+    @ApiProperty({ type: () => [Number] })
     @IsOptional()
-    @IsString()
-	@ApiProperty()
-		phoneNumber: string;
-    @IsOptional()
-    @IsString()
-    @ApiProperty()
-        company: string;
+    customers_ids: number[];
+    // @ApiProperty({ type: [CreateCustomerDto] })
+    // @IsNotEmpty()
+    // @ValidateNested({ each: true })
+    // customers: CreateCustomerDto[];
+}
+
+export class CreateGuestOrderDto extends OrderDto {
+    @ApiProperty({ type: () => [Number] })
+    @IsNotEmpty()
+    baskets_ids: number[];
+    @ApiProperty({ type: [CreateCustomerAddressDto] })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    customers: CreateCustomerAddressDto[];
 }

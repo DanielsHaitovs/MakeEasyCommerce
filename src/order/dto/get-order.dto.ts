@@ -1,61 +1,34 @@
-// import { ApiProperty } from "@nestjs/swagger";
-// import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
-// import { CreateUserDto } from "src/user/dto/create-user.dto";
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    ValidateNested,
+} from 'class-validator';
+import { OrderDto } from './create-order.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { GetCustomerDto } from '@src/customer/dto/get-customer.dto';
+import { GetBasketDto } from '@src/basket/dto/get-basket.dto';
 
-// export class CreateOrderDto {
-//     @IsNotEmpty()
-//     @IsString()
-//     @ApiProperty()
-//         order_type: string
-//     @IsNotEmpty()
-//     @ApiProperty({ type: () => CreateAddressDto })
-// 	@ValidateNested()
-// 		shipping_address: CreateAddressDto[];
-//     @IsNotEmpty()
-//     @ApiProperty({ type: () => CreateAddressDto })
-//     @ValidateNested()
-//         payment_address: CreateAddressDto[];
-//     @IsNotEmpty()
-//     @ApiProperty({ type: () => CreateUserDto })
-//     @ValidateNested()
-//         user: CreateUserDto[];
-// }
+export class GetOrderShortDto extends OrderDto {
+    @IsNotEmpty()
+    @IsNumber()
+    @ApiProperty()
+    id: number;
+}
 
-// export class CreateAddressDto {
-// 	@IsString()
-//     @IsNotEmpty()
-// 	@ApiProperty()
-// 		firstName: string;
-// 	@IsString()
-//     @IsNotEmpty()
-// 	@ApiProperty()
-// 		lastName: string;
-//     @IsString()
-//     @IsNotEmpty()
-//     @ApiProperty()
-//         country: string;
-// 	@IsString()
-//     @IsNotEmpty()
-// 	@ApiProperty()
-// 		city: string;
-// 	@IsString()
-//     @IsNotEmpty()
-// 	@ApiProperty()
-// 		zipCode: string;
-// 	@IsString()
-//     @IsNotEmpty()
-// 	@ApiProperty()
-// 		streetName: string;
-// 	@IsString()
-//     @IsNotEmpty()
-// 	@ApiProperty()
-// 		houseNumber: string;
-//     @IsOptional()
-//     @IsString()
-// 	@ApiProperty()
-// 		phoneNumber: string;
-//     @IsOptional()
-//     @IsString()
-//     @ApiProperty()
-//         company: string;
-// }
+export class GetOrderDto extends GetOrderShortDto {
+    @ApiProperty({ type: () => [Number] })
+    @IsNotEmpty()
+    baskets_ids: number[];
+    @ApiProperty({ type: () => [Number] })
+    @IsOptional()
+    customers_ids: number[];
+    @ApiProperty({ type: [GetBasketDto] })
+    @IsNotEmpty()
+    @ValidateNested()
+    baskets: GetBasketDto[];
+    @ApiProperty({ type: [GetCustomerDto] })
+    @IsNotEmpty()
+    @ValidateNested()
+    customers: GetCustomerDto[];
+}

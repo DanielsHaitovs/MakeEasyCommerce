@@ -1,22 +1,29 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
-import { GetProductBasketDto } from "src/product/dto/get-product.dto";
-import { UserShortDto } from "src/user/dto/get-user.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { GetCustomerDto } from '@src/customer/dto/get-customer.dto';
+import { GetProductDto } from '@src/product/dto/get-product.dto';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class BasketDto {
-    @IsNotEmpty()
-    @ApiProperty({ type: () => GetProductBasketDto })
-	@ValidateNested()
-		products: GetProductBasketDto[];
-    @IsNotEmpty()
     @IsNumber()
     @ApiProperty()
-        basket_total_price: number;
+    store_id: number;
+    @ApiProperty()
+    @IsNumber()
+    status: number;
+    product_count: number;
+    basket_final_price: number;
     @IsNotEmpty()
-    @IsArray()
-    @ApiProperty({ type: () => UserShortDto })
-    @ValidateNested()
-        user: UserShortDto[];
+    @ApiProperty({ type: [Number] })
+    product_ids: number[];
+    @IsNotEmpty()
+    @ApiProperty({ type: [Number] })
+    customers_ids: number[];
+    // @IsArray()
+    // @ApiProperty()
+    // personalization: number[];
 }
 
-export class CreateBasketDto extends PartialType(BasketDto){}
+export class CreateBasketDto extends BasketDto {
+    products: GetProductDto[];
+    customers: GetCustomerDto[];
+}
