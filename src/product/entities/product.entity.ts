@@ -1,8 +1,8 @@
 import { IsNumber, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
-@Entity()
-@Unique(['sku'])
+@Entity('product_index')
+@Unique('product_index_unique', ['sku'])
 export class Product {
     @PrimaryGeneratedColumn()
     id: number;
