@@ -1,52 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-    RuleDto,
-    AttributeDescriptionDto,
-    AttributeOptionsDto,
-} from './create-attribute.dto';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import {
+    AttributeOptionsDto,
+    CreateAttributeDto,
+} from './create-attribute.dto';
 
-export class GetRuleDto extends RuleDto {
-    // @ApiProperty()
-    // @IsNotEmpty()
-    // @IsNumber()
-    // id: number;
-}
-
-export class GetAttributeOptionDto extends AttributeOptionsDto {
+export class GetAttributeOptionsDto extends AttributeOptionsDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
     id: number;
 }
-
-export class GetAttributeRuleDto {
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    id: number;
-    @ApiProperty({ type: () => GetRuleDto })
-    @ValidateNested({ each: true })
-    front: GetRuleDto;
-    @ApiProperty({ type: () => GetRuleDto })
-    @ValidateNested({ each: true })
-    back: GetRuleDto;
-}
-
-export class GetAttributeDto {
+export class GetAttributeDto extends PartialType(CreateAttributeDto) {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
     id: number;
 
-    @ApiProperty({ type: () => AttributeDescriptionDto })
-    description: AttributeDescriptionDto;
-
-    @ApiProperty({ type: () => GetAttributeRuleDto })
+    @ApiProperty({ type: [GetAttributeOptionsDto] })
     @ValidateNested({ each: true })
-    rule: GetAttributeRuleDto;
-
-    @ApiProperty({ type: () => GetAttributeOptionDto })
-    @ValidateNested({ each: true })
-    options: GetAttributeOptionDto;
+    options: GetAttributeOptionsDto[];
 }

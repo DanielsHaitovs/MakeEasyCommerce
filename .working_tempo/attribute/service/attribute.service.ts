@@ -5,6 +5,8 @@ import { GetAttributeDto } from '../dto/get-attribute.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { Attribute } from '../entities/attribute.entity';
+import { AttributeRule } from '../entities/inheritance/rules/attribute-rule.entity';
+import { OptionValues } from '../entities/inheritance/options/option-values.entity';
 
 @Injectable()
 export class AttributeService {
@@ -18,18 +20,28 @@ export class AttributeService {
     }: {
         createAttributeDto: CreateAttributeDto;
     }): Promise<GetAttributeDto> {
-        return null;
-        // return await this.entityManager.save(
-        //     Attribute,
-        //     this.entityManager.create(Attribute, {
-        //         options: newOptions,
-        //         rule: this.entityManager.create(
-        //             AttributeRule,
-        //             createAttributeDto.rule,
-        //         ),
-        //         ...createAttributeDto,
-        //     }),
-        // );
+        console.log(createAttributeDto);
+        const newRule = this.entityManager.create(
+            AttributeRule,
+            createAttributeDto.rule,
+        );
+        const newOptions = this.entityManager.create(
+            OptionValues,
+            createAttributeDto.option,
+        );
+
+        const save = await this.entityManager.save(OptionValues, newOptions);
+
+        console.log('newOptions');
+        console.log(save);
+
+        const newAttribute = this.entityManager.create(Attribute, {
+            rule: newRule,
+            option: save,
+            description: createAttributeDto.description,
+        });
+
+        return await this.entityManager.save(Attribute, newAttribute);
     }
 
     async findAll() {

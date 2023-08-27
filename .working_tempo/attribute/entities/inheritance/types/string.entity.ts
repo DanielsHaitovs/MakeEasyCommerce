@@ -1,8 +1,9 @@
-import { Column } from 'typeorm';
+import { ChildEntity, Column } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BooleanAttribute {
-    @ApiProperty({ type: [Boolean] })
+@ChildEntity()
+export class StringAttribute {
+    @ApiProperty({ type: () => [String] })
     @Column('simple-array')
     values: [number] | [string] | [boolean] | [JSON] | [Date];
 }

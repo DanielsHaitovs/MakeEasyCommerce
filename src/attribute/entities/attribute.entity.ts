@@ -1,20 +1,17 @@
+import { IsEnum, IsString } from 'class-validator';
 import {
-    Column,
     Entity,
-    Index,
-    JoinColumn,
-    JoinTable,
-    OneToMany,
-    OneToOne,
     PrimaryGeneratedColumn,
-    RelationId,
+    Column,
+    ManyToOne,
+    Index,
+    OneToMany,
 } from 'typeorm';
-import { AttributeRule } from './inheritance/rules/attribute-rule.entity';
-import { AttributeDescription } from './inheritance/description/description.entity';
 import { OptionValues } from './inheritance/options/option-values.entity';
+import { AttributeDescription } from './inheritance/description/description.entity';
 
 @Entity('attribute_index')
-@Index('attribute_index_index', ['rule'])
+@Index('attribute_index_index', ['id'])
 export class Attribute {
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,26 +19,14 @@ export class Attribute {
     @Column(() => AttributeDescription)
     description: AttributeDescription;
 
-    @OneToOne(() => AttributeRule, (rule) => rule.attribute, {
-        cascade: true,
-        eager: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    })
-    @JoinColumn({
-        name: 'rule_id',
-        foreignKeyConstraintName: 'fk_attribute_rules_index',
-    })
-    rule: AttributeRule;
+    // This will be handy defining catalog attribute group
+    // And adding into this group all related catalog attributes
+    // Same should work for all entities!
+    // Lets assume that this should be assigned
+    // per each eav model that will come in future.
+    @ManyToOne(() => Attribute, { onDelete: 'CASCADE' })
+    parent: Attribute; // Optional parent attribute for handling arrays
 
-    @OneToMany(() => OptionValues, (options) => options.attribute, {
-        cascade: true,
-        eager: true,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    })
-    values: OptionValues[];
-
-    @RelationId((attribute: Attribute) => attribute.values)
-    values_ids: number[];
+    @OneToMany(() => OptionValues, (option) => option.attribute)
+    options: OptionValues[];
 }

@@ -13,17 +13,10 @@ import { Basket } from './basket/entities/basket.entity';
 import { Order } from './order/entities/order.entity';
 import { AttributeModule } from './attribute/attribute.module';
 import { Attribute } from './attribute/entities/attribute.entity';
-import { AttributeRule } from './attribute/entities/inheritance/rules/attribute-rule.entity';
-import { AttributeDescription } from './attribute/entities/inheritance/description/description.entity';
 import { OptionValues } from './attribute/entities/inheritance/options/option-values.entity';
 
 @Module({
     imports: [
-        AttributeModule,
-        OrderModule,
-        CustomerModule,
-        ProductModule,
-        BasketModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.TYPEORM_HOST,
@@ -32,22 +25,25 @@ import { OptionValues } from './attribute/entities/inheritance/options/option-va
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
             entities: [
-                Attribute,
-                OptionValues,
-                AttributeRule,
-                AttributeDescription,
                 Customer,
                 Address,
                 Details,
                 Product,
                 Basket,
                 Order,
+                Attribute,
+                OptionValues,
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
+        AttributeModule,
+        OrderModule,
+        CustomerModule,
+        ProductModule,
+        BasketModule,
     ],
     controllers: [],
     providers: [AppService],

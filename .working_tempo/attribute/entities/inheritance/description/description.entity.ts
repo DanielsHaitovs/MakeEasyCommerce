@@ -1,8 +1,8 @@
-import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Column, Index, Unique } from 'typeorm';
 import { AttributeType } from '../../enum/type.enum';
 
-@Unique('attribute_description_unique', ['name', 'code'])
+@Unique(['name', 'code'])
 @Index('attribute_description_index', ['name', 'code'])
 export abstract class AttributeDescription {
     @Column()
@@ -20,13 +20,7 @@ export abstract class AttributeDescription {
     @IsString()
     description: string;
 
-    @Column()
+    @Column({ type: 'enum', enum: AttributeType })
     @IsNotEmpty()
-    @IsEnum(AttributeType)
-    dataType: string;
-
-    @Column({ default: false })
-    @IsNotEmpty()
-    @IsBoolean()
-    isArray: boolean;
+    type: AttributeType;
 }
