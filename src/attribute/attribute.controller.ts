@@ -15,6 +15,7 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
+    ApiParam,
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
@@ -77,9 +78,41 @@ export class AttributeController {
         });
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.attributeService.findOne(+id);
+    @Get('get/one/:id')
+    @ApiOperation({
+        summary: 'Find One Attribute by ID',
+        description: 'Get data of all Attributes, good luck!',
+    })
+    @ApiParam({ name: 'id', description: 'attribute id' })
+    @ApiQuery({
+        name: 'Attribute Rules',
+        description:
+            'Its basically setting on how attribute will work in backend and front end',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'Attribute Option Values',
+        description: 'This will return attribute options values',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'All Attributes and theirs details',
+        type: [GetAttributeDto],
+    })
+    async findOneById(
+        @Param('id') id: number,
+        @Query('Attribute Rules') attributeRule: boolean,
+        @Query('Attribute Option Values') optionsData: boolean,
+    ) {
+        return await this.attributeService.findOneById({
+            id: id,
+            attributeRule: attributeRule,
+            optionsData: optionsData,
+        });
     }
 
     @Patch(':id')

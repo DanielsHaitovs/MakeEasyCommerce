@@ -75,14 +75,34 @@ export class AttributeService {
         } catch (e) {
             return e.message;
         }
-        // return await this.entityManager
-        //     .getRepository(Attribute)
-        //     .createQueryBuilder('attribute')
-        //     .getMany();
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} attribute`;
+    async findOneById({
+        id,
+        attributeRule,
+        optionsData,
+    }: {
+        id: number;
+        attributeRule: boolean;
+        optionsData: boolean;
+    }): Promise<GetAttributeDto[]> {
+        const where = {
+            filter: 'id',
+            value: id,
+        };
+        const relations = {
+            rule: attributeRule,
+            options: optionsData,
+        };
+        try {
+            return await this.findAttributeQuery({
+                where,
+                relations,
+                many: false,
+            });
+        } catch (e) {
+            return e.message;
+        }
     }
 
     update(id: number, updateAttributeDto: UpdateAttributeDto) {

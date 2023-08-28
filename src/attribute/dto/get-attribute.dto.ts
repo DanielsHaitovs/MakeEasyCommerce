@@ -28,4 +28,8 @@ export class GetAttributeDto extends PartialType(CreateAttributeDto) {
     @ApiProperty({ type: [GetAttributeOptionsDto] })
     @ValidateNested({ each: true })
     options: GetAttributeOptionsDto[];
+
+    @ApiProperty({ type: GetAttributeRuleDto })
+    @IsNotEmpty()
+    rule: GetAttributeRuleDto;
 }
