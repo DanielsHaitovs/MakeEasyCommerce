@@ -12,6 +12,7 @@ import {
 } from './dto/get-attribute.dto';
 import { Attribute } from './entities/attribute.entity';
 import { OptionValues } from './entities/inheritance/options/option-values.entity';
+import { AttributeRule } from './entities/inheritance/rules/attribute-rule.entity';
 
 @Injectable()
 export class AttributeService {
@@ -25,55 +26,29 @@ export class AttributeService {
     }: {
         createAttributeDto: CreateAttributeDto;
     }): Promise<GetAttributeDto> {
-        // const options: AttributeOptionsDto[] = createAttributeDto.options;
-
-        const newAttribute: GetAttributeDto = await this.entityManager.save(
-            Attribute,
-            this.entityManager.create(Attribute, {
-                options: null,
-                ...createAttributeDto,
-            }),
+        const newRule = await this.entityManager.save(
+            AttributeRule,
+            this.entityManager.create(AttributeRule, createAttributeDto.rule),
         );
 
-        const buildedOptions: GetAttributeOptionsDto[] = [];
-        const savedOptions: GetAttributeOptionsDto[] = [];
-        for (const option of createAttributeDto.options) {
-            buildedOptions.push({
-                // attribute: null,
-                ...this.entityManager.create(OptionValues, {
-                    value: option.value,
-                }),
+        const newOptions: GetAttributeOptionsDto[] =
+            await this.saveMultipleOptions({
+                options: createAttributeDto.options,
             });
 
-            savedOptions.push(
-                await this.entityManager.save(OptionValues, {
-                    attribute: newAttribute.id,
-                    ...this.entityManager.create(OptionValues, {
-                        value: option.value,
-                    }),
-                }),
-            );
-        }
+        delete createAttributeDto.options;
+        delete createAttributeDto.rule;
 
-        return {
-            options: savedOptions,
-            ...newAttribute,
-        };
+        const newAttribute: CreateAttributeDto = this.entityManager.create(
+            Attribute,
+            {
+                options: newOptions,
+                rule: newRule,
+                ...createAttributeDto,
+            },
+        );
 
-        // const newOptions = await this.entityManager.save(
-        //     OptionValues,
-        //     buildedOptions,
-        // );
-
-        // return await this.entityManager.save(
-        //     Attribute,
-        //     this.entityManager.create(Attribute, {
-        //         options: newOptions,
-        //         ...createAttributeDto,
-        //     }),
-        // );
-        // console.log(newAttribute);
-        // return newAttribute;
+        return await this.entityManager.save(Attribute, newAttribute);
     }
 
     async findAll(): Promise<GetAttributeDto[]> {
@@ -93,5 +68,25 @@ export class AttributeService {
 
     remove(id: number) {
         return `This action removes a #${id} attribute`;
+    }
+
+    private async saveMultipleOptions({
+        options,
+    }: {
+        options: AttributeOptionsDto[];
+    }): Promise<GetAttributeOptionsDto[]> {
+        const savedOptions: GetAttributeOptionsDto[] = [];
+        for (const option of options) {
+            savedOptions.push(
+                await this.entityManager.save(OptionValues, {
+                    attribute: null,
+                    ...this.entityManager.create(OptionValues, {
+                        value: option.value,
+                    }),
+                }),
+            );
+        }
+
+        return savedOptions;
     }
 }

@@ -14,6 +14,7 @@ import { Order } from './order/entities/order.entity';
 import { AttributeModule } from './attribute/attribute.module';
 import { Attribute } from './attribute/entities/attribute.entity';
 import { OptionValues } from './attribute/entities/inheritance/options/option-values.entity';
+import { AttributeRule } from './attribute/entities/inheritance/rules/attribute-rule.entity';
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { OptionValues } from './attribute/entities/inheritance/options/option-va
                 Order,
                 Attribute,
                 OptionValues,
+                AttributeRule,
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',

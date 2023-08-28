@@ -6,9 +6,12 @@ import {
     ManyToOne,
     Index,
     OneToMany,
+    OneToOne,
+    JoinColumn,
 } from 'typeorm';
 import { OptionValues } from './inheritance/options/option-values.entity';
 import { AttributeDescription } from './inheritance/description/description.entity';
+import { AttributeRule } from './inheritance/rules/attribute-rule.entity';
 
 @Entity('attribute_index')
 @Index('attribute_index_index', ['id'])
@@ -29,4 +32,11 @@ export class Attribute {
 
     @OneToMany(() => OptionValues, (option) => option.attribute)
     options: OptionValues[];
+
+    @OneToOne(() => AttributeRule, (rule) => rule.attribute)
+    @JoinColumn({
+        name: 'rule_id',
+        foreignKeyConstraintName: 'fk_attribute_index_rule',
+    })
+    rule: AttributeRule;
 }
