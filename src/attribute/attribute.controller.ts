@@ -115,6 +115,60 @@ export class AttributeController {
         });
     }
 
+    @Get('get/by/attribute/:code')
+    @ApiOperation({
+        summary: 'Find One Attribute by attribute code',
+        description: 'Get data of 1 specific Attribute, good luck!',
+    })
+    @ApiQuery({
+        name: 'Attribute code name',
+        description:
+            'Its basically will try to find your attribute by mentioned code',
+        type: String,
+        example: 'name',
+        required: true,
+    })
+    @ApiQuery({
+        name: 'Attribute code value',
+        description:
+            'Its basically will try to find your attribute by mentioned code and this value',
+        type: String,
+        example: 'test',
+        required: true,
+    })
+    @ApiQuery({
+        name: 'Attribute Rules',
+        description:
+            'Its basically setting on how attribute will work in backend and front end',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'Attribute Option Values',
+        description: 'This will return attribute options values',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'All Attributes and theirs details',
+        type: [GetAttributeDto],
+    })
+    async findOneBy(
+        @Query('Attribute code name') attributeCode: string,
+        @Query('Attribute code value') attributeValue: string,
+        @Query('Attribute Rules') attributeRule: boolean,
+        @Query('Attribute Option Values') optionsData: boolean,
+    ) {
+        return await this.attributeService.findOneBy({
+            code: attributeCode,
+            value: attributeValue,
+            attributeRule: attributeRule,
+            optionsData: optionsData,
+        });
+    }
+
     @Patch(':id')
     update(
         @Param('id') id: string,

@@ -105,6 +105,39 @@ export class AttributeService {
         }
     }
 
+    async findOneBy({
+        code,
+        value,
+        attributeRule,
+        optionsData,
+    }: {
+        code: string;
+        value: any;
+        attributeRule: boolean;
+        optionsData: boolean;
+    }): Promise<GetAttributeDto[]> {
+        const where = {
+            filter: code,
+            value: value,
+        };
+
+        console.log('here');
+        console.log(where);
+        const relations = {
+            rule: attributeRule,
+            options: optionsData,
+        };
+        try {
+            return await this.findAttributeQuery({
+                where,
+                relations,
+                many: false,
+            });
+        } catch (e) {
+            return e.message;
+        }
+    }
+
     update(id: number, updateAttributeDto: UpdateAttributeDto) {
         return `This action updates a #${id} attribute`;
     }
@@ -157,6 +190,8 @@ export class AttributeService {
         }
 
         if (!many && relations.options && relations.rule) {
+            console.log(condition);
+            console.log(query);
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -173,8 +208,8 @@ export class AttributeService {
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(condition, query)
+                    .leftJoinAndSelect('attribute.rule', 'rule')
                     .getOne(),
             ];
         }
@@ -184,7 +219,19 @@ export class AttributeService {
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
+                    .where(condition, query)
                     .leftJoinAndSelect('attribute.options', 'options')
+                    .getOne(),
+            ];
+        }
+
+        if (!many && !relations.options && !relations.rule) {
+            console.log(condition);
+            console.log(query);
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
                     .where(condition, query)
                     .getOne(),
             ];
