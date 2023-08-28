@@ -78,10 +78,10 @@ export class AttributeController {
         });
     }
 
-    @Get('get/one/:id')
+    @Get('get/by/:id')
     @ApiOperation({
         summary: 'Find One Attribute by ID',
-        description: 'Get data of all Attributes, good luck!',
+        description: 'Get data of 1 specific Attribute, good luck!',
     })
     @ApiParam({ name: 'id', description: 'attribute id' })
     @ApiQuery({
