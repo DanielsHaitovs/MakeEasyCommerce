@@ -51,11 +51,34 @@ export class AttributeService {
         return await this.entityManager.save(Attribute, newAttribute);
     }
 
-    async findAll(): Promise<GetAttributeDto[]> {
-        return await this.entityManager
-            .getRepository(Attribute)
-            .createQueryBuilder('attribute')
-            .getMany();
+    async findAll({
+        attributeRule,
+        optionsData,
+    }: {
+        attributeRule: boolean;
+        optionsData: boolean;
+    }): Promise<GetAttributeDto[]> {
+        const where = {
+            filter: '',
+            value: null,
+        };
+        const relations = {
+            rule: attributeRule,
+            options: optionsData,
+        };
+        try {
+            return await this.findAttributeQuery({
+                where,
+                relations,
+                many: true,
+            });
+        } catch (e) {
+            return e.message;
+        }
+        // return await this.entityManager
+        //     .getRepository(Attribute)
+        //     .createQueryBuilder('attribute')
+        //     .getMany();
     }
 
     findOne(id: number) {
@@ -88,5 +111,104 @@ export class AttributeService {
         }
 
         return savedOptions;
+    }
+
+    protected async findAttributeQuery({
+        where,
+        relations,
+        many,
+    }: {
+        where: {
+            filter: string;
+            value: any;
+        };
+        relations: {
+            rule: boolean;
+            options: boolean;
+        };
+        many: boolean;
+    }): Promise<any[]> {
+        let condition = '';
+        let query = null;
+        if (where.filter && where.value) {
+            condition = 'attribute.' + where.filter + ' = :' + where.filter;
+            query = {};
+            query[where.filter] = where.value;
+        }
+
+        if (!many && relations.options && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .leftJoinAndSelect('attribute.options', 'options')
+                    .where(condition, query)
+                    .getOne(),
+            ];
+        }
+
+        if (!many && !relations.options && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .where(condition, query)
+                    .getOne(),
+            ];
+        }
+
+        if (!many && relations.options && !relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.options', 'options')
+                    .where(condition, query)
+                    .getOne(),
+            ];
+        }
+        //
+
+        if (many && relations.options && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .leftJoinAndSelect('attribute.options', 'options')
+                    .where(condition, query)
+                    .getMany(),
+            ];
+        }
+
+        if (many && !relations.options && relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .where(condition, query)
+                    .getMany(),
+            ];
+        }
+
+        if (many && relations.options && !relations.rule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.options', 'options')
+                    .where(condition, query)
+                    .getMany(),
+            ];
+        }
+
+        return await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder('attribute')
+            .where(condition, query)
+            .getMany();
     }
 }

@@ -6,11 +6,18 @@ import {
     Patch,
     Param,
     Delete,
+    Query,
 } from '@nestjs/common';
 import { AttributeService } from './attribute.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBody,
+    ApiOkResponse,
+    ApiOperation,
+    ApiQuery,
+    ApiTags,
+} from '@nestjs/swagger';
 import { GetAttributeDto } from './dto/get-attribute.dto';
 
 @Controller('attribute')
@@ -41,12 +48,33 @@ export class AttributeController {
         summary: 'Find All Attributes',
         description: 'Get data of all Attributes, good luck!',
     })
+    @ApiQuery({
+        name: 'Attribute Rules',
+        description:
+            'Its basically setting on how attribute will work in backend and front end',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'Attribute Option Values',
+        description: 'This will return attribute options values',
+        type: 'boolean',
+        example: false,
+        required: false,
+    })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
         type: [GetAttributeDto],
     })
-    async findAll() {
-        return await this.attributeService.findAll();
+    async findAll(
+        @Query('Attribute Rules') attributeRule: boolean,
+        @Query('Attribute Option Values') optionsData: boolean,
+    ) {
+        return await this.attributeService.findAll({
+            attributeRule: attributeRule,
+            optionsData: optionsData,
+        });
     }
 
     @Get(':id')
