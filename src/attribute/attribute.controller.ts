@@ -20,6 +20,11 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { GetAttributeDto } from './dto/get-attribute.dto';
+import {
+    AttributeRelationsDto,
+    PaginateAttributeRelationsDto,
+    PaginationFilterDto,
+} from './dto/attribute.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -50,31 +55,63 @@ export class AttributeController {
         description: 'Get data of all Attributes, good luck!',
     })
     @ApiQuery({
-        name: 'Attribute Rules',
+        name: 'Query Filtering and Pagination',
         description:
-            'Its basically setting on how attribute will work in backend and front end',
-        type: 'boolean',
-        example: false,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'Attribute Option Values',
-        description: 'This will return attribute options values',
-        type: 'boolean',
-        example: false,
-        required: false,
+            'Its basically will try to find all your attributes. You can set page and limit for this query. Optionally Can load Attribute Options values and Attribute Rules',
+        type: PaginateAttributeRelationsDto,
+        example: {
+            page: 1,
+            limit: 10,
+            filter: {
+                code: 'id',
+                value: 1,
+            },
+            includeOptions: true,
+            includeRule: false,
+        },
+        required: true,
     })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
         type: [GetAttributeDto],
     })
     async findAll(
-        @Query('Attribute Rules') attributeRule: boolean,
-        @Query('Attribute Option Values') optionsData: boolean,
-    ) {
+        @Query() filter: PaginateAttributeRelationsDto,
+    ): Promise<GetAttributeDto[]> {
         return await this.attributeService.findAll({
-            attributeRule: attributeRule,
-            optionsData: optionsData,
+            condition: filter,
+        });
+    }
+
+    @Get('get/by')
+    @ApiOperation({
+        summary: 'Find Attributes by attribute code and its value',
+        description: 'Get data of 1 specific Attribute, good luck!',
+    })
+    @ApiQuery({
+        name: 'Query Filtering and Pagination',
+        description:
+            'Its basically will try to find your attribute by mentioned code and value. You can set page and limit for this query. Optionally Can load Attribute Options values and Attribute Rules',
+        type: PaginationFilterDto,
+        example: {
+            code: 'id',
+            value: 1,
+            includeRule: true,
+            includeOptions: false,
+            page: 1,
+            limit: 10,
+        },
+        required: false,
+    })
+    @ApiOkResponse({
+        description: 'All Attributes and theirs details',
+        type: [GetAttributeDto],
+    })
+    async findBy(
+        @Query() filter: PaginationFilterDto,
+    ): Promise<GetAttributeDto[]> {
+        return await this.attributeService.findBy({
+            condition: filter,
         });
     }
 
@@ -85,18 +122,14 @@ export class AttributeController {
     })
     @ApiParam({ name: 'id', description: 'attribute id' })
     @ApiQuery({
-        name: 'Attribute Rules',
+        name: 'Load Attribute Relations',
         description:
-            'Its basically setting on how attribute will work in backend and front end',
-        type: 'boolean',
-        example: false,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'Attribute Option Values',
-        description: 'This will return attribute options values',
-        type: 'boolean',
-        example: false,
+            'Gives an option to decide which relation to load. Can load Attribute Options values and Attribute Rules',
+        type: AttributeRelationsDto,
+        example: {
+            includeRule: true,
+            includeOptions: false,
+        },
         required: false,
     })
     @ApiOkResponse({
@@ -105,67 +138,11 @@ export class AttributeController {
     })
     async findOneById(
         @Param('id') id: number,
-        @Query('Attribute Rules') attributeRule: boolean,
-        @Query('Attribute Option Values') optionsData: boolean,
-    ) {
+        @Query() relations: AttributeRelationsDto,
+    ): Promise<GetAttributeDto> {
         return await this.attributeService.findOneById({
             id: id,
-            attributeRule: attributeRule,
-            optionsData: optionsData,
-        });
-    }
-
-    @Get('get/by/attribute/:code')
-    @ApiOperation({
-        summary: 'Find One Attribute by attribute code',
-        description: 'Get data of 1 specific Attribute, good luck!',
-    })
-    @ApiQuery({
-        name: 'Attribute code name',
-        description:
-            'Its basically will try to find your attribute by mentioned code',
-        type: String,
-        example: 'name',
-        required: true,
-    })
-    @ApiQuery({
-        name: 'Attribute code value',
-        description:
-            'Its basically will try to find your attribute by mentioned code and this value',
-        type: String,
-        example: 'test',
-        required: true,
-    })
-    @ApiQuery({
-        name: 'Attribute Rules',
-        description:
-            'Its basically setting on how attribute will work in backend and front end',
-        type: 'boolean',
-        example: false,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'Attribute Option Values',
-        description: 'This will return attribute options values',
-        type: 'boolean',
-        example: false,
-        required: false,
-    })
-    @ApiOkResponse({
-        description: 'All Attributes and theirs details',
-        type: [GetAttributeDto],
-    })
-    async findOneBy(
-        @Query('Attribute code name') attributeCode: string,
-        @Query('Attribute code value') attributeValue: string,
-        @Query('Attribute Rules') attributeRule: boolean,
-        @Query('Attribute Option Values') optionsData: boolean,
-    ) {
-        return await this.attributeService.findOneBy({
-            code: attributeCode,
-            value: attributeValue,
-            attributeRule: attributeRule,
-            optionsData: optionsData,
+            loadRelations: relations,
         });
     }
 

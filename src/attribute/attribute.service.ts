@@ -13,6 +13,11 @@ import {
 import { Attribute } from './entities/attribute.entity';
 import { OptionValues } from './entities/inheritance/options/option-values.entity';
 import { AttributeRule } from './entities/inheritance/rules/attribute-rule.entity';
+import {
+    AttributeRelationsDto,
+    PaginateAttributeRelationsDto,
+    PaginationFilterDto,
+} from './dto/attribute.dto';
 
 @Injectable()
 export class AttributeService {
@@ -51,25 +56,47 @@ export class AttributeService {
         return await this.entityManager.save(Attribute, newAttribute);
     }
 
-    async findAll({
-        attributeRule,
-        optionsData,
+    async findOneById({
+        id,
+        loadRelations,
     }: {
-        attributeRule: boolean;
-        optionsData: boolean;
+        id: number;
+        loadRelations: AttributeRelationsDto;
+    }): Promise<GetAttributeDto> {
+        try {
+            return (
+                await this.findAttributeQuery({
+                    condition: {
+                        page: 1,
+                        limit: 1,
+                        code: 'id',
+                        value: `${id}`,
+                        includeRule: loadRelations.includeRule,
+                        includeOptions: loadRelations.includeOptions,
+                    },
+                    many: false,
+                })
+            ).shift();
+        } catch (e) {
+            return e.message;
+        }
+    }
+
+    async findAll({
+        condition,
+    }: {
+        condition: PaginateAttributeRelationsDto;
     }): Promise<GetAttributeDto[]> {
-        const where = {
-            filter: '',
-            value: null,
-        };
-        const relations = {
-            rule: attributeRule,
-            options: optionsData,
-        };
         try {
             return await this.findAttributeQuery({
-                where,
-                relations,
+                condition: {
+                    limit: condition.limit,
+                    page: condition.page,
+                    includeOptions: condition.includeOptions,
+                    includeRule: condition.includeRule,
+                    code: '',
+                    value: '',
+                },
                 many: true,
             });
         } catch (e) {
@@ -77,61 +104,15 @@ export class AttributeService {
         }
     }
 
-    async findOneById({
-        id,
-        attributeRule,
-        optionsData,
+    async findBy({
+        condition,
     }: {
-        id: number;
-        attributeRule: boolean;
-        optionsData: boolean;
+        condition: PaginationFilterDto;
     }): Promise<GetAttributeDto[]> {
-        const where = {
-            filter: 'id',
-            value: id,
-        };
-        const relations = {
-            rule: attributeRule,
-            options: optionsData,
-        };
         try {
             return await this.findAttributeQuery({
-                where,
-                relations,
-                many: false,
-            });
-        } catch (e) {
-            return e.message;
-        }
-    }
-
-    async findOneBy({
-        code,
-        value,
-        attributeRule,
-        optionsData,
-    }: {
-        code: string;
-        value: any;
-        attributeRule: boolean;
-        optionsData: boolean;
-    }): Promise<GetAttributeDto[]> {
-        const where = {
-            filter: code,
-            value: value,
-        };
-
-        console.log('here');
-        console.log(where);
-        const relations = {
-            rule: attributeRule,
-            options: optionsData,
-        };
-        try {
-            return await this.findAttributeQuery({
-                where,
-                relations,
-                many: false,
+                condition: condition,
+                many: true,
             });
         } catch (e) {
             return e.message;
@@ -167,107 +148,103 @@ export class AttributeService {
     }
 
     protected async findAttributeQuery({
-        where,
-        relations,
+        condition,
         many,
     }: {
-        where: {
-            filter: string;
-            value: any;
-        };
-        relations: {
-            rule: boolean;
-            options: boolean;
-        };
+        condition: PaginationFilterDto;
         many: boolean;
     }): Promise<any[]> {
-        let condition = '';
+        let where = '';
         let query = null;
-        if (where.filter && where.value) {
-            condition = 'attribute.' + where.filter + ' = :' + where.filter;
+        if (condition.code && condition.value) {
+            where = 'attribute.' + condition.code + ' = :' + condition.code;
             query = {};
-            query[where.filter] = where.value;
+            query[condition.code] = condition.value;
         }
 
-        if (!many && relations.options && relations.rule) {
-            console.log(condition);
-            console.log(query);
+        if (!many && condition.includeOptions && condition.includeRule) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
-                    .where(condition, query)
+                    .where(where, query)
                     .getOne(),
             ];
         }
 
-        if (!many && !relations.options && relations.rule) {
-            return [
-                await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder('attribute')
-                    .where(condition, query)
-                    .leftJoinAndSelect('attribute.rule', 'rule')
-                    .getOne(),
-            ];
-        }
-
-        if (!many && relations.options && !relations.rule) {
-            return [
-                await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder('attribute')
-                    .where(condition, query)
-                    .leftJoinAndSelect('attribute.options', 'options')
-                    .getOne(),
-            ];
-        }
-
-        if (!many && !relations.options && !relations.rule) {
-            console.log(condition);
-            console.log(query);
-            return [
-                await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder('attribute')
-                    .where(condition, query)
-                    .getOne(),
-            ];
-        }
-        //
-
-        if (many && relations.options && relations.rule) {
+        if (!many && !condition.includeOptions && condition.includeRule) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
+                    .where(where, query)
+                    .getOne(),
+            ];
+        }
+
+        if (!many && condition.includeOptions && !condition.includeRule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
-                    .where(condition, query)
+                    .where(where, query)
+                    .getOne(),
+            ];
+        }
+
+        if (!many && !condition.includeOptions && !condition.includeRule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .where(where, query)
+                    .getOne(),
+            ];
+        }
+
+        // Multiple Records
+        const skip = (condition.page - 1) * condition.limit;
+
+        if (many && condition.includeOptions && condition.includeRule) {
+            return [
+                await this.entityManager
+                    .getRepository(Attribute)
+                    .createQueryBuilder('attribute')
+                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .leftJoinAndSelect('attribute.options', 'options')
+                    .where(where, query)
+                    .skip(skip)
+                    .take(condition.limit)
                     .getMany(),
             ];
         }
 
-        if (many && !relations.options && relations.rule) {
+        if (many && !condition.includeOptions && condition.includeRule) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
-                    .where(condition, query)
+                    .where(where, query)
+                    .skip(skip)
+                    .take(condition.limit)
                     .getMany(),
             ];
         }
 
-        if (many && relations.options && !relations.rule) {
+        if (many && condition.includeOptions && !condition.includeRule) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
-                    .where(condition, query)
+                    .where(where, query)
+                    .skip(skip)
+                    .take(condition.limit)
                     .getMany(),
             ];
         }
@@ -275,7 +252,9 @@ export class AttributeService {
         return await this.entityManager
             .getRepository(Attribute)
             .createQueryBuilder('attribute')
-            .where(condition, query)
+            .where(where, query)
+            .skip(skip)
+            .take(condition.limit)
             .getMany();
     }
 }
