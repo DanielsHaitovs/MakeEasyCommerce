@@ -18,12 +18,14 @@ import {
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
 } from '../../dto/attribute.dto';
+import { OptionsService } from '../options/options.service';
 
 @Injectable()
 export class AttributeService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
+        private readonly optionsService: OptionsService,
     ) {}
 
     async create({
@@ -35,14 +37,13 @@ export class AttributeService {
             AttributeRule,
             this.entityManager.create(AttributeRule, createAttributeDto.rule),
         );
+        delete createAttributeDto.rule;
 
         const newOptions: GetAttributeOptionsDto[] =
-            await this.saveMultipleOptions({
-                options: createAttributeDto.options,
+            await this.optionsService.createOptions({
+                createOptions: createAttributeDto.options,
             });
-
         delete createAttributeDto.options;
-        delete createAttributeDto.rule;
 
         const newAttribute: CreateAttributeDto = this.entityManager.create(
             Attribute,
@@ -125,26 +126,6 @@ export class AttributeService {
 
     remove(id: number) {
         return `This action removes a #${id} attribute`;
-    }
-
-    private async saveMultipleOptions({
-        options,
-    }: {
-        options: AttributeOptionsDto[];
-    }): Promise<GetAttributeOptionsDto[]> {
-        const savedOptions: GetAttributeOptionsDto[] = [];
-        for (const option of options) {
-            savedOptions.push(
-                await this.entityManager.save(OptionValues, {
-                    attribute: null,
-                    ...this.entityManager.create(OptionValues, {
-                        value: option.value,
-                    }),
-                }),
-            );
-        }
-
-        return savedOptions;
     }
 
     protected async findAttributeQuery({
@@ -258,3 +239,27 @@ export class AttributeService {
             .getMany();
     }
 }
+
+// private async saveMultipleOptions({
+//     options,
+// }: {
+//     options: AttributeOptionsDto[];
+// }): Promise<GetAttributeOptionsDto[]> {
+//     const savedOptions: GetAttributeOptionsDto[] = [];
+
+//     // let try to achieve it by saving multiple options at once
+//     // Might be handy to inject here env value
+//     // that will limit amount of options to be saved at once
+//     for (const option of options) {
+//         savedOptions.push(
+//             await this.entityManager.save(OptionValues, {
+//                 attribute: null,
+//                 ...this.entityManager.create(OptionValues, {
+//                     value: option.value,
+//                 }),
+//             }),
+//         );
+//     }
+
+//     return savedOptions;
+// }
