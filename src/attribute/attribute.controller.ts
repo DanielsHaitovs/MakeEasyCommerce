@@ -55,7 +55,7 @@ export class AttributeController {
         description: 'Get data of all Attributes, good luck!',
     })
     @ApiQuery({
-        name: 'Query Filtering and Pagination',
+        name: 'paginate',
         description:
             'Its basically will try to find all your attributes. You can set page and limit for this query. Optionally Can load Attribute Options values and Attribute Rules',
         type: PaginateAttributeRelationsDto,
@@ -75,9 +75,7 @@ export class AttributeController {
         description: 'All Attributes and theirs details',
         type: [GetAttributeDto],
     })
-    async findAll(
-        @Query() filter: PaginateAttributeRelationsDto,
-    ): Promise<GetAttributeDto[]> {
+    async findAll(@Query() filter): Promise<GetAttributeDto[]> {
         return await this.attributeService.findAll({
             condition: filter,
         });
@@ -107,9 +105,7 @@ export class AttributeController {
         description: 'All Attributes and theirs details',
         type: [GetAttributeDto],
     })
-    async findBy(
-        @Query() filter: PaginationFilterDto,
-    ): Promise<GetAttributeDto[]> {
+    async findBy(@Query() filter): Promise<GetAttributeDto[]> {
         return await this.attributeService.findBy({
             condition: filter,
         });
@@ -138,7 +134,7 @@ export class AttributeController {
     })
     async findOneById(
         @Param('id') id: number,
-        @Query() relations: AttributeRelationsDto,
+        @Query() relations,
     ): Promise<GetAttributeDto> {
         return await this.attributeService.findOneById({
             id: id,
