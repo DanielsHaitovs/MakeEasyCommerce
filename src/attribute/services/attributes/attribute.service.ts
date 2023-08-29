@@ -2,22 +2,22 @@ import { Injectable } from '@nestjs/common';
 import {
     AttributeOptionsDto,
     CreateAttributeDto,
-} from './dto/create-attribute.dto';
-import { UpdateAttributeDto } from './dto/update-attribute.dto';
+} from '../../dto/create-attribute.dto';
+import { UpdateAttributeDto } from '../../dto/update-attribute.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import {
     GetAttributeDto,
     GetAttributeOptionsDto,
-} from './dto/get-attribute.dto';
-import { Attribute } from './entities/attribute.entity';
-import { OptionValues } from './entities/inheritance/options/option-values.entity';
-import { AttributeRule } from './entities/inheritance/rules/attribute-rule.entity';
+} from '../../dto/get-attribute.dto';
+import { Attribute } from '../../entities/attribute.entity';
+import { OptionValues } from '../../entities/inheritance/options/option-values.entity';
+import { AttributeRule } from '../../entities/inheritance/rules/attribute-rule.entity';
 import {
     AttributeRelationsDto,
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
-} from './dto/attribute.dto';
+} from '../../dto/attribute.dto';
 
 @Injectable()
 export class AttributeService {

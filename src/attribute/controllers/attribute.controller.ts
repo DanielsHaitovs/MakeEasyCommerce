@@ -8,9 +8,9 @@ import {
     Delete,
     Query,
 } from '@nestjs/common';
-import { AttributeService } from './attribute.service';
-import { CreateAttributeDto } from './dto/create-attribute.dto';
-import { UpdateAttributeDto } from './dto/update-attribute.dto';
+import { AttributeService } from '../services/attributes/attribute.service';
+import { CreateAttributeDto } from '../dto/create-attribute.dto';
+import { UpdateAttributeDto } from '../dto/update-attribute.dto';
 import {
     ApiBody,
     ApiOkResponse,
@@ -19,12 +19,12 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { GetAttributeDto } from './dto/get-attribute.dto';
+import { GetAttributeDto } from '../dto/get-attribute.dto';
 import {
     AttributeRelationsDto,
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
-} from './dto/attribute.dto';
+} from '../dto/attribute.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
