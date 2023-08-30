@@ -1,10 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
-import {
-    AttributeOptionsDto,
-    AttributeRuleDto,
-    CreateAttributeDto,
-} from './create-attribute.dto';
+import { AttributeRuleDto, CreateAttributeDto } from './create-attribute.dto';
+import { AttributeOptionsDto } from './attribute.dto';
 
 export class GetAttributeRuleDto extends AttributeRuleDto {
     @ApiProperty()
@@ -19,6 +16,7 @@ export class GetAttributeOptionsDto extends AttributeOptionsDto {
     @IsNumber()
     id: number;
 }
+
 export class GetAttributeDto extends PartialType(CreateAttributeDto) {
     @ApiProperty()
     @IsNotEmpty()

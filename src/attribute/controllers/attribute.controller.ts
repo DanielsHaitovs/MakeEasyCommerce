@@ -25,6 +25,7 @@ import {
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
 } from '../dto/attribute.dto';
+import { AttributeResponse } from '../dto/responses/response.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -43,7 +44,7 @@ export class AttributeController {
     })
     async create(
         @Body() createAttributeDto: CreateAttributeDto,
-    ): Promise<GetAttributeDto> {
+    ): Promise<GetAttributeDto | AttributeResponse> {
         return await this.attributeService.create({
             createAttributeDto: createAttributeDto,
         });
@@ -142,12 +143,24 @@ export class AttributeController {
         });
     }
 
-    @Patch(':id')
-    update(
+    @Patch('update/:id')
+    @ApiOperation({
+        summary: 'Update Attribute by ID',
+        description: 'Update specifically attribute data by id',
+    })
+    @ApiBody({
+        type: UpdateAttributeDto,
+        description: 'Attribute',
+        required: true,
+    })
+    async update(
         @Param('id') id: string,
         @Body() updateAttributeDto: UpdateAttributeDto,
     ) {
-        return this.attributeService.update(+id, updateAttributeDto);
+        return this.attributeService.update({
+            id: +id,
+            updateAttributeDto: updateAttributeDto,
+        });
     }
 
     @Delete(':id')

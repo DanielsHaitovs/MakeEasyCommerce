@@ -1,4 +1,3 @@
-import { IsEnum, IsString } from 'class-validator';
 import {
     Entity,
     PrimaryGeneratedColumn,

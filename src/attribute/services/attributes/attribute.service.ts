@@ -1,24 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import {
-    AttributeOptionsDto,
-    CreateAttributeDto,
-} from '../../dto/create-attribute.dto';
+import { CreateAttributeDto } from '../../dto/create-attribute.dto';
 import { UpdateAttributeDto } from '../../dto/update-attribute.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import {
     GetAttributeDto,
     GetAttributeOptionsDto,
+    GetAttributeRuleDto,
 } from '../../dto/get-attribute.dto';
 import { Attribute } from '../../entities/attribute.entity';
-import { OptionValues } from '../../entities/inheritance/options/option-values.entity';
-import { AttributeRule } from '../../entities/inheritance/rules/attribute-rule.entity';
 import {
+    AttributeDescriptionDto,
     AttributeRelationsDto,
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
 } from '../../dto/attribute.dto';
 import { OptionsService } from '../options/options.service';
+import { RuleService } from '../rules/rule.service';
+import { AttributeResponse } from '@src/attribute/dto/responses/response.dto';
+import { AttributeRule } from '@src/attribute/entities/inheritance/rules/attribute-rule.entity';
+import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
 
 @Injectable()
 export class AttributeService {
@@ -26,33 +27,54 @@ export class AttributeService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         private readonly optionsService: OptionsService,
+        private readonly ruleService: RuleService,
     ) {}
 
     async create({
         createAttributeDto,
     }: {
         createAttributeDto: CreateAttributeDto;
-    }): Promise<GetAttributeDto> {
-        const newRule = await this.entityManager.save(
-            AttributeRule,
-            this.entityManager.create(AttributeRule, createAttributeDto.rule),
-        );
-        delete createAttributeDto.rule;
+    }): Promise<GetAttributeDto | AttributeResponse> {
+        const exists = await this.ifAttributeExist({
+            code: createAttributeDto.description.code,
+            name: createAttributeDto.description.name,
+        });
 
-        const newOptions: GetAttributeOptionsDto[] =
-            await this.optionsService.createOptions({
-                createOptions: createAttributeDto.options,
-            });
-        delete createAttributeDto.options;
+        if (exists) {
+            return {
+                message: 'Already exists',
+                errors: [
+                    {
+                        message:
+                            'Attribute with this name ' +
+                            `${createAttributeDto.description.name}` +
+                            ' or code ' +
+                            `${createAttributeDto.description.code}` +
+                            ' already exists in this entity',
+                    },
+                    {
+                        status: 200,
+                    },
+                ],
+            };
+        }
 
         const newAttribute: CreateAttributeDto = this.entityManager.create(
             Attribute,
             {
-                options: newOptions,
-                rule: newRule,
-                ...createAttributeDto,
+                description: createAttributeDto.description,
+                options: null,
+                rule: null,
             },
         );
+
+        newAttribute.rule = await this.ruleService.createRule({
+            newRule: createAttributeDto.rule,
+        });
+
+        newAttribute.options = await this.optionsService.createOptions({
+            createOptions: createAttributeDto.options,
+        });
 
         return await this.entityManager.save(Attribute, newAttribute);
     }
@@ -120,8 +142,49 @@ export class AttributeService {
         }
     }
 
-    update(id: number, updateAttributeDto: UpdateAttributeDto) {
-        return `This action updates a #${id} attribute`;
+    // Not working!
+    async update({
+        id,
+        updateAttributeDto,
+    }: {
+        id: number;
+        updateAttributeDto: UpdateAttributeDto;
+    }): Promise<GetAttributeDto | AttributeResponse> {
+        const preparedRule: GetAttributeRuleDto = updateAttributeDto.rule;
+
+        const updatedRules: GetAttributeRuleDto = (
+            await this.entityManager.update(AttributeRule, id, preparedRule)
+        ).raw;
+
+        const preparedOptions: GetAttributeOptionsDto[] =
+            updateAttributeDto.options;
+
+        const updatedOptions: GetAttributeOptionsDto[] = [];
+        for (const option of preparedOptions) {
+            updatedOptions.push(
+                (await this.entityManager.update(OptionValues, id, option)).raw,
+            );
+        }
+
+        const updateDescription: AttributeDescriptionDto =
+            updateAttributeDto.description;
+        updateDescription['id'] = updateAttributeDto.id;
+
+        const updatedAttribute = await this.entityManager.update(
+            Attribute,
+            id,
+            {
+                options: updatedOptions,
+                rule: updatedRules,
+                description: updateDescription,
+            },
+        );
+
+        console.log(updatedRules);
+        console.log(updatedOptions);
+        console.log(updatedAttribute);
+        return null;
+        // return updatedAttribute;
     }
 
     remove(id: number) {
@@ -238,28 +301,19 @@ export class AttributeService {
             .take(condition.limit)
             .getMany();
     }
+
+    protected async ifAttributeExist({
+        code,
+        name,
+    }: {
+        code: string;
+        name: string;
+    }): Promise<boolean> {
+        return await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder('attribute')
+            .where('attribute.code =:code', { code: code })
+            .orWhere('attribute.name =:name', { name: name })
+            .getExists();
+    }
 }
-
-// private async saveMultipleOptions({
-//     options,
-// }: {
-//     options: AttributeOptionsDto[];
-// }): Promise<GetAttributeOptionsDto[]> {
-//     const savedOptions: GetAttributeOptionsDto[] = [];
-
-//     // let try to achieve it by saving multiple options at once
-//     // Might be handy to inject here env value
-//     // that will limit amount of options to be saved at once
-//     for (const option of options) {
-//         savedOptions.push(
-//             await this.entityManager.save(OptionValues, {
-//                 attribute: null,
-//                 ...this.entityManager.create(OptionValues, {
-//                     value: option.value,
-//                 }),
-//             }),
-//         );
-//     }
-
-//     return savedOptions;
-// }

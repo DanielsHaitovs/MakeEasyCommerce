@@ -1,41 +1,51 @@
+import { ToBoolean } from '@src/attribute/decorator/eav-attribute-rule.decorator';
 import { IsBoolean } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class Rule {
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInCatalog: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInListing: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInLayeredNavigation: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInFilter: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInOptionFilter: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInSort: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInSearch: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInPromo: boolean;
 
     @Column()
     @IsBoolean()
+    @ToBoolean()
     useInReport: boolean;
 
     // Other properties specific to your app's requirements (e.g., description, units, etc.)
