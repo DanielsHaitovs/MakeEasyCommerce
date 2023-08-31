@@ -7,12 +7,13 @@ import { OptionValues } from './entities/inheritance/options/option-values.entit
 import { AttributeRule } from './entities/inheritance/rules/attribute-rule.entity';
 import { OptionsService } from './services/options/options.service';
 import { RuleService } from './services/rules/rule.service';
+import { OptionsController } from './controllers/options/options.controller';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Attribute, OptionValues, AttributeRule]),
     ],
-    controllers: [AttributeController],
+    controllers: [AttributeController, OptionsController],
     providers: [AttributeService, OptionsService, RuleService],
 })
 export class AttributeModule {}

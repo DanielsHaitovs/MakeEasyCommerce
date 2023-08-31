@@ -29,10 +29,16 @@ export class Attribute {
     @ManyToOne(() => Attribute, { onDelete: 'CASCADE' })
     parent: Attribute; // Optional parent attribute for handling arrays
 
-    @OneToMany(() => OptionValues, (option) => option.attribute)
+    @OneToMany(() => OptionValues, (option) => option.attribute, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
     options: OptionValues[];
 
-    @OneToOne(() => AttributeRule, (rule) => rule.attribute)
+    @OneToOne(() => AttributeRule, (rule) => rule.attribute, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
     @JoinColumn({
         name: 'rule_id',
         foreignKeyConstraintName: 'fk_attribute_index_rule',

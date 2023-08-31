@@ -164,7 +164,13 @@ export class AttributeController {
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.attributeService.remove(+id);
+    @ApiOperation({
+        summary: 'Delete Attribute by ID',
+        description: 'Delete specifically attribute data by id',
+    })
+    async removeBasket(
+        @Param('id') id: string,
+    ): Promise<string | AttributeResponse> {
+        return await this.attributeService.remove({ id: +id });
     }
 }

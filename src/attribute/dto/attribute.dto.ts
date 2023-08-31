@@ -46,55 +46,55 @@ export class RuleDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInCatalog: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInListing: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInLayeredNavigation: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInFilter: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInOptionFilter: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInSort: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInSearch: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInPromo: boolean;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     useInReport: boolean;
 }
 

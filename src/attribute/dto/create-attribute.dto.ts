@@ -9,10 +9,12 @@ import {
 export class AttributeRuleDto {
     @ApiProperty({ type: RuleDto })
     @ValidateNested({ each: true })
+    @IsNotEmpty()
     front: RuleDto;
 
     @ApiProperty({ type: RuleDto })
     @ValidateNested({ each: true })
+    @IsNotEmpty()
     back: RuleDto;
 }
 

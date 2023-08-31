@@ -10,7 +10,6 @@ import {
 } from '../../dto/get-attribute.dto';
 import { Attribute } from '../../entities/attribute.entity';
 import {
-    AttributeDescriptionDto,
     AttributeRelationsDto,
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
@@ -142,7 +141,6 @@ export class AttributeService {
         }
     }
 
-    // Not working!
     async update({
         id,
         updateAttributeDto,
@@ -150,45 +148,121 @@ export class AttributeService {
         id: number;
         updateAttributeDto: UpdateAttributeDto;
     }): Promise<GetAttributeDto | AttributeResponse> {
-        const preparedRule: GetAttributeRuleDto = updateAttributeDto.rule;
-
-        const updatedRules: GetAttributeRuleDto = (
-            await this.entityManager.update(AttributeRule, id, preparedRule)
-        ).raw;
-
-        const preparedOptions: GetAttributeOptionsDto[] =
-            updateAttributeDto.options;
-
-        const updatedOptions: GetAttributeOptionsDto[] = [];
-        for (const option of preparedOptions) {
-            updatedOptions.push(
-                (await this.entityManager.update(OptionValues, id, option)).raw,
-            );
-        }
-
-        const updateDescription: AttributeDescriptionDto =
-            updateAttributeDto.description;
-        updateDescription['id'] = updateAttributeDto.id;
-
-        const updatedAttribute = await this.entityManager.update(
+        const attribute: GetAttributeDto = await this.entityManager.preload(
             Attribute,
-            id,
             {
-                options: updatedOptions,
-                rule: updatedRules,
-                description: updateDescription,
+                id: id,
+                description: updateAttributeDto.description,
             },
         );
 
-        console.log(updatedRules);
-        console.log(updatedOptions);
-        console.log(updatedAttribute);
-        return null;
-        // return updatedAttribute;
+        const rule: GetAttributeRuleDto = await this.entityManager.preload(
+            AttributeRule,
+            updateAttributeDto.rule,
+        );
+
+        await this.entityManager.update(
+            AttributeRule,
+            updateAttributeDto.rule.id,
+            rule,
+        );
+
+        const options: GetAttributeOptionsDto[] = [];
+        for (const option of updateAttributeDto.options) {
+            const updateOptions = await this.entityManager.preload(
+                OptionValues,
+                option,
+            );
+            options.push(updateOptions);
+            await this.entityManager.update(OptionValues, option.id, option);
+        }
+
+        return {
+            id: id,
+            description: attribute.description,
+            options: options,
+            rule: rule,
+        };
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} attribute`;
+    async remove({ id }: { id: number }): Promise<string | AttributeResponse> {
+        const attribute: GetAttributeDto = await this.findOneById({
+            id: id,
+            loadRelations: {
+                includeOptions: true,
+                includeRule: true,
+            },
+        });
+
+        if (attribute.options != null && attribute.options != undefined) {
+            for (const option of attribute.options) {
+                const deletedOption = (
+                    await this.entityManager.delete(OptionValues, option.id)
+                ).affected;
+
+                if (deletedOption < 1) {
+                    if (deletedOption < 1) {
+                        return {
+                            message: 'Delete Attribute Option Failed',
+                            errors: [
+                                {
+                                    message:
+                                        'Attribute Option with id ' +
+                                        option.id +
+                                        ' not deleted',
+                                },
+                                {
+                                    status: 999,
+                                },
+                            ],
+                        };
+                    }
+                }
+            }
+        }
+
+        const deletedAttribute = (
+            await this.entityManager.delete(Attribute, attribute.id)
+        ).affected;
+
+        if (deletedAttribute < 1) {
+            return {
+                message: 'Delete Attribute Failed',
+                errors: [
+                    {
+                        message: 'Attribute was not deleted',
+                    },
+                    {
+                        status: 999,
+                    },
+                ],
+            };
+        }
+
+        if (attribute.rule != null && attribute.rule.id != null) {
+            const deletedRule = (
+                await this.entityManager.delete(
+                    AttributeRule,
+                    attribute.rule.id,
+                )
+            ).affected;
+
+            if (deletedRule < 1) {
+                return {
+                    message: 'Delete Attribute Rule Failed',
+                    errors: [
+                        {
+                            message: 'Attribute  Rule was not deleted',
+                        },
+                        {
+                            status: 999,
+                        },
+                    ],
+                };
+            }
+        }
+
+        return 'success';
     }
 
     protected async findAttributeQuery({
@@ -214,6 +288,7 @@ export class AttributeService {
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .getOne(),
             ];
         }
@@ -225,6 +300,7 @@ export class AttributeService {
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .getOne(),
             ];
         }
@@ -236,6 +312,7 @@ export class AttributeService {
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .getOne(),
             ];
         }
@@ -246,6 +323,7 @@ export class AttributeService {
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .getOne(),
             ];
         }
@@ -261,6 +339,7 @@ export class AttributeService {
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -274,6 +353,7 @@ export class AttributeService {
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -287,6 +367,7 @@ export class AttributeService {
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
+                    .orderBy('options.id', 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -297,6 +378,7 @@ export class AttributeService {
             .getRepository(Attribute)
             .createQueryBuilder('attribute')
             .where(where, query)
+            .orderBy('options.id', 'ASC')
             .skip(skip)
             .take(condition.limit)
             .getMany();
@@ -315,5 +397,28 @@ export class AttributeService {
             .where('attribute.code =:code', { code: code })
             .orWhere('attribute.name =:name', { name: name })
             .getExists();
+    }
+
+    protected async deleteAttributeRelations({
+        id,
+        relationsAlias,
+        relation,
+        current_relation,
+    }: {
+        id: number;
+        relationsAlias: 'attribute';
+        relation: string;
+        current_relation: any[] | any;
+    }): Promise<any> {
+        try {
+            await this.entityManager
+                .getRepository(Attribute)
+                .createQueryBuilder(relationsAlias)
+                .relation(Attribute, relation)
+                .of(id)
+                .remove(current_relation);
+        } catch (e) {
+            return e.message;
+        }
     }
 }

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { AttributeOptionsDto } from '@src/attribute/dto/attribute.dto';
+import {
+    AttributeOptionsDto,
+    PaginationDto,
+} from '@src/attribute/dto/attribute.dto';
 import { GetAttributeOptionsDto } from '@src/attribute/dto/get-attribute.dto';
 import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
 import { EntityManager } from 'typeorm';
@@ -23,6 +26,25 @@ export class OptionsService {
                 options: createOptions,
             }),
         );
+    }
+
+    async findAll({
+        condition,
+    }: {
+        condition: PaginationDto;
+    }): Promise<GetAttributeOptionsDto[]> {
+        try {
+            // return await this.entityManager.find(OptionValues);
+            const skip = (condition.page - 1) * condition.limit;
+            return await this.entityManager
+                .getRepository(OptionValues)
+                .createQueryBuilder('options')
+                .skip(skip)
+                .take(condition.limit)
+                .getMany();
+        } catch (e) {
+            return e.message;
+        }
     }
 
     protected async prepareOptions({
