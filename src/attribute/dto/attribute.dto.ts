@@ -7,6 +7,8 @@ import {
     IsString,
 } from 'class-validator';
 import { ToBoolean } from '../decorator/eav-attribute-rule.decorator';
+import { Transform } from 'class-transformer';
+import { ParseBoolPipe } from '@nestjs/common';
 
 export class AttributeDescriptionDto {
     @ApiProperty()
@@ -31,7 +33,7 @@ export class AttributeDescriptionDto {
 
     @ApiProperty()
     @IsBoolean()
-    @ToBoolean()
+    // @ToBoolean()
     isArray: boolean;
 }
 
@@ -103,12 +105,10 @@ export class RuleDto {
 export class AttributeRelationsDto {
     @ApiProperty({ type: Boolean })
     @IsOptional()
-    @ToBoolean()
     @IsBoolean()
     includeRule: boolean;
     @ApiProperty({ type: Boolean })
     @IsOptional()
-    @ToBoolean()
     @IsBoolean()
     includeOptions: boolean;
 }

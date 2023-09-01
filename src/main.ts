@@ -22,7 +22,9 @@ async function bootstrap() {
         new ValidationPipe({
             skipMissingProperties: false,
             transform: true,
-            transformOptions: { enableImplicitConversion: true },
+            transformOptions: {
+                enableImplicitConversion: true,
+            },
             whitelist: true,
             forbidNonWhitelisted: true,
         }),

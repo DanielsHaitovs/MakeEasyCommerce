@@ -3,12 +3,18 @@ import {
     GetAttributeOptionsDto,
     GetAttributeRuleDto,
 } from './get-attribute.dto';
-import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
-import { AttributeDescriptionDto } from './attribute.dto';
+import {
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    ValidateNested,
+} from 'class-validator';
+import { AttributeDescriptionDto, AttributeOptionsDto } from './attribute.dto';
 
 export class UpdateAttributeDto {
     @ApiProperty()
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     id: number;
 
@@ -26,4 +32,16 @@ export class UpdateAttributeDto {
     @ValidateNested({ each: true })
     @IsNotEmpty()
     rule: GetAttributeRuleDto;
+
+    @ApiProperty({ type: [Number] })
+    @IsOptional()
+    @IsArray()
+    options_ids: number[];
+}
+
+export class UpdateAttributeOptionsDto extends AttributeOptionsDto {
+    @ApiProperty()
+    @IsOptional()
+    @IsNumber()
+    id: number;
 }

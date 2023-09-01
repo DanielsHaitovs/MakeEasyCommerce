@@ -6,7 +6,7 @@ import { EntityManager } from 'typeorm';
 import {
     GetAttributeDto,
     GetAttributeOptionsDto,
-    GetAttributeRuleDto,
+    GetUpdatedOptionsDto,
 } from '../../dto/get-attribute.dto';
 import { Attribute } from '../../entities/attribute.entity';
 import {
@@ -143,9 +143,11 @@ export class AttributeService {
 
     async update({
         id,
+        keepOldOptions,
         updateAttributeDto,
     }: {
         id: number;
+        keepOldOptions: boolean;
         updateAttributeDto: UpdateAttributeDto;
     }): Promise<GetAttributeDto | AttributeResponse> {
         const attribute: GetAttributeDto = await this.entityManager.preload(
@@ -153,36 +155,22 @@ export class AttributeService {
             {
                 id: id,
                 description: updateAttributeDto.description,
+                rule: updateAttributeDto.rule,
+                options: null,
             },
         );
 
-        const rule: GetAttributeRuleDto = await this.entityManager.preload(
-            AttributeRule,
-            updateAttributeDto.rule,
-        );
+        const updatedOptions: GetUpdatedOptionsDto =
+            await this.optionsService.updateOptions({
+                options: updateAttributeDto.options,
+                parentId: id,
+                keepOldOptions: keepOldOptions,
+            });
 
-        await this.entityManager.update(
-            AttributeRule,
-            updateAttributeDto.rule.id,
-            rule,
-        );
-
-        const options: GetAttributeOptionsDto[] = [];
-        for (const option of updateAttributeDto.options) {
-            const updateOptions = await this.entityManager.preload(
-                OptionValues,
-                option,
-            );
-            options.push(updateOptions);
-            await this.entityManager.update(OptionValues, option.id, option);
+        if (updatedOptions.newOptionsIds.length > 0) {
+            attribute.options_ids.push(...updatedOptions.newOptionsIds);
         }
-
-        return {
-            id: id,
-            description: attribute.description,
-            options: options,
-            rule: rule,
-        };
+        return await this.entityManager.save(Attribute, attribute);
     }
 
     async remove({ id }: { id: number }): Promise<string | AttributeResponse> {
@@ -209,7 +197,7 @@ export class AttributeService {
                                     message:
                                         'Attribute Option with id ' +
                                         option.id +
-                                        ' not deleted',
+                                        ' was not deleted',
                                 },
                                 {
                                     status: 999,

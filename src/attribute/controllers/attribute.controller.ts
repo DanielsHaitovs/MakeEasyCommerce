@@ -7,6 +7,8 @@ import {
     Param,
     Delete,
     Query,
+    ParseArrayPipe,
+    ParseBoolPipe,
 } from '@nestjs/common';
 import { AttributeService } from '../services/attributes/attribute.service';
 import { CreateAttributeDto } from '../dto/create-attribute.dto';
@@ -154,11 +156,12 @@ export class AttributeController {
         required: true,
     })
     async update(
-        @Param('id') id: string,
+        @Query('keepOldOptions', ParseBoolPipe) conditionValue: boolean,
         @Body() updateAttributeDto: UpdateAttributeDto,
     ) {
         return this.attributeService.update({
-            id: +id,
+            id: updateAttributeDto.id,
+            keepOldOptions: conditionValue,
             updateAttributeDto: updateAttributeDto,
         });
     }

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import {
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    ValidateNested,
+} from 'class-validator';
 import { AttributeRuleDto } from './create-attribute.dto';
 import { AttributeDescriptionDto, AttributeOptionsDto } from './attribute.dto';
 
@@ -17,7 +23,18 @@ export class GetAttributeOptionsDto extends AttributeOptionsDto {
     id: number;
 }
 
-export class GetAttributeDto {
+export class GetUpdatedOptionsDto {
+    @ApiProperty({ type: [GetAttributeOptionsDto] })
+    @ValidateNested({ each: true })
+    updatedOptions: GetAttributeOptionsDto[];
+
+    @ApiProperty({ type: [Number] })
+    @IsOptional()
+    @IsArray()
+    newOptionsIds: number[];
+}
+
+export class GetAttributeShortDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
@@ -26,7 +43,9 @@ export class GetAttributeDto {
     @ApiProperty({ type: AttributeDescriptionDto })
     @ValidateNested({ each: true })
     description: AttributeDescriptionDto;
+}
 
+export class GetAttributeDto extends GetAttributeShortDto {
     @ApiProperty({ type: [GetAttributeOptionsDto] })
     @ValidateNested({ each: true })
     options: GetAttributeOptionsDto[];
@@ -34,4 +53,9 @@ export class GetAttributeDto {
     @ApiProperty({ type: GetAttributeRuleDto })
     @ValidateNested({ each: true })
     rule: GetAttributeRuleDto;
+
+    @ApiProperty({ type: [Number] })
+    @IsOptional()
+    @IsArray()
+    options_ids: number[];
 }

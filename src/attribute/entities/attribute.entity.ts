@@ -7,6 +7,7 @@ import {
     OneToMany,
     OneToOne,
     JoinColumn,
+    RelationId,
 } from 'typeorm';
 import { OptionValues } from './inheritance/options/option-values.entity';
 import { AttributeDescription } from './inheritance/description/description.entity';
@@ -34,6 +35,9 @@ export class Attribute {
         onDelete: 'CASCADE',
     })
     options: OptionValues[];
+
+    @RelationId((attribute: Attribute) => attribute.options)
+    options_ids: number[];
 
     @OneToOne(() => AttributeRule, (rule) => rule.attribute, {
         cascade: true,

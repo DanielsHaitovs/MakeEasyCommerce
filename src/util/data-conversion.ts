@@ -1,6 +1,6 @@
 export class dataConversion {
     public static valueToBoolean(value: any) {
-        if (value === null || value === undefined) {
+        if (value === null && value === undefined) {
             return undefined;
         }
         if (typeof value === 'boolean') {
