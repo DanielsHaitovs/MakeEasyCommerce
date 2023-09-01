@@ -4,7 +4,10 @@ import {
     AttributeOptionsDto,
     PaginationDto,
 } from '@src/attribute/dto/attribute.dto';
-import { GetAttributeOptionsDto, GetUpdatedOptionsDto } from '@src/attribute/dto/get-attribute.dto';
+import {
+    GetAttributeOptionsDto,
+    GetUpdatedOptionsDto,
+} from '@src/attribute/dto/get-attribute.dto';
 import { UpdateAttributeOptionsDto } from '@src/attribute/dto/update-attribute.dto';
 import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
 import { EntityManager } from 'typeorm';
@@ -66,6 +69,18 @@ export class OptionsService {
         }
     }
 
+    async findOneById({ id }: { id: number }): Promise<GetAttributeOptionsDto> {
+        try {
+            return await this.entityManager.findOne(OptionValues, {
+                where: {
+                    id: id,
+                },
+            });
+        } catch (e) {
+            return e.message;
+        }
+    }
+
     async updateOptions({
         options,
         parentId,
@@ -101,20 +116,25 @@ export class OptionsService {
         };
     }
 
-    async addNewOptions({
-        options,
+    async update({
+        id,
+        value,
         parentId,
     }: {
-        options: UpdateAttributeOptionsDto[];
+        id: number;
+        value: string | number | boolean | Date | JSON;
         parentId: number;
     }): Promise<any> {
-        const currentOptions = await this.entityManager.find(OptionValues, {
-            where: {
-                attribute: {
-                    id: parentId,
-                },
+        return await this.entityManager.update(OptionValues, id, {
+            value: value,
+            attribute: {
+                id: parentId,
             },
         });
+    }
+
+    async remove({ id }: { id: number }): Promise<number> {
+        return (await this.entityManager.delete(OptionValues, id)).affected;
     }
 
     protected async prepareOptions({

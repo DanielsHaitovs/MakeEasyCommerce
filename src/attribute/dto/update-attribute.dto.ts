@@ -45,3 +45,15 @@ export class UpdateAttributeOptionsDto extends AttributeOptionsDto {
     @IsNumber()
     id: number;
 }
+
+export class UpdateOptionDto extends AttributeOptionsDto {
+    @ApiProperty()
+    @IsOptional()
+    @IsNumber()
+    id: number;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsNumber()
+    attributeId: number;
+}

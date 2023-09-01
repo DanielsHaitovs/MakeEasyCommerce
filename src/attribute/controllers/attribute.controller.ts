@@ -7,7 +7,6 @@ import {
     Param,
     Delete,
     Query,
-    ParseArrayPipe,
     ParseBoolPipe,
 } from '@nestjs/common';
 import { AttributeService } from '../services/attributes/attribute.service';
