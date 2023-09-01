@@ -9,7 +9,6 @@ import {
 import { Address } from './address.entity';
 
 @Entity('customer_index')
-// @Unique(['email'])
 export class Customer {
     @PrimaryGeneratedColumn()
     id: number;
