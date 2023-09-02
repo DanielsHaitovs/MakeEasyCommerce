@@ -5,7 +5,6 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import {
     GetAttributeDto,
-    GetAttributeOptionsDto,
     GetUpdatedOptionsDto,
 } from '../../dto/get-attribute.dto';
 import { Attribute } from '../../entities/attribute.entity';
@@ -15,7 +14,7 @@ import {
     PaginationFilterDto,
 } from '../../dto/attribute.dto';
 import { OptionsService } from '../options/options.service';
-import { RuleService } from '../rules/rule.service';
+import { RulesService } from '../rules/rules.service';
 import { AttributeResponse } from '@src/attribute/dto/responses/response.dto';
 import { AttributeRule } from '@src/attribute/entities/inheritance/rules/attribute-rule.entity';
 import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
@@ -26,7 +25,7 @@ export class AttributeService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         private readonly optionsService: OptionsService,
-        private readonly ruleService: RuleService,
+        private readonly ruleService: RulesService,
     ) {}
 
     async create({
@@ -67,7 +66,7 @@ export class AttributeService {
             },
         );
 
-        newAttribute.rule = await this.ruleService.createRule({
+        newAttribute.rule = await this.ruleService.create({
             newRule: createAttributeDto.rule,
         });
 

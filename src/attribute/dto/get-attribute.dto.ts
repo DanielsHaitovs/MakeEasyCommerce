@@ -6,10 +6,10 @@ import {
     IsOptional,
     ValidateNested,
 } from 'class-validator';
-import { AttributeRuleDto } from './create-attribute.dto';
+import { AttributeRulesDto } from './create-attribute.dto';
 import { AttributeDescriptionDto, AttributeOptionsDto } from './attribute.dto';
 
-export class GetAttributeRuleDto extends AttributeRuleDto {
+export class GetAttributeRulesDto extends AttributeRulesDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
@@ -50,9 +50,9 @@ export class GetAttributeDto extends GetAttributeShortDto {
     @ValidateNested({ each: true })
     options: GetAttributeOptionsDto[];
 
-    @ApiProperty({ type: GetAttributeRuleDto })
+    @ApiProperty({ type: GetAttributeRulesDto })
     @ValidateNested({ each: true })
-    rule: GetAttributeRuleDto;
+    rule: GetAttributeRulesDto;
 
     @ApiProperty({ type: [Number] })
     @IsOptional()

@@ -42,9 +42,6 @@ export class OptionsService {
     }: {
         createOptions: AttributeOptionsDto[];
     }): Promise<GetAttributeOptionsDto[]> {
-        // const test = await this.queryManager.createEntity(OptionValues);
-        console.log(test);
-
         return await this.entityManager.save(
             OptionValues,
             await this.prepareOptions({
@@ -98,11 +95,11 @@ export class OptionsService {
 
         for (const option of options) {
             if (option.id != undefined && option != null) {
-                const preloadOption = await this.entityManager.preload(
+                await this.entityManager.update(
                     OptionValues,
+                    option.id,
                     option,
                 );
-                await this.entityManager.save(OptionValues, preloadOption);
             } else {
                 const newRecord: GetAttributeOptionsDto = await this.create({
                     createOption: option,

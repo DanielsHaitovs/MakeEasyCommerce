@@ -6,7 +6,7 @@ import {
     RuleDto,
 } from './attribute.dto';
 
-export class AttributeRuleDto {
+export class AttributeRulesDto {
     @ApiProperty({ type: RuleDto })
     @ValidateNested({ each: true })
     @IsNotEmpty()
@@ -27,7 +27,7 @@ export class CreateAttributeDto {
     @ValidateNested({ each: true })
     options: AttributeOptionsDto[];
 
-    @ApiProperty({ type: AttributeRuleDto })
+    @ApiProperty({ type: AttributeRulesDto })
     @IsNotEmpty()
-    rule: AttributeRuleDto;
+    rule: AttributeRulesDto;
 }

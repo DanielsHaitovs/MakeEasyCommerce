@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
     GetAttributeOptionsDto,
-    GetAttributeRuleDto,
+    GetAttributeRulesDto,
 } from './get-attribute.dto';
 import {
     IsArray,
@@ -11,6 +11,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { AttributeDescriptionDto, AttributeOptionsDto } from './attribute.dto';
+import { AttributeRulesDto } from './create-attribute.dto';
 
 export class UpdateAttributeDto {
     @ApiProperty()
@@ -28,10 +29,10 @@ export class UpdateAttributeDto {
     @IsNotEmpty()
     options: GetAttributeOptionsDto[];
 
-    @ApiProperty({ type: GetAttributeRuleDto })
+    @ApiProperty({ type: GetAttributeRulesDto })
     @ValidateNested({ each: true })
     @IsNotEmpty()
-    rule: GetAttributeRuleDto;
+    rule: GetAttributeRulesDto;
 
     @ApiProperty({ type: [Number] })
     @IsOptional()
@@ -56,4 +57,11 @@ export class UpdateOptionDto extends AttributeOptionsDto {
     @IsOptional()
     @IsNumber()
     attributeId: number;
+}
+
+export class UpdateRulesDto extends AttributeRulesDto {
+    @ApiProperty({ type: Number })
+    @IsOptional()
+    @IsNumber()
+    id: number;
 }
