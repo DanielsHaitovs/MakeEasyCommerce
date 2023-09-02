@@ -7,7 +7,7 @@ import {
 import { OrderDto } from './create-order.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { GetCustomerDto } from '@src/customer/dto/get-customer.dto';
-import { GetBasketDto } from '@src/basket/dto/get-basket.dto';
+import { GetBasketDto } from '.working_tempo/basket/dto/get-basket.dto';
 
 export class GetOrderShortDto extends OrderDto {
     @IsNotEmpty()

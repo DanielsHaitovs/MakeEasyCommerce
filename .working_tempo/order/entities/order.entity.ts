@@ -1,5 +1,5 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
-import { Basket } from '@src/basket/entities/basket.entity';
+import { Basket } from '.working_tempo/basket/entities/basket.entity';
 import { Customer } from '@src/customer/entities/customer.entity';
 import { IsNumber } from 'class-validator';
 import { Column, Entity, JoinTable, ManyToMany, RelationId } from 'typeorm';
