@@ -23,7 +23,7 @@ import { AttributeResponse } from '@src/attribute/dto/responses/response.dto';
 import { UpdateRulesDto } from '@src/attribute/dto/update-attribute.dto';
 import { RulesService } from '@src/attribute/services/rules/rules.service';
 
-@Controller('options')
+@Controller('rules')
 @ApiTags('AttributeRules')
 export class RulesController {
     constructor(private readonly rulesService: RulesService) {}
