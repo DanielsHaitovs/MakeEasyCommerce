@@ -1,20 +1,12 @@
-import {
-    Column,
-    Entity,
-    Index,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { Attribute } from '../../attribute.entity';
 import { IsEnum } from 'class-validator';
 import { AttributeType } from '../../enum/type.enum';
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 
 @Entity('attribute_options')
 @Index('attribute_option_index', ['id', 'value'])
-export class OptionValues {
-    @PrimaryGeneratedColumn()
-    id: number;
-
+export class OptionValues extends MecBaseEntity {
     // Maybe there is point of splitting this into several tables
     // Number Attribute Table
     // String Attribute Table and etc.

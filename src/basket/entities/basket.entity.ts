@@ -1,28 +1,23 @@
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { Customer } from '@src/customer/entities/customer.entity';
 import { Product } from '@src/product/entities/product.entity';
 import { IsNumber } from 'class-validator';
-import {
-    Column,
-    Entity,
-    JoinTable,
-    ManyToMany,
-    PrimaryGeneratedColumn,
-    RelationId,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, RelationId } from 'typeorm';
 
 @Entity('basket_index')
-export class Basket {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Basket extends MecBaseEntity {
     @IsNumber()
     @Column()
     store_id: number;
+
     @IsNumber()
     @Column()
     status: number;
+
     @IsNumber()
     @Column()
     product_count: number;
+
     @Column({
         type: 'numeric',
         precision: 20,
