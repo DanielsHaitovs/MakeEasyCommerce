@@ -1,6 +1,5 @@
 import {
     Entity,
-    PrimaryGeneratedColumn,
     Column,
     ManyToOne,
     Index,
@@ -12,13 +11,11 @@ import {
 import { OptionValues } from './inheritance/options/option-values.entity';
 import { AttributeDescription } from './inheritance/description/description.entity';
 import { AttributeRule } from './inheritance/rules/attribute-rule.entity';
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 
 @Entity('attribute_index')
 @Index('attribute_index_index', ['id'])
-export class Attribute {
-    @PrimaryGeneratedColumn()
-    id: number;
-
+export class Attribute extends MecBaseEntity {
     @Column(() => AttributeDescription)
     description: AttributeDescription;
 

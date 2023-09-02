@@ -1,25 +1,19 @@
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { Basket } from '@src/basket/entities/basket.entity';
 import { Customer } from '@src/customer/entities/customer.entity';
 import { IsNumber } from 'class-validator';
-import {
-    Column,
-    Entity,
-    JoinTable,
-    ManyToMany,
-    PrimaryGeneratedColumn,
-    RelationId,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, RelationId } from 'typeorm';
 
 @Entity('order_index')
-export class Order {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Order extends MecBaseEntity {
     @IsNumber()
     @Column()
     order_type: number;
+
     @IsNumber()
     @Column()
     order_status: number;
+
     @ManyToMany(() => Basket, {
         cascade: true,
         eager: true,
@@ -39,7 +33,6 @@ export class Order {
         synchronize: true,
     })
     baskets: Basket[];
-
     @RelationId((order: Order) => order.baskets)
     baskets_ids: number[];
 
@@ -62,7 +55,6 @@ export class Order {
         synchronize: true,
     })
     customers: Customer[];
-
     @RelationId((order: Order) => order.customers)
     customers_ids: number[];
 }

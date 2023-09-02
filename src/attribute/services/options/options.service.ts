@@ -42,6 +42,9 @@ export class OptionsService {
     }: {
         createOptions: AttributeOptionsDto[];
     }): Promise<GetAttributeOptionsDto[]> {
+        // const test = await this.queryManager.createEntity(OptionValues);
+        console.log(test);
+
         return await this.entityManager.save(
             OptionValues,
             await this.prepareOptions({
