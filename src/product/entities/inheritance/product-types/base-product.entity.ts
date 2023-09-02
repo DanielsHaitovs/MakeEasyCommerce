@@ -3,9 +3,14 @@ import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Column, ManyToOne, Unique } from 'typeorm';
 import { Product } from '../../product.entity';
 import { ProductTypes } from '../../enum/product-types.enum';
+import { ProductVisibility } from '../../enum/product-visibility.enum';
 
 @Unique(['sku', 'name'])
 export class BaseProduct extends MecBaseEntity {
+    @Column()
+    @IsEnum(ProductTypes)
+    product_type: ProductTypes;
+
     @Column()
     @IsString()
     sku: string;
@@ -15,12 +20,8 @@ export class BaseProduct extends MecBaseEntity {
     name: string;
 
     @Column()
-    @IsEnum(ProductTypes)
-    product_type: ProductTypes;
-
-    @Column()
-    @IsNumber()
-    visibility: number;
+    @IsEnum(ProductVisibility)
+    visibility: ProductVisibility;
 
     @Column()
     @IsNumber()
@@ -32,11 +33,4 @@ export class BaseProduct extends MecBaseEntity {
         scale: 2,
     })
     final_price: number;
-
-    @Column()
-    @IsNumber()
-    store_id: number;
-
-    @ManyToOne(() => Product, (product) => product.simple_product)
-    relation: Product;
 }

@@ -3,4 +3,5 @@ export enum ProductTypes {
     CONFIGURABLE = 'configurable',
     SIMPLE = 'simple',
     GROUPED = 'grouped',
+    VARIATION = 'variation',
 }
