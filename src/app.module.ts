@@ -11,6 +11,7 @@ import { SimpleProduct } from './product/entities/inheritance/product-types/simp
 import { ConfigurableProduct } from './product/entities/inheritance/product-types/configurable-product.entity';
 import { PersonalizedProduct } from './product/entities/inheritance/product-types/personalized-product.entity';
 import { GroupedProduct } from './product/entities/inheritance/product-types/grouped-product.entity';
+import { ProductVariants } from './product/entities/inheritance/product-types/product-variants.entity';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { GroupedProduct } from './product/entities/inheritance/product-types/gro
                 OptionValues,
                 AttributeRule,
                 Product,
+                ProductVariants,
                 SimpleProduct,
                 ConfigurableProduct,
                 PersonalizedProduct,

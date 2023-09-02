@@ -1,10 +1,4 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateProductDto } from './create-product.dto';
-import { IsNumber, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { GetProductDto } from './get-product.dto';
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {
-    @ApiProperty({ type: Number })
-    @IsOptional()
-    @IsNumber()
-    id: number;
-}
+export class UpdateProductDto extends PartialType(GetProductDto) {}

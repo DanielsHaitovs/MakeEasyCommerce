@@ -7,11 +7,13 @@ import { SimpleProduct } from './entities/inheritance/product-types/simple-produ
 import { ConfigurableProduct } from './entities/inheritance/product-types/configurable-product.entity';
 import { PersonalizedProduct } from './entities/inheritance/product-types/personalized-product.entity';
 import { GroupedProduct } from './entities/inheritance/product-types/grouped-product.entity';
+import { ProductVariants } from './entities/inheritance/product-types/product-variants.entity';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             Product,
+            ProductVariants,
             SimpleProduct,
             ConfigurableProduct,
             PersonalizedProduct,

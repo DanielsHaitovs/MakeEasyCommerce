@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductTypes } from '../entities/enum/product-types.enum';
 import {
+    IsArray,
     IsEnum,
     IsNotEmpty,
     IsNumber,
@@ -48,9 +49,18 @@ export class ProductDto {
 }
 
 export class CreateSimpleProductDto extends ProductDto {}
-export class CreateConfigurableProduct extends ProductDto {}
+export class CreateConfigurableProduct extends ProductDto {
+    @ApiProperty({ type: [CreateSimpleProductDto] })
+    @ValidateNested({ each: true })
+    variants: CreateSimpleProductDto[];
+}
 export class CreatePersonalizedProductDto extends ProductDto {}
-export class CreateGroupedProductDto extends ProductDto {}
+export class CreateGroupedProductDto extends ProductDto {
+    @ApiProperty({ type: [Number] })
+    @IsNotEmpty()
+    @IsArray()
+    product_ids: number[];
+}
 
 export class CreateProductDto extends MecBaseDto {
     @ApiProperty({
