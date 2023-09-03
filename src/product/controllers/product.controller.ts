@@ -7,17 +7,30 @@ import {
     Param,
     Delete,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductService } from '../services/product.service';
+import { CreateProductDto } from '../dto/create-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('product')
+@ApiTags('Product')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
-    @Post()
-    create(@Body() createProductDto: CreateProductDto) {
-        return this.productService.create(createProductDto);
+    @Post('new')
+    @ApiOperation({
+        summary: 'Create Product',
+        description: 'Create product entity',
+    })
+    @ApiBody({
+        type: CreateProductDto,
+        description: 'Create Product DTO',
+        required: true,
+    })
+    async create(@Body() createProductDto: CreateProductDto): Promise<any> {
+        return await this.productService.create({
+            createProductDto: createProductDto,
+        });
     }
 
     @Get()

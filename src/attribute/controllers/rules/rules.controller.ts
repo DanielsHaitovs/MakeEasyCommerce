@@ -16,12 +16,12 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { PaginationDto } from '@src/attribute/dto/attribute.dto';
 import { AttributeRulesDto } from '@src/attribute/dto/create-attribute.dto';
 import { GetAttributeRulesDto } from '@src/attribute/dto/get-attribute.dto';
-import { AttributeResponse } from '@src/attribute/dto/responses/response.dto';
+import { AttributeResponse } from '@src/attribute/dto/requests/attribute-response.dto';
 import { UpdateRulesDto } from '@src/attribute/dto/update-attribute.dto';
 import { RulesService } from '@src/attribute/services/rules/rules.service';
+import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
 
 @Controller('rules')
 @ApiTags('AttributeRules')

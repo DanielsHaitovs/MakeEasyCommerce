@@ -16,14 +16,12 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import {
-    AttributeOptionsDto,
-    PaginationDto,
-} from '@src/attribute/dto/attribute.dto';
+import { AttributeOptionsDto } from '@src/attribute/dto/attribute.dto';
 import { GetAttributeOptionsDto } from '@src/attribute/dto/get-attribute.dto';
-import { AttributeResponse } from '@src/attribute/dto/responses/response.dto';
+import { AttributeResponse } from '@src/attribute/dto/requests/attribute-response.dto';
 import { UpdateOptionDto } from '@src/attribute/dto/update-attribute.dto';
 import { OptionsService } from '@src/attribute/services/options/options.service';
+import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
 
 @Controller('options')
 @ApiTags('AttributeOptions')

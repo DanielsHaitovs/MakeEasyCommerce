@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
-export class MecBaseDto {
+export class MecBaseShortDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
@@ -28,4 +28,11 @@ export class TimeStampDto {
     @IsOptional()
     @IsDate()
     restoredAt: Date;
+}
+
+export class MecBaseDto extends TimeStampDto {
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
+    id: number;
 }

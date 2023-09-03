@@ -12,6 +12,7 @@ import { ConfigurableProduct } from './product/entities/inheritance/product-type
 import { PersonalizedProduct } from './product/entities/inheritance/product-types/personalized-product.entity';
 import { GroupedProduct } from './product/entities/inheritance/product-types/grouped-product.entity';
 import { ProductVariants } from './product/entities/inheritance/product-types/product-variants.entity';
+import { VirtualProduct } from './product/entities/inheritance/product-types/virtual-product.entity';
 
 @Module({
     imports: [
@@ -32,14 +33,15 @@ import { ProductVariants } from './product/entities/inheritance/product-types/pr
                 ConfigurableProduct,
                 PersonalizedProduct,
                 GroupedProduct,
+                VirtualProduct,
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        AttributeModule,
         ProductModule,
+        AttributeModule,
     ],
     controllers: [],
     providers: [AppService],

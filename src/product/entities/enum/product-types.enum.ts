@@ -1,7 +1,8 @@
 export enum ProductTypes {
-    PERSONALIZED = 'personalized',
-    CONFIGURABLE = 'configurable',
     SIMPLE = 'simple',
+    CONFIGURABLE = 'configurable',
+    PERSONALIZED = 'personalized',
     GROUPED = 'grouped',
     VARIATION = 'variation',
+    VIRTUAL = 'virtual',
 }

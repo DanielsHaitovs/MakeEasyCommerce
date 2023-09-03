@@ -21,12 +21,13 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { GetAttributeDto } from '../dto/get-attribute.dto';
+import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
+
+import { AttributeResponse } from '../dto/requests/attribute-response.dto';
 import {
-    AttributeRelationsDto,
-    PaginateAttributeRelationsDto,
-    PaginationFilterDto,
-} from '../dto/attribute.dto';
-import { AttributeResponse } from '../dto/responses/response.dto';
+    AttributeFilterByRelation,
+    AttributeFilterByValue,
+} from '../dto/requests/attribute-requests.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -57,19 +58,22 @@ export class AttributeController {
         description: 'Get data of all Attributes, good luck!',
     })
     @ApiQuery({
-        name: 'paginate',
-        description:
-            'Its basically will try to find all your attributes. You can set page and limit for this query. Optionally Can load Attribute Options values and Attribute Rules',
-        type: PaginateAttributeRelationsDto,
+        name: 'Pagination',
+        description: 'You can set page and limit for this query.',
+        type: PaginationDto,
         example: {
             page: 1,
             limit: 10,
-            filter: {
-                code: 'id',
-                value: 1,
-            },
-            includeOptions: true,
-            includeRule: false,
+        },
+        required: true,
+    })
+    @ApiQuery({
+        name: 'Relations',
+        description: 'You can decide whether to load relation or not',
+        type: AttributeFilterByRelation,
+        example: {
+            includeRules: false,
+            includeOptions: false,
         },
         required: true,
     })
@@ -77,39 +81,66 @@ export class AttributeController {
         description: 'All Attributes and theirs details',
         type: [GetAttributeDto],
     })
-    async findAll(@Query() filter): Promise<GetAttributeDto[]> {
+    async findAll(
+        @Query() pagination,
+        @Query() relations,
+    ): Promise<GetAttributeDto[]> {
         return await this.attributeService.findAll({
-            condition: filter,
+            condition: {
+                page: pagination.page,
+                limit: pagination.limit,
+                relations: {
+                    includeOptions: relations.includeOptions,
+                    includeRules: relations.includeRules,
+                },
+                filter: {
+                    code: '',
+                    value: '',
+                },
+            },
         });
     }
 
     @Get('get/by')
     @ApiOperation({
         summary: 'Find Attributes by attribute code and its value',
-        description: 'Get data of 1 specific Attribute, good luck!',
+        description: 'Finds data of specific Attribute, good luck!',
     })
     @ApiQuery({
-        name: 'Query Filtering and Pagination',
-        description:
-            'Its basically will try to find your attribute by mentioned code and value. You can set page and limit for this query. Optionally Can load Attribute Options values and Attribute Rules',
-        type: PaginationFilterDto,
+        name: 'Find by value',
+        description: 'You can find attribute data by column value.',
+        type: AttributeFilterByValue,
         example: {
-            code: 'id',
-            value: 1,
-            includeRule: true,
-            includeOptions: false,
-            page: 1,
-            limit: 10,
+            code: 'name',
+            value: 'test',
         },
         required: false,
     })
+    @ApiQuery({
+        name: 'Relations',
+        description: 'Helps you to decide whether to load relations or not',
+        type: AttributeFilterByValue,
+        example: {
+            includeRules: false,
+            includeOptions: false,
+        },
+        required: true,
+    })
     @ApiOkResponse({
-        description: 'All Attributes and theirs details',
+        description: 'Data of 1 specific attribute',
         type: [GetAttributeDto],
     })
-    async findBy(@Query() filter): Promise<GetAttributeDto[]> {
+    async findBy(
+        @Query() relations,
+        @Query() filter,
+    ): Promise<GetAttributeDto[]> {
         return await this.attributeService.findBy({
-            condition: filter,
+            condition: {
+                page: 1,
+                limit: 0,
+                relations: relations,
+                filter: filter,
+            },
         });
     }
 
@@ -123,7 +154,7 @@ export class AttributeController {
         name: 'Load Attribute Relations',
         description:
             'Gives an option to decide which relation to load. Can load Attribute Options values and Attribute Rules',
-        type: AttributeRelationsDto,
+        type: AttributeFilterByRelation,
         example: {
             includeRule: true,
             includeOptions: false,

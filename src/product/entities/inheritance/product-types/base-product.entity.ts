@@ -1,7 +1,6 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
-import { Column, ManyToOne, Unique } from 'typeorm';
-import { Product } from '../../product.entity';
+import { Column, Unique } from 'typeorm';
 import { ProductTypes } from '../../enum/product-types.enum';
 import { ProductVisibility } from '../../enum/product-visibility.enum';
 

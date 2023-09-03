@@ -8,16 +8,15 @@ import {
     GetUpdatedOptionsDto,
 } from '../../dto/get-attribute.dto';
 import { Attribute } from '../../entities/attribute.entity';
-import {
-    AttributeRelationsDto,
-    PaginateAttributeRelationsDto,
-    PaginationFilterDto,
-} from '../../dto/attribute.dto';
 import { OptionsService } from '../options/options.service';
 import { RulesService } from '../rules/rules.service';
-import { AttributeResponse } from '@src/attribute/dto/responses/response.dto';
 import { AttributeRule } from '@src/attribute/entities/inheritance/rules/attribute-rule.entity';
 import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
+import {
+    AttributeConditionsDto,
+    AttributeFilterByRelation,
+} from '@src/attribute/dto/requests/attribute-requests.dto';
+import { AttributeResponse } from '@src/attribute/dto/requests/attribute-response.dto';
 
 @Injectable()
 export class AttributeService {
@@ -82,7 +81,7 @@ export class AttributeService {
         loadRelations,
     }: {
         id: number;
-        loadRelations: AttributeRelationsDto;
+        loadRelations: AttributeFilterByRelation;
     }): Promise<GetAttributeDto> {
         try {
             return (
@@ -90,10 +89,11 @@ export class AttributeService {
                     condition: {
                         page: 1,
                         limit: 1,
-                        code: 'id',
-                        value: `${id}`,
-                        includeRule: loadRelations.includeRule,
-                        includeOptions: loadRelations.includeOptions,
+                        filter: {
+                            code: 'id',
+                            value: `${id}`,
+                        },
+                        relations: loadRelations,
                     },
                     many: false,
                 })
@@ -106,18 +106,12 @@ export class AttributeService {
     async findAll({
         condition,
     }: {
-        condition: PaginateAttributeRelationsDto;
+        condition: AttributeConditionsDto;
     }): Promise<GetAttributeDto[]> {
+        console.log(condition);
         try {
             return await this.findAttributeQuery({
-                condition: {
-                    limit: condition.limit,
-                    page: condition.page,
-                    includeOptions: condition.includeOptions,
-                    includeRule: condition.includeRule,
-                    code: '',
-                    value: '',
-                },
+                condition: condition,
                 many: true,
             });
         } catch (e) {
@@ -128,7 +122,7 @@ export class AttributeService {
     async findBy({
         condition,
     }: {
-        condition: PaginationFilterDto;
+        condition: AttributeConditionsDto;
     }): Promise<GetAttributeDto[]> {
         try {
             return await this.findAttributeQuery({
@@ -177,7 +171,7 @@ export class AttributeService {
             id: id,
             loadRelations: {
                 includeOptions: true,
-                includeRule: true,
+                includeRules: true,
             },
         });
 
@@ -256,18 +250,25 @@ export class AttributeService {
         condition,
         many,
     }: {
-        condition: PaginationFilterDto;
+        condition: AttributeConditionsDto;
         many: boolean;
     }): Promise<any[]> {
         let where = '';
         let query = null;
-        if (condition.code && condition.value) {
-            where = 'attribute.' + condition.code + ' = :' + condition.code;
+        if (condition.filter.code && condition.filter.value) {
+            where =
+                'attribute.' +
+                condition.filter.code +
+                ' = :' +
+                condition.filter.code;
             query = {};
-            query[condition.code] = condition.value;
+            query[condition.filter.code] = condition.filter.value;
         }
 
-        if (!many && condition.includeOptions && condition.includeRule) {
+        const options: boolean = condition.relations.includeOptions;
+        const rules: boolean = condition.relations.includeRules;
+
+        if (!many && options && rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -280,7 +281,7 @@ export class AttributeService {
             ];
         }
 
-        if (!many && !condition.includeOptions && condition.includeRule) {
+        if (!many && !options && rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -292,7 +293,7 @@ export class AttributeService {
             ];
         }
 
-        if (!many && condition.includeOptions && !condition.includeRule) {
+        if (!many && options && !rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -304,7 +305,7 @@ export class AttributeService {
             ];
         }
 
-        if (!many && !condition.includeOptions && !condition.includeRule) {
+        if (!many && !options && !rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -318,7 +319,7 @@ export class AttributeService {
         // Multiple Records
         const skip = (condition.page - 1) * condition.limit;
 
-        if (many && condition.includeOptions && condition.includeRule) {
+        if (many && options && rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -333,7 +334,7 @@ export class AttributeService {
             ];
         }
 
-        if (many && !condition.includeOptions && condition.includeRule) {
+        if (many && !options && rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -347,7 +348,7 @@ export class AttributeService {
             ];
         }
 
-        if (many && condition.includeOptions && !condition.includeRule) {
+        if (many && options && !rules) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)

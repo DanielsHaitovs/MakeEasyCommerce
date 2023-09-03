@@ -6,9 +6,12 @@ import {
     CreatePersonalizedProductDto,
     CreateProductDto,
     CreateSimpleProductDto,
+    CreateVirtualProductDto,
 } from './create-product.dto';
 import { ProductTypes } from '../entities/enum/product-types.enum';
+import { GetResponseOptions } from './requests/product-response.dto';
 
+export class GetVirtualProductDto extends CreateVirtualProductDto {}
 export class GetSimpleProductDto extends CreateSimpleProductDto {}
 export class GetConfigurableProduct extends CreateConfigurableProduct {
     @ApiProperty({ type: [GetSimpleProductDto] })
@@ -31,17 +34,7 @@ export class GetProductDto extends CreateProductDto {
     @IsEnum(ProductTypes)
     product_type: ProductTypes;
 
-    @ApiProperty({
-        type:
-            GetSimpleProductDto ||
-            GetConfigurableProduct ||
-            GetPersonalizedProductDto ||
-            GetGroupedProductDto,
-    })
+    @ApiProperty()
     @ValidateNested({ each: true })
-    product:
-        | GetSimpleProductDto
-        | GetConfigurableProduct
-        | GetPersonalizedProductDto
-        | GetGroupedProductDto;
+    product: GetResponseOptions;
 }

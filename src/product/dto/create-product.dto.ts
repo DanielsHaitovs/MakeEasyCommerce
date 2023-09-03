@@ -5,18 +5,14 @@ import {
     IsEnum,
     IsNotEmpty,
     IsNumber,
+    IsOptional,
     IsString,
     ValidateNested,
 } from 'class-validator';
 import { ProductVisibility } from '../entities/enum/product-visibility.enum';
-import { MecBaseDto } from '@src/base/dto/mec-base.dto';
+import { CreateResponseOptions } from './requests/product-response.dto';
 
 export class ProductDto {
-    @ApiProperty({
-        enum: ProductTypes,
-        enumName: 'ProductTypes',
-    })
-    @IsEnum(ProductTypes)
     product_type: ProductTypes;
 
     @ApiProperty({ type: String })
@@ -45,16 +41,21 @@ export class ProductDto {
     @ApiProperty({ type: Number })
     @IsNotEmpty()
     @IsNumber()
-    price: string;
+    final_price: number;
 }
 
+export class CreateVirtualProductDto extends ProductDto {}
+
 export class CreateSimpleProductDto extends ProductDto {}
+
 export class CreateConfigurableProduct extends ProductDto {
     @ApiProperty({ type: [CreateSimpleProductDto] })
     @ValidateNested({ each: true })
     variants: CreateSimpleProductDto[];
 }
+
 export class CreatePersonalizedProductDto extends ProductDto {}
+
 export class CreateGroupedProductDto extends ProductDto {
     @ApiProperty({ type: [Number] })
     @IsNotEmpty()
@@ -62,7 +63,7 @@ export class CreateGroupedProductDto extends ProductDto {
     product_ids: number[];
 }
 
-export class CreateProductDto extends MecBaseDto {
+export class CreateProductDto {
     @ApiProperty({
         enum: ProductTypes,
         enumName: 'ProductTypes',
@@ -70,17 +71,7 @@ export class CreateProductDto extends MecBaseDto {
     @IsEnum(ProductTypes)
     product_type: ProductTypes;
 
-    @ApiProperty({
-        type:
-            CreateSimpleProductDto ||
-            CreateConfigurableProduct ||
-            CreatePersonalizedProductDto ||
-            CreateGroupedProductDto,
-    })
-    @ValidateNested({ each: true })
-    product:
-        | CreateSimpleProductDto
-        | CreateConfigurableProduct
-        | CreatePersonalizedProductDto
-        | CreateGroupedProductDto;
+    @ApiProperty()
+    @ValidateNested()
+    product: CreateResponseOptions;
 }

@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import {
-    AttributeOptionsDto,
-    PaginationDto,
-} from '@src/attribute/dto/attribute.dto';
+import { AttributeOptionsDto } from '@src/attribute/dto/attribute.dto';
 import {
     GetAttributeOptionsDto,
     GetUpdatedOptionsDto,
 } from '@src/attribute/dto/get-attribute.dto';
 import { UpdateAttributeOptionsDto } from '@src/attribute/dto/update-attribute.dto';
 import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
+import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
 import { EntityManager } from 'typeorm';
 
 @Injectable()
@@ -56,7 +54,6 @@ export class OptionsService {
         condition: PaginationDto;
     }): Promise<GetAttributeOptionsDto[]> {
         try {
-            // return await this.entityManager.find(OptionValues);
             const skip = (condition.page - 1) * condition.limit;
             return await this.entityManager
                 .getRepository(OptionValues)
