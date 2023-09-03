@@ -1,6 +1,6 @@
 import { Entity, Index, ManyToOne } from 'typeorm';
-import { Product } from '../../product.entity';
 import { BaseProduct } from './base-product.entity';
+import { Product } from '@src/product/entities/product.entity';
 
 @Entity('product_type_virtual')
 @Index('product_index_virtual', ['id', 'sku', 'name'])

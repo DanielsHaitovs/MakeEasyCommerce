@@ -7,12 +7,15 @@ import { OptionValues } from './attribute/entities/inheritance/options/option-va
 import { AttributeRule } from './attribute/entities/inheritance/rules/attribute-rule.entity';
 import { ProductModule } from './product/product.module';
 import { Product } from './product/entities/product.entity';
-import { SimpleProduct } from './product/entities/inheritance/product-types/simple-product.entity';
-import { ConfigurableProduct } from './product/entities/inheritance/product-types/configurable-product.entity';
-import { PersonalizedProduct } from './product/entities/inheritance/product-types/personalized-product.entity';
-import { GroupedProduct } from './product/entities/inheritance/product-types/grouped-product.entity';
-import { ProductVariants } from './product/entities/inheritance/product-types/product-variants.entity';
-import { VirtualProduct } from './product/entities/inheritance/product-types/virtual-product.entity';
+import { ProductAttributes } from './product/entities/attributes/attributes-product.entity';
+import { ProductVariants } from './product/entities/product-types/product-variants.entity';
+import { SimpleProduct } from './product/entities/product-types/simple-product.entity';
+import { ConfigurableProduct } from './product/entities/product-types/configurable-product.entity';
+import { PersonalizedProduct } from './product/entities/product-types/personalized-product.entity';
+import { GroupedProduct } from './product/entities/product-types/grouped-product.entity';
+import { VirtualProduct } from './product/entities/product-types/virtual-product.entity';
+import { ProductOptionValues } from './product/entities/attributes/options/option-values.entity';
+import { ProductAttributeRule } from './product/entities/attributes/rules/attribute-rule.entity';
 
 @Module({
     imports: [
@@ -28,6 +31,9 @@ import { VirtualProduct } from './product/entities/inheritance/product-types/vir
                 OptionValues,
                 AttributeRule,
                 Product,
+                ProductAttributes,
+                ProductOptionValues,
+                ProductAttributeRule,
                 ProductVariants,
                 SimpleProduct,
                 ConfigurableProduct,

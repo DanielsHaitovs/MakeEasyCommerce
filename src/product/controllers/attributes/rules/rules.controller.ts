@@ -16,17 +16,17 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { RulesService } from '@src/attribute/services/rules/rules.service';
 import { AttributeRulesDto } from '@src/base/dto/attributes/create-attribute.dto';
 import { GetAttributeRulesDto } from '@src/base/dto/attributes/get-attribute.dto';
 import { AttributeResponse } from '@src/base/dto/attributes/requests/attribute-response.dto';
 import { UpdateRulesDto } from '@src/base/dto/attributes/update-attribute.dto';
 import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
+import { ProductRulesService } from '@src/product/services/attributes/rules/product-rules.service';
 
-@Controller('rules')
-@ApiTags('AttributeRules')
-export class RulesController {
-    constructor(private readonly rulesService: RulesService) {}
+@Controller('product_rules')
+@ApiTags('Product Attribute Rules')
+export class ProductRulesController {
+    constructor(private readonly rulesService: ProductRulesService) {}
 
     @Post('new')
     @ApiOperation({

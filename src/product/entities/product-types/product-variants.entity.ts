@@ -1,5 +1,4 @@
 import { Entity, Index, ManyToOne } from 'typeorm';
-import { Product } from '../../product.entity';
 import { ConfigurableProduct } from './configurable-product.entity';
 import { BaseProduct } from './base-product.entity';
 
@@ -7,5 +6,5 @@ import { BaseProduct } from './base-product.entity';
 @Index('product_index_variants', ['id', 'sku', 'name'])
 export class ProductVariants extends BaseProduct {
     @ManyToOne(() => ConfigurableProduct, (product) => product.product_variants)
-    relation: Product;
+    relation: ConfigurableProduct;
 }

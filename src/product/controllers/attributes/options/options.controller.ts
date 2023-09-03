@@ -16,17 +16,17 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { OptionsService } from '@src/attribute/services/options/options.service';
 import { AttributeOptionsDto } from '@src/base/dto/attributes/attribute.dto';
 import { GetAttributeOptionsDto } from '@src/base/dto/attributes/get-attribute.dto';
 import { AttributeResponse } from '@src/base/dto/attributes/requests/attribute-response.dto';
 import { UpdateOptionDto } from '@src/base/dto/attributes/update-attribute.dto';
 import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
+import { ProductOptionsService } from '@src/product/services/attributes/options/product-options.service';
 
-@Controller('options')
-@ApiTags('AttributeOptions')
-export class OptionsController {
-    constructor(private readonly optionsService: OptionsService) {}
+@Controller('product_options')
+@ApiTags('Product Attribute Options')
+export class ProductOptionsController {
+    constructor(private readonly optionsService: ProductOptionsService) {}
 
     @Post('new')
     @ApiOperation({

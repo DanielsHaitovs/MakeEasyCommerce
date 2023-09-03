@@ -8,7 +8,7 @@ import {
     CreateSimpleProductDto,
     CreateVirtualProductDto,
 } from './create-product.dto';
-import { ProductTypes } from '../entities/enum/product-types.enum';
+import { ProductTypes } from '../../base/enum/product/product-types.enum';
 import { GetResponseOptions } from './requests/product-response.dto';
 
 export class GetVirtualProductDto extends CreateVirtualProductDto {}

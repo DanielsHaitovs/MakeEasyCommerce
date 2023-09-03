@@ -9,7 +9,6 @@ import {
     Query,
     ParseBoolPipe,
 } from '@nestjs/common';
-import { AttributeService } from '../services/attributes/attribute.service';
 import {
     ApiBody,
     ApiOkResponse,
@@ -24,11 +23,12 @@ import { AttributeResponse } from '@src/base/dto/attributes/requests/attribute-r
 import { GetAttributeDto } from '@src/base/dto/attributes/get-attribute.dto';
 import { AttributeFilterByValue } from '@src/base/dto/attributes/requests/attribute-requests.dto';
 import { UpdateAttributeDto } from '@src/base/dto/attributes/update-attribute.dto';
+import { ProductAttributeService } from '@src/product/services/attributes/attributes/product-attribute.service';
 
-@Controller('attribute')
-@ApiTags('Attribute')
-export class AttributeController {
-    constructor(private readonly attributeService: AttributeService) {}
+@Controller('product_attribute')
+@ApiTags('Product Attributes')
+export class ProductAttributeController {
+    constructor(private readonly attributeService: ProductAttributeService) {}
 
     @Post('new')
     @ApiOperation({

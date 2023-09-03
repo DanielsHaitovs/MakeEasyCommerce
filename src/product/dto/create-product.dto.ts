@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductTypes } from '../entities/enum/product-types.enum';
+import { ProductTypes } from '../../base/enum/product/product-types.enum';
 import {
     IsArray,
     IsEnum,
@@ -9,7 +9,7 @@ import {
     IsString,
     ValidateNested,
 } from 'class-validator';
-import { ProductVisibility } from '../entities/enum/product-visibility.enum';
+import { ProductVisibility } from '../../base/enum/product/product-visibility.enum';
 import { CreateResponseOptions } from './requests/product-response.dto';
 
 export class ProductDto {

@@ -1,8 +1,8 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
+import { ProductTypes } from '@src/base/enum/product/product-types.enum';
+import { ProductVisibility } from '@src/base/enum/product/product-visibility.enum';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Column, Unique } from 'typeorm';
-import { ProductTypes } from '../../enum/product-types.enum';
-import { ProductVisibility } from '../../enum/product-visibility.enum';
 
 @Unique(['sku', 'name'])
 export class BaseProduct extends MecBaseEntity {

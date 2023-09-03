@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { Attribute } from '../../entities/attribute.entity';
-import { OptionsService } from '../options/options.service';
-import { RulesService } from '../rules/rules.service';
 import { AttributeRule } from '@src/attribute/entities/inheritance/rules/attribute-rule.entity';
 import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
+import { ProductRulesService } from '../rules/product-rules.service';
+import { ProductOptionsService } from '../options/product-options.service';
 import { CreateAttributeDto } from '@src/base/dto/attributes/create-attribute.dto';
+import { AttributeResponse } from '@src/base/dto/attributes/requests/attribute-response.dto';
 import {
     GetAttributeDto,
     GetUpdatedOptionsDto,
 } from '@src/base/dto/attributes/get-attribute.dto';
-import { AttributeResponse } from '@src/base/dto/attributes/requests/attribute-response.dto';
+import { ProductAttributes } from '@src/product/entities/attributes/attributes-product.entity';
 import {
     AttributeConditionsDto,
     AttributeFilterByRelation,
@@ -19,12 +19,12 @@ import {
 import { UpdateAttributeDto } from '@src/base/dto/attributes/update-attribute.dto';
 
 @Injectable()
-export class AttributeService {
+export class ProductAttributeService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
-        private readonly optionsService: OptionsService,
-        private readonly ruleService: RulesService,
+        private readonly optionsService: ProductOptionsService,
+        private readonly ruleService: ProductRulesService,
     ) {}
 
     async create({
@@ -57,7 +57,7 @@ export class AttributeService {
         }
 
         const newAttribute: CreateAttributeDto = this.entityManager.create(
-            Attribute,
+            ProductAttributes,
             {
                 description: createAttributeDto.description,
                 options: null,
@@ -73,7 +73,7 @@ export class AttributeService {
             createOptions: createAttributeDto.options,
         });
 
-        return await this.entityManager.save(Attribute, newAttribute);
+        return await this.entityManager.save(ProductAttributes, newAttribute);
     }
 
     async findOneById({
@@ -144,7 +144,7 @@ export class AttributeService {
         updateAttributeDto: UpdateAttributeDto;
     }): Promise<GetAttributeDto | AttributeResponse> {
         const attribute: GetAttributeDto = await this.entityManager.preload(
-            Attribute,
+            ProductAttributes,
             {
                 id: id,
                 description: updateAttributeDto.description,
@@ -165,7 +165,7 @@ export class AttributeService {
         }
         return {
             options: updatedOptions.newOptions,
-            ...(await this.entityManager.save(Attribute, attribute)),
+            ...(await this.entityManager.save(ProductAttributes, attribute)),
         };
     }
 
@@ -206,7 +206,7 @@ export class AttributeService {
         }
 
         const deletedAttribute = (
-            await this.entityManager.delete(Attribute, attribute.id)
+            await this.entityManager.delete(ProductAttributes, attribute.id)
         ).affected;
 
         if (deletedAttribute < 1) {
@@ -275,7 +275,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
@@ -292,7 +292,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(where, query)
@@ -308,7 +308,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
@@ -324,7 +324,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .where(where, query)
                     .orderBy('attribute.id', 'ASC')
@@ -342,7 +342,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
@@ -361,7 +361,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(where, query)
@@ -379,7 +379,7 @@ export class AttributeService {
         ) {
             return [
                 await this.entityManager
-                    .getRepository(Attribute)
+                    .getRepository(ProductAttributes)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
@@ -391,7 +391,7 @@ export class AttributeService {
         }
 
         return await this.entityManager
-            .getRepository(Attribute)
+            .getRepository(ProductAttributes)
             .createQueryBuilder('attribute')
             .where(where, query)
             .orderBy('attribute.id', 'ASC')
@@ -408,7 +408,7 @@ export class AttributeService {
         name: string;
     }): Promise<boolean> {
         return await this.entityManager
-            .getRepository(Attribute)
+            .getRepository(ProductAttributes)
             .createQueryBuilder('attribute')
             .where('attribute.code =:code', { code: code })
             .orWhere('attribute.name =:name', { name: name })
@@ -428,9 +428,9 @@ export class AttributeService {
     }): Promise<any> {
         try {
             await this.entityManager
-                .getRepository(Attribute)
+                .getRepository(ProductAttributes)
                 .createQueryBuilder(relationsAlias)
-                .relation(Attribute, relation)
+                .relation(ProductAttributes, relation)
                 .of(id)
                 .remove(current_relation);
         } catch (e) {

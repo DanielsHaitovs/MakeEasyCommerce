@@ -7,12 +7,12 @@ import {
     RelationId,
 } from 'typeorm';
 import { BaseProduct } from './base-product.entity';
-import { Product } from '../../product.entity';
 import { SimpleProduct } from './simple-product.entity';
 import { ConfigurableProduct } from './configurable-product.entity';
 import { PersonalizedProduct } from './personalized-product.entity';
-import { GroupTypes } from '../../enum/group-types.enum';
 import { IsEnum } from 'class-validator';
+import { GroupTypes } from '@src/base/enum/product/group-types.enum';
+import { Product } from '@src/product/entities/product.entity';
 
 @Entity('product_type_grouped')
 @Index('product_index_grouped', ['id', 'sku', 'name'])

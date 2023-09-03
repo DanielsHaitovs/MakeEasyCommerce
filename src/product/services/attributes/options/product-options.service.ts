@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
 import { AttributeOptionsDto } from '@src/base/dto/attributes/attribute.dto';
 import {
     GetAttributeOptionsDto,
@@ -8,10 +7,11 @@ import {
 } from '@src/base/dto/attributes/get-attribute.dto';
 import { UpdateAttributeOptionsDto } from '@src/base/dto/attributes/update-attribute.dto';
 import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
+import { ProductOptionValues } from '@src/product/entities/attributes/options/option-values.entity';
 import { EntityManager } from 'typeorm';
 
 @Injectable()
-export class OptionsService {
+export class ProductOptionsService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -25,8 +25,8 @@ export class OptionsService {
         attributeId: number;
     }): Promise<GetAttributeOptionsDto> {
         return await this.entityManager.save(
-            OptionValues,
-            this.entityManager.create(OptionValues, {
+            ProductOptionValues,
+            this.entityManager.create(ProductOptionValues, {
                 value: createOption.value,
                 attribute: {
                     id: attributeId,
@@ -41,7 +41,7 @@ export class OptionsService {
         createOptions: AttributeOptionsDto[];
     }): Promise<GetAttributeOptionsDto[]> {
         return await this.entityManager.save(
-            OptionValues,
+            ProductOptionValues,
             await this.prepareOptions({
                 options: createOptions,
             }),
@@ -56,7 +56,7 @@ export class OptionsService {
         try {
             const skip = (condition.page - 1) * condition.limit;
             return await this.entityManager
-                .getRepository(OptionValues)
+                .getRepository(ProductOptionValues)
                 .createQueryBuilder('options')
                 .skip(skip)
                 .take(condition.limit)
@@ -68,7 +68,7 @@ export class OptionsService {
 
     async findOneById({ id }: { id: number }): Promise<GetAttributeOptionsDto> {
         try {
-            return await this.entityManager.findOne(OptionValues, {
+            return await this.entityManager.findOne(ProductOptionValues, {
                 where: {
                     id: id,
                 },
@@ -93,7 +93,7 @@ export class OptionsService {
         for (const option of options) {
             if (option.id != undefined && option != null) {
                 await this.entityManager.update(
-                    OptionValues,
+                    ProductOptionValues,
                     option.id,
                     option,
                 );
@@ -123,7 +123,7 @@ export class OptionsService {
         value: string | number | boolean | Date | JSON;
         parentId: number;
     }): Promise<any> {
-        return await this.entityManager.update(OptionValues, id, {
+        return await this.entityManager.update(ProductOptionValues, id, {
             value: value,
             attribute: {
                 id: parentId,
@@ -132,7 +132,8 @@ export class OptionsService {
     }
 
     async remove({ id }: { id: number }): Promise<number> {
-        return (await this.entityManager.delete(OptionValues, id)).affected;
+        return (await this.entityManager.delete(ProductOptionValues, id))
+            .affected;
     }
 
     protected async prepareOptions({
@@ -141,7 +142,7 @@ export class OptionsService {
         options: AttributeOptionsDto[];
     }) {
         return options.map((option) => {
-            return this.entityManager.create(OptionValues, {
+            return this.entityManager.create(ProductOptionValues, {
                 value: option.value,
             });
         });

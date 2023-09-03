@@ -1,12 +1,12 @@
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
-import { Attribute } from '../../attribute.entity';
 import { IsEnum } from 'class-validator';
-import { AttributeType } from '../../../../base/enum/attributes/type.enum';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
+import { ProductAttributes } from '../attributes-product.entity';
+import { AttributeType } from '@src/base/enum/attributes/type.enum';
 
-@Entity('attribute_options')
-@Index('attribute_option_index', ['id', 'value'])
-export class OptionValues extends MecBaseEntity {
+@Entity('product_attribute_options')
+@Index('product_attribute_option', ['id', 'value'])
+export class ProductOptionValues extends MecBaseEntity {
     // Maybe there is point of splitting this into several tables
     // Number Attribute Table
     // String Attribute Table and etc.
@@ -14,6 +14,6 @@ export class OptionValues extends MecBaseEntity {
     @IsEnum(AttributeType)
     value: string | number | boolean | Date | JSON;
 
-    @ManyToOne(() => Attribute, (attribute) => attribute.options)
-    attribute: OptionValues;
+    @ManyToOne(() => ProductAttributes, (attribute) => attribute.options)
+    attribute: ProductAttributes;
 }

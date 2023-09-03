@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSimpleProductDto } from '../../dto/create-product.dto';
 import { UpdateProductDto } from '../../dto/update-product.dto';
-import { ProductError, ProductSuccess } from '../../dto/requests/product-response.dto';
+import {
+    ProductError,
+    ProductSuccess,
+} from '../../dto/requests/product-response.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { SimpleProduct } from '@src/product/entities/inheritance/product-types/simple-product.entity';
-import { AttributeConditionsDto } from '@src/attribute/dto/requests/attribute-requests.dto';
 import { GetSimpleProductDto } from '@src/product/dto/get-product.dto';
+import { SimpleProduct } from '@src/product/entities/product-types/simple-product.entity';
+import { AttributeConditionsDto } from '@src/base/dto/attributes/requests/attribute-requests.dto';
 
 @Injectable()
 export class SimpleProductService {

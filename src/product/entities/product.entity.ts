@@ -1,12 +1,13 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { IsEnum } from 'class-validator';
 import { Column, Entity, Index, OneToMany, RelationId } from 'typeorm';
-import { ProductTypes } from './enum/product-types.enum';
-import { SimpleProduct } from './inheritance/product-types/simple-product.entity';
-import { ConfigurableProduct } from './inheritance/product-types/configurable-product.entity';
-import { PersonalizedProduct } from './inheritance/product-types/personalized-product.entity';
-import { GroupedProduct } from './inheritance/product-types/grouped-product.entity';
-import { VirtualProduct } from './inheritance/product-types/virtual-product.entity';
+import { ConfigurableProduct } from './product-types/configurable-product.entity';
+import { SimpleProduct } from './product-types/simple-product.entity';
+import { PersonalizedProduct } from './product-types/personalized-product.entity';
+import { GroupedProduct } from './product-types/grouped-product.entity';
+import { VirtualProduct } from './product-types/virtual-product.entity';
+import { ProductAttributes } from './attributes/attributes-product.entity';
+import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 
 @Entity('product_index')
 @Index('product_index_index', ['id', 'product_type'])
@@ -54,4 +55,12 @@ export class Product extends MecBaseEntity {
     virtual_product: VirtualProduct[];
     @RelationId((product: Product) => product.virtual_product)
     virtual_product_ids: number[];
+
+    @OneToMany(() => ProductAttributes, (product) => product.relation, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
+    product_attributes: ProductAttributes[];
+    @RelationId((product: Product) => product.product_attributes)
+    attributes_ids: number[];
 }

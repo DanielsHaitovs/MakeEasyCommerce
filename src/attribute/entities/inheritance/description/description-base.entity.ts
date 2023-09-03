@@ -1,12 +1,8 @@
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { Column, Index, Unique } from 'typeorm';
+import { Column } from 'typeorm';
 import { AttributeType } from '../../../../base/enum/attributes/type.enum';
 
-const uniqueCode = 'attribute_description_unique';
-const indexCode = 'attribute_description_index';
-@Unique(uniqueCode, ['name', 'code'])
-@Index(indexCode, ['name', 'code'])
-export abstract class AttributeDescription {
+export abstract class AttributeDescriptionBase {
     @Column()
     @IsNotEmpty()
     @IsString()
