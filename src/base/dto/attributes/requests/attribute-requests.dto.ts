@@ -1,30 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-// import { ToBoolean } from '@src/attribute/decorator/eav-attribute-rule.decorator';
 import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
-import { Transform, TransformFnParams } from 'class-transformer';
 import {
-    IsBoolean,
     IsNotEmpty,
     IsOptional,
     IsString,
     ValidateNested,
 } from 'class-validator';
-import { Any } from 'typeorm';
-export function ToBoolean(): (target: any, key: string) => void {
-    return Transform((params: TransformFnParams) => {
-        const { value } = params;
-        if (typeof value === 'boolean') {
-            return value;
-        }
-        if (value?.toString()?.toLowerCase() === 'false') {
-            return false;
-        }
-        if (value?.toString()?.toLowerCase() === 'true') {
-            return true;
-        }
-        return undefined;
-    });
-}
+
 export class AttributeFilterByRelation {
     @ApiProperty({ type: Boolean })
     @IsNotEmpty()

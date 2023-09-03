@@ -11,7 +11,6 @@ import { ProductVariants } from './entities/product-types/product-variants.entit
 import { VirtualProduct } from './entities/product-types/virtual-product.entity';
 import { SimpleProductController } from './controllers/simple/simple-product.controller';
 import { SimpleProductService } from './services/simple/simple-product.service';
-import { Attribute } from '@src/attribute/entities/attribute.entity';
 import { ProductAttributes } from './entities/attributes/attributes-product.entity';
 import { ProductAttributeRule } from './entities/attributes/rules/attribute-rule.entity';
 import { ProductOptionValues } from './entities/attributes/options/option-values.entity';

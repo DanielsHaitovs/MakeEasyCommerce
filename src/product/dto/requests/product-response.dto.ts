@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
     CreateConfigurableProduct,
     CreateGroupedProductDto,
@@ -47,5 +46,5 @@ export class ProductError {
 
 export class ProductSuccess {
     status: number;
-    result: GetResponseOptions;
+    result: any[];
 }

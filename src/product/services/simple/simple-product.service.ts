@@ -49,7 +49,7 @@ export class SimpleProductService {
 
             return {
                 status: 200,
-                result: newProduct,
+                result: [newProduct],
             };
         } catch (e) {
             return {
@@ -96,7 +96,7 @@ export class SimpleProductService {
     }
 
     update(id: number, updateProductDto: UpdateProductDto) {
-        return `This action updates a #${id} product`;
+        return updateProductDto;
     }
 
     remove(id: number) {

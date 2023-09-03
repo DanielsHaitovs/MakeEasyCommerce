@@ -13,7 +13,10 @@ export class ProductService {
     }: {
         createProductDto: CreateProductDto;
     }): Promise<ProductError | ProductSuccess> {
-        return null;
+        return {
+            status: 200,
+            result: [createProductDto],
+        };
     }
 
     findAll() {
@@ -25,7 +28,7 @@ export class ProductService {
     }
 
     update(id: number, updateProductDto: UpdateProductDto) {
-        return `This action updates a #${id} product`;
+        return updateProductDto;
     }
 
     remove(id: number) {

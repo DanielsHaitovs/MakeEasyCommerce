@@ -81,11 +81,9 @@ export class OptionsService {
     async updateOptions({
         options,
         parentId,
-        keepOldOptions,
     }: {
         options: UpdateAttributeOptionsDto[];
         parentId: number;
-        keepOldOptions: boolean;
     }): Promise<GetUpdatedOptionsDto> {
         const newOptions: GetAttributeOptionsDto[] = [];
         const optionsIds: number[] = [];

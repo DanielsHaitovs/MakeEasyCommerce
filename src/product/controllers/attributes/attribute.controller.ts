@@ -161,7 +161,6 @@ export class ProductAttributeController {
     ) {
         return this.attributeService.update({
             id: updateAttributeDto.id,
-            keepOldOptions: conditionValue,
             updateAttributeDto: updateAttributeDto,
         });
     }

@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    IsBoolean,
-    IsNotEmpty,
-    IsOptional,
-    IsString,
-    ValidateNested,
-} from 'class-validator';
-import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class AttributeDescriptionDto {
     @ApiProperty()

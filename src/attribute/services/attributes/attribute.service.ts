@@ -135,11 +135,9 @@ export class AttributeService {
 
     async update({
         id,
-        keepOldOptions,
         updateAttributeDto,
     }: {
         id: number;
-        keepOldOptions: boolean;
         updateAttributeDto: UpdateAttributeDto;
     }): Promise<GetAttributeDto | AttributeResponse> {
         const attribute: GetAttributeDto = await this.entityManager.preload(
@@ -156,7 +154,6 @@ export class AttributeService {
             await this.optionsService.updateOptions({
                 options: updateAttributeDto.options,
                 parentId: id,
-                keepOldOptions: keepOldOptions,
             });
 
         if (updatedOptions.newOptionsIds.length > 0) {
