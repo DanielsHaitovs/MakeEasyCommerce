@@ -135,7 +135,7 @@ export class ProductAttributeController {
         @Param('id') id: number,
         @Query('includeRules', ParseBoolPipe) includeRules: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<GetAttributeDto> {
+    ): Promise<GetAttributeDto | AttributeResponse> {
         return await this.attributeService.findOneById({
             id: id,
             loadRelations: {

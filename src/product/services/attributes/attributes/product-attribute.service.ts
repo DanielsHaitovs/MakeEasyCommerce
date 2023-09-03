@@ -95,7 +95,7 @@ export class ProductAttributeService {
     }: {
         id: number;
         loadRelations: AttributeFilterByRelation;
-    }): Promise<GetAttributeDto> {
+    }): Promise<GetAttributeDto | any> {
         try {
             return (
                 await this.findAttributeQuery({
@@ -112,7 +112,17 @@ export class ProductAttributeService {
                 })
             ).shift();
         } catch (e) {
-            return e.message;
+            return {
+                message: 'Failed Retrieving Product',
+                errors: [
+                    {
+                        message: e.message,
+                    },
+                    {
+                        status: 999,
+                    },
+                ],
+            };
         }
     }
 
@@ -187,31 +197,40 @@ export class ProductAttributeService {
             },
         });
 
-        if (attribute.options != null && attribute.options != undefined) {
-            for (const option of attribute.options) {
-                const deletedOption = (
-                    await this.entityManager.delete(
-                        ProductOptionValues,
-                        option.id,
-                    )
-                ).affected;
+        if (attribute === null) {
+            return {
+                message: 'Attribute was not deleted',
+                errors: [
+                    {
+                        message: 'this attribute id was not found',
+                    },
+                    {
+                        status: 999,
+                    },
+                ],
+            };
+        }
 
-                if (deletedOption < 1) {
-                    return {
-                        message: 'Delete Attribute Option Failed',
-                        errors: [
-                            {
-                                message:
-                                    'Attribute Option with id ' +
-                                    option.id +
-                                    ' was not deleted',
-                            },
-                            {
-                                status: 999,
-                            },
-                        ],
-                    };
-                }
+        for (const option of attribute.options) {
+            const deletedOption = (
+                await this.entityManager.delete(ProductOptionValues, option.id)
+            ).affected;
+
+            if (deletedOption < 1) {
+                return {
+                    message: 'Delete Attribute Option Failed',
+                    errors: [
+                        {
+                            message:
+                                'Attribute Option with id ' +
+                                option.id +
+                                ' was not deleted',
+                        },
+                        {
+                            status: 999,
+                        },
+                    ],
+                };
             }
         }
 
