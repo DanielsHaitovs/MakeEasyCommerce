@@ -28,6 +28,10 @@ export class GetUpdatedOptionsDto {
     @ValidateNested({ each: true })
     updatedOptions: GetAttributeOptionsDto[];
 
+    @ApiProperty({ type: [GetAttributeOptionsDto] })
+    @ValidateNested({ each: true })
+    newOptions: GetAttributeOptionsDto[];
+
     @ApiProperty({ type: [Number] })
     @IsOptional()
     @IsArray()

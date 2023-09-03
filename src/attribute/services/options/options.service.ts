@@ -106,9 +106,10 @@ export class OptionsService {
                 optionsIds.push(newRecord.id);
             }
         }
-
+        console.log(newOptions);
         return {
-            updatedOptions: newOptions,
+            updatedOptions: null,
+            newOptions: newOptions,
             newOptionsIds: optionsIds,
         };
     }

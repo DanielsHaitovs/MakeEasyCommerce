@@ -84,6 +84,7 @@ export class AttributeService {
         loadRelations: AttributeFilterByRelation;
     }): Promise<GetAttributeDto> {
         try {
+            console.log(loadRelations);
             return (
                 await this.findAttributeQuery({
                     condition: {
@@ -108,7 +109,6 @@ export class AttributeService {
     }: {
         condition: AttributeConditionsDto;
     }): Promise<GetAttributeDto[]> {
-        console.log(condition);
         try {
             return await this.findAttributeQuery({
                 condition: condition,
@@ -163,7 +163,10 @@ export class AttributeService {
         if (updatedOptions.newOptionsIds.length > 0) {
             attribute.options_ids.push(...updatedOptions.newOptionsIds);
         }
-        return await this.entityManager.save(Attribute, attribute);
+        return {
+            options: updatedOptions.newOptions,
+            ...(await this.entityManager.save(Attribute, attribute)),
+        };
     }
 
     async remove({ id }: { id: number }): Promise<string | AttributeResponse> {
@@ -255,7 +258,7 @@ export class AttributeService {
     }): Promise<any[]> {
         let where = '';
         let query = null;
-        if (condition.filter.code && condition.filter.value) {
+        if (condition.filter.code != null && condition.filter.value != null) {
             where =
                 'attribute.' +
                 condition.filter.code +
@@ -265,10 +268,11 @@ export class AttributeService {
             query[condition.filter.code] = condition.filter.value;
         }
 
-        const options: boolean = condition.relations.includeOptions;
-        const rules: boolean = condition.relations.includeRules;
-
-        if (!many && options && rules) {
+        if (
+            !many &&
+            condition.relations.includeOptions &&
+            condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -276,42 +280,54 @@ export class AttributeService {
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .getOne(),
             ];
         }
 
-        if (!many && !options && rules) {
+        if (
+            !many &&
+            !condition.relations.includeOptions &&
+            condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .getOne(),
             ];
         }
 
-        if (!many && options && !rules) {
+        if (
+            !many &&
+            condition.relations.includeOptions &&
+            !condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .getOne(),
             ];
         }
 
-        if (!many && !options && !rules) {
+        if (
+            !many &&
+            !condition.relations.includeOptions &&
+            !condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .getOne(),
             ];
         }
@@ -319,7 +335,11 @@ export class AttributeService {
         // Multiple Records
         const skip = (condition.page - 1) * condition.limit;
 
-        if (many && options && rules) {
+        if (
+            many &&
+            condition.relations.includeOptions &&
+            condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
@@ -327,35 +347,43 @@ export class AttributeService {
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
             ];
         }
 
-        if (many && !options && rules) {
+        if (
+            many &&
+            !condition.relations.includeOptions &&
+            condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.rule', 'rule')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
             ];
         }
 
-        if (many && options && !rules) {
+        if (
+            many &&
+            condition.relations.includeOptions &&
+            !condition.relations.includeRules
+        ) {
             return [
                 await this.entityManager
                     .getRepository(Attribute)
                     .createQueryBuilder('attribute')
                     .leftJoinAndSelect('attribute.options', 'options')
                     .where(where, query)
-                    .orderBy('options.id', 'ASC')
+                    .orderBy('attribute.id', 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -366,7 +394,7 @@ export class AttributeService {
             .getRepository(Attribute)
             .createQueryBuilder('attribute')
             .where(where, query)
-            .orderBy('options.id', 'ASC')
+            .orderBy('attribute.id', 'ASC')
             .skip(skip)
             .take(condition.limit)
             .getMany();

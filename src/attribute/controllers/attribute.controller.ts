@@ -24,10 +24,7 @@ import { GetAttributeDto } from '../dto/get-attribute.dto';
 import { PaginationDto } from '@src/base/dto/query-filters/query.dto';
 
 import { AttributeResponse } from '../dto/requests/attribute-response.dto';
-import {
-    AttributeFilterByRelation,
-    AttributeFilterByValue,
-} from '../dto/requests/attribute-requests.dto';
+import { AttributeFilterByValue } from '../dto/requests/attribute-requests.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -58,23 +55,9 @@ export class AttributeController {
         description: 'Get data of all Attributes, good luck!',
     })
     @ApiQuery({
-        name: 'Pagination',
+        name: 'pagination',
         description: 'You can set page and limit for this query.',
         type: PaginationDto,
-        example: {
-            page: 1,
-            limit: 10,
-        },
-        required: true,
-    })
-    @ApiQuery({
-        name: 'Relations',
-        description: 'You can decide whether to load relation or not',
-        type: AttributeFilterByRelation,
-        example: {
-            includeRules: false,
-            includeOptions: false,
-        },
         required: true,
     })
     @ApiOkResponse({
@@ -82,20 +65,22 @@ export class AttributeController {
         type: [GetAttributeDto],
     })
     async findAll(
-        @Query() pagination,
-        @Query() relations,
+        @Query() filter: any,
+        @Query('includeRules', ParseBoolPipe) includeRules: boolean,
+        @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
     ): Promise<GetAttributeDto[]> {
+        console.log(filter);
         return await this.attributeService.findAll({
             condition: {
-                page: pagination.page,
-                limit: pagination.limit,
+                page: filter.page,
+                limit: filter.limit,
                 relations: {
-                    includeOptions: relations.includeOptions,
-                    includeRules: relations.includeRules,
+                    includeOptions: includeOptions,
+                    includeRules: includeRules,
                 },
                 filter: {
-                    code: '',
-                    value: '',
+                    code: null,
+                    value: null,
                 },
             },
         });
@@ -116,29 +101,23 @@ export class AttributeController {
         },
         required: false,
     })
-    @ApiQuery({
-        name: 'Relations',
-        description: 'Helps you to decide whether to load relations or not',
-        type: AttributeFilterByValue,
-        example: {
-            includeRules: false,
-            includeOptions: false,
-        },
-        required: true,
-    })
     @ApiOkResponse({
         description: 'Data of 1 specific attribute',
         type: [GetAttributeDto],
     })
     async findBy(
-        @Query() relations,
-        @Query() filter,
+        @Query() filter: any,
+        @Query('includeRules', ParseBoolPipe) includeRules: boolean,
+        @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
     ): Promise<GetAttributeDto[]> {
         return await this.attributeService.findBy({
             condition: {
                 page: 1,
                 limit: 0,
-                relations: relations,
+                relations: {
+                    includeOptions: includeOptions,
+                    includeRules: includeRules,
+                },
                 filter: filter,
             },
         });
@@ -150,28 +129,21 @@ export class AttributeController {
         description: 'Get data of 1 specific Attribute, good luck!',
     })
     @ApiParam({ name: 'id', description: 'attribute id' })
-    @ApiQuery({
-        name: 'Load Attribute Relations',
-        description:
-            'Gives an option to decide which relation to load. Can load Attribute Options values and Attribute Rules',
-        type: AttributeFilterByRelation,
-        example: {
-            includeRule: true,
-            includeOptions: false,
-        },
-        required: false,
-    })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
         type: [GetAttributeDto],
     })
     async findOneById(
         @Param('id') id: number,
-        @Query() relations,
+        @Query('includeRules', ParseBoolPipe) includeRules: boolean,
+        @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
     ): Promise<GetAttributeDto> {
         return await this.attributeService.findOneById({
             id: id,
-            loadRelations: relations,
+            loadRelations: {
+                includeOptions: includeOptions,
+                includeRules: includeRules,
+            },
         });
     }
 
