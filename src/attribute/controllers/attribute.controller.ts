@@ -68,7 +68,6 @@ export class AttributeController {
         @Query('includeRules', ParseBoolPipe) includeRules: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
     ): Promise<GetAttributeDto[]> {
-        console.log(filter);
         return await this.attributeService.findAll({
             condition: {
                 page: filter.page,

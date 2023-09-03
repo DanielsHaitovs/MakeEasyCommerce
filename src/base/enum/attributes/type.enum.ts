@@ -4,4 +4,5 @@ export enum AttributeType {
     Number = 'Number',
     JSON = 'JSON',
     Date = 'Date',
+    ANY = 'Any',
 }

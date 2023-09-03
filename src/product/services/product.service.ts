@@ -13,7 +13,6 @@ export class ProductService {
     }: {
         createProductDto: CreateProductDto;
     }): Promise<ProductError | ProductSuccess> {
-        console.log(createProductDto.product_type);
         return null;
     }
 

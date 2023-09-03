@@ -84,7 +84,6 @@ export class AttributeService {
         loadRelations: AttributeFilterByRelation;
     }): Promise<GetAttributeDto> {
         try {
-            console.log(loadRelations);
             return (
                 await this.findAttributeQuery({
                     condition: {

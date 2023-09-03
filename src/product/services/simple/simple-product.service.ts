@@ -29,7 +29,6 @@ export class SimpleProductService {
                 sku: createProductDto.sku,
             });
 
-            console.log(validate);
             if (validate) {
                 return {
                     message: 'Product Already exists',

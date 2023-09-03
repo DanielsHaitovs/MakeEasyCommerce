@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { AttributeRule } from '@src/attribute/entities/inheritance/rules/attribute-rule.entity';
-import { OptionValues } from '@src/attribute/entities/inheritance/options/option-values.entity';
 import { ProductRulesService } from '../rules/product-rules.service';
 import { ProductOptionsService } from '../options/product-options.service';
 import { CreateAttributeDto } from '@src/base/dto/attributes/create-attribute.dto';
@@ -17,6 +15,21 @@ import {
     AttributeFilterByRelation,
 } from '@src/base/dto/attributes/requests/attribute-requests.dto';
 import { UpdateAttributeDto } from '@src/base/dto/attributes/update-attribute.dto';
+import { ProductOptionValues } from '@src/product/entities/attributes/options/option-values.entity';
+import { ProductAttributeRule } from '@src/product/entities/attributes/rules/attribute-rule.entity';
+
+export const alias = {
+    parentAlias: 'productAttribute',
+    orderBy: 'productAttribute.id',
+    ruleAlias: 'rule',
+    ruleSelect: 'productAttribute.rule',
+    optionsRule: 'options',
+    optionsSelect: 'productAttribute.options',
+    attrName: 'productAttribute.name =:name',
+    nameSelect: 'productAttribute.options',
+    attrCode: 'code',
+    codeSelect: 'productAttribute.code =:code',
+};
 
 @Injectable()
 export class ProductAttributeService {
@@ -50,7 +63,7 @@ export class ProductAttributeService {
                             ' already exists in this entity',
                     },
                     {
-                        status: 200,
+                        status: 999,
                     },
                 ],
             };
@@ -84,7 +97,6 @@ export class ProductAttributeService {
         loadRelations: AttributeFilterByRelation;
     }): Promise<GetAttributeDto> {
         try {
-            console.log(loadRelations);
             return (
                 await this.findAttributeQuery({
                     condition: {
@@ -181,26 +193,27 @@ export class ProductAttributeService {
         if (attribute.options != null && attribute.options != undefined) {
             for (const option of attribute.options) {
                 const deletedOption = (
-                    await this.entityManager.delete(OptionValues, option.id)
+                    await this.entityManager.delete(
+                        ProductOptionValues,
+                        option.id,
+                    )
                 ).affected;
 
                 if (deletedOption < 1) {
-                    if (deletedOption < 1) {
-                        return {
-                            message: 'Delete Attribute Option Failed',
-                            errors: [
-                                {
-                                    message:
-                                        'Attribute Option with id ' +
-                                        option.id +
-                                        ' was not deleted',
-                                },
-                                {
-                                    status: 999,
-                                },
-                            ],
-                        };
-                    }
+                    return {
+                        message: 'Delete Attribute Option Failed',
+                        errors: [
+                            {
+                                message:
+                                    'Attribute Option with id ' +
+                                    option.id +
+                                    ' was not deleted',
+                            },
+                            {
+                                status: 999,
+                            },
+                        ],
+                    };
                 }
             }
         }
@@ -226,7 +239,7 @@ export class ProductAttributeService {
         if (attribute.rule != null && attribute.rule.id != null) {
             const deletedRule = (
                 await this.entityManager.delete(
-                    AttributeRule,
+                    ProductAttributeRule,
                     attribute.rule.id,
                 )
             ).affected;
@@ -258,9 +271,11 @@ export class ProductAttributeService {
     }): Promise<any[]> {
         let where = '';
         let query = null;
+
         if (condition.filter.code != null && condition.filter.value != null) {
             where =
-                'attribute.' +
+                alias.parentAlias +
+                '.' +
                 condition.filter.code +
                 ' = :' +
                 condition.filter.code;
@@ -276,11 +291,11 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
-                    .leftJoinAndSelect('attribute.options', 'options')
+                    .createQueryBuilder(alias.parentAlias)
+                    .leftJoinAndSelect(alias.ruleSelect, alias.ruleAlias)
+                    .leftJoinAndSelect(alias.optionsSelect, alias.optionsRule)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .getOne(),
             ];
         }
@@ -293,10 +308,10 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .createQueryBuilder(alias.parentAlias)
+                    .leftJoinAndSelect(alias.ruleSelect, alias.ruleAlias)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .getOne(),
             ];
         }
@@ -309,10 +324,10 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.options', 'options')
+                    .createQueryBuilder(alias.parentAlias)
+                    .leftJoinAndSelect(alias.optionsSelect, alias.optionsRule)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .getOne(),
             ];
         }
@@ -325,9 +340,9 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
+                    .createQueryBuilder(alias.parentAlias)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .getOne(),
             ];
         }
@@ -343,11 +358,11 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
-                    .leftJoinAndSelect('attribute.options', 'options')
+                    .createQueryBuilder(alias.parentAlias)
+                    .leftJoinAndSelect(alias.ruleSelect, alias.ruleAlias)
+                    .leftJoinAndSelect(alias.optionsSelect, alias.optionsRule)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -362,10 +377,10 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
+                    .createQueryBuilder(alias.parentAlias)
+                    .leftJoinAndSelect(alias.ruleSelect, alias.ruleAlias)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -380,10 +395,10 @@ export class ProductAttributeService {
             return [
                 await this.entityManager
                     .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.options', 'options')
+                    .createQueryBuilder(alias.parentAlias)
+                    .leftJoinAndSelect(alias.optionsSelect, alias.optionsRule)
                     .where(where, query)
-                    .orderBy('attribute.id', 'ASC')
+                    .orderBy(alias.orderBy, 'ASC')
                     .skip(skip)
                     .take(condition.limit)
                     .getMany(),
@@ -392,9 +407,9 @@ export class ProductAttributeService {
 
         return await this.entityManager
             .getRepository(ProductAttributes)
-            .createQueryBuilder('attribute')
+            .createQueryBuilder(alias.parentAlias)
             .where(where, query)
-            .orderBy('attribute.id', 'ASC')
+            .orderBy(alias.orderBy, 'ASC')
             .skip(skip)
             .take(condition.limit)
             .getMany();
@@ -409,9 +424,9 @@ export class ProductAttributeService {
     }): Promise<boolean> {
         return await this.entityManager
             .getRepository(ProductAttributes)
-            .createQueryBuilder('attribute')
-            .where('attribute.code =:code', { code: code })
-            .orWhere('attribute.name =:name', { name: name })
+            .createQueryBuilder(alias.parentAlias)
+            .where('productAttribute.code =:code', { code: code })
+            .orWhere('productAttribute.name =:name', { name: name })
             .getExists();
     }
 

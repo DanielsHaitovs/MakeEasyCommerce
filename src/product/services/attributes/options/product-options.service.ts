@@ -106,7 +106,6 @@ export class ProductOptionsService {
                 optionsIds.push(newRecord.id);
             }
         }
-        console.log(newOptions);
         return {
             updatedOptions: null,
             newOptions: newOptions,

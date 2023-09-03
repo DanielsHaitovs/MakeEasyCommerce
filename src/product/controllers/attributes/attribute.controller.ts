@@ -50,8 +50,8 @@ export class ProductAttributeController {
 
     @Get('get/all')
     @ApiOperation({
-        summary: 'Find All Attributes',
-        description: 'Get data of all Attributes, good luck!',
+        summary: 'Find All Product Attributes',
+        description: 'Get data of all Product Attributes, good luck!',
     })
     @ApiQuery({
         name: 'pagination',
@@ -68,7 +68,6 @@ export class ProductAttributeController {
         @Query('includeRules', ParseBoolPipe) includeRules: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
     ): Promise<GetAttributeDto[]> {
-        console.log(filter);
         return await this.attributeService.findAll({
             condition: {
                 page: filter.page,
