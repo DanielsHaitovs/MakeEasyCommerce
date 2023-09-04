@@ -1,13 +1,13 @@
-import { MecBaseEntity } from '@src/base/entity/base.entity';
-import { IsEnum } from 'class-validator';
 import { Column, Entity, Index, OneToMany, RelationId } from 'typeorm';
-import { SimpleProduct } from './product/product-types/product/simple-product.entity';
-import { VirtualProduct } from './product/product-types/product/virtual-product.entity';
-import { ConfigurableProduct } from './product/product-types/configurable-product.entity';
-import { GroupedProduct } from './product/product-types/grouped-product.entity';
-import { PersonalizedProduct } from './product/product-types/product/personalized-product.entity';
-import { ProductAttributes } from './attributes/attributes-product.entity';
+import { IsEnum } from 'class-validator';
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { ProductTypes } from '@src/base/enum/product/product-types.enum';
+import { ConfigurableProduct } from './product/product-types/configurable-product.entity';
+import { ProductAttributes } from './attributes/attributes-product.entity';
+import { SimpleProduct } from './product/product-types/simple-product.entity';
+import { VirtualProduct } from './product/product-types/virtual-product.entity';
+import { GroupedProduct } from './product/product-types/grouped-product.entity';
+import { PersonalizedProduct } from './product/product-types/personalized-product.entity';
 
 @Entity('product_index')
 @Index('product_index_index', ['id', 'product_type'])

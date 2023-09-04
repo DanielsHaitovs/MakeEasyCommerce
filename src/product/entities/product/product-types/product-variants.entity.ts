@@ -1,5 +1,5 @@
 import { Entity, Index, ManyToOne } from 'typeorm';
-import { ConfigurableProduct } from '../configurable-product.entity';
+import { ConfigurableProduct } from './configurable-product.entity';
 import { BaseProduct } from '../base-product.entity';
 
 @Entity('product_type_variants')

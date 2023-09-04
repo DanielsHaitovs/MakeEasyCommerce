@@ -1,6 +1,6 @@
 import { Entity, Index, ManyToOne, OneToMany, RelationId } from 'typeorm';
-import { BaseProduct } from './base-product.entity';
-import { ProductVariants } from './product/product-variants.entity';
+import { BaseProduct } from '../base-product.entity';
+import { ProductVariants } from './product-variants.entity';
 import { Product } from '@src/product/entities/product.entity';
 
 @Entity('product_type_configurable')
