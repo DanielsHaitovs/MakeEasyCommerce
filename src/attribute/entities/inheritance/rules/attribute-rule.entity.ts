@@ -1,7 +1,7 @@
 import { Column, Entity, Index, OneToOne } from 'typeorm';
-import { Rule } from './rule.entity';
 import { Attribute } from '../../attribute.entity';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
+import { Rule } from '@src/base/entity/attributes/rule.entity';
 
 @Entity('attribute_rule')
 @Index('attribute_rule_index', ['id'])

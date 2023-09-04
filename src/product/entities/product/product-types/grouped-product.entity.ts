@@ -6,13 +6,13 @@ import {
     OneToMany,
     RelationId,
 } from 'typeorm';
-import { BaseProduct } from './base-product.entity';
-import { SimpleProduct } from './simple-product.entity';
 import { ConfigurableProduct } from './configurable-product.entity';
-import { PersonalizedProduct } from './personalized-product.entity';
 import { IsEnum } from 'class-validator';
 import { GroupTypes } from '@src/base/enum/product/group-types.enum';
 import { Product } from '@src/product/entities/product.entity';
+import { BaseProduct } from './base-product.entity';
+import { SimpleProduct } from './product/simple-product.entity';
+import { PersonalizedProduct } from './product/personalized-product.entity';
 
 @Entity('product_type_grouped')
 @Index('product_index_grouped', ['id', 'sku', 'name'])

@@ -8,14 +8,15 @@ import { AttributeRule } from './attribute/entities/inheritance/rules/attribute-
 import { ProductModule } from './product/product.module';
 import { Product } from './product/entities/product.entity';
 import { ProductAttributes } from './product/entities/attributes/attributes-product.entity';
-import { ProductVariants } from './product/entities/product-types/product-variants.entity';
-import { SimpleProduct } from './product/entities/product-types/simple-product.entity';
-import { ConfigurableProduct } from './product/entities/product-types/configurable-product.entity';
-import { PersonalizedProduct } from './product/entities/product-types/personalized-product.entity';
-import { GroupedProduct } from './product/entities/product-types/grouped-product.entity';
-import { VirtualProduct } from './product/entities/product-types/virtual-product.entity';
+import { ProductVariants } from './product/entities/product/product-types/product/product-variants.entity';
+import { SimpleProduct } from './product/entities/product/product-types/product/simple-product.entity';
+import { PersonalizedProduct } from './product/entities/product/product-types/product/personalized-product.entity';
+import { VirtualProduct } from './product/entities/product/product-types/product/virtual-product.entity';
 import { ProductOptionValues } from './product/entities/attributes/options/option-values.entity';
 import { ProductAttributeRule } from './product/entities/attributes/rules/attribute-rule.entity';
+import { ConfigurableProduct } from './product/entities/product/product-types/configurable-product.entity';
+import { GroupedProduct } from './product/entities/product/product-types/grouped-product.entity';
+import { SimpleProductOptionValues } from './product/entities/attributes/options/simple-product.entity';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { ProductAttributeRule } from './product/entities/attributes/rules/attrib
                 ProductAttributeRule,
                 ProductVariants,
                 SimpleProduct,
+                SimpleProductOptionValues,
                 ConfigurableProduct,
                 PersonalizedProduct,
                 GroupedProduct,

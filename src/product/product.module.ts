@@ -3,12 +3,12 @@ import { ProductService } from './services/product.service';
 import { ProductController } from './controllers/product.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { SimpleProduct } from './entities/product-types/simple-product.entity';
-import { ConfigurableProduct } from './entities/product-types/configurable-product.entity';
-import { PersonalizedProduct } from './entities/product-types/personalized-product.entity';
-import { GroupedProduct } from './entities/product-types/grouped-product.entity';
-import { ProductVariants } from './entities/product-types/product-variants.entity';
-import { VirtualProduct } from './entities/product-types/virtual-product.entity';
+import { SimpleProduct } from './entities/product/product-types/product/simple-product.entity';
+import { VirtualProduct } from './entities/product/product-types/product/virtual-product.entity';
+import { ProductVariants } from './entities/product/product-types/product/product-variants.entity';
+import { ConfigurableProduct } from './entities/product/product-types/configurable-product.entity';
+import { GroupedProduct } from './entities/product/product-types/grouped-product.entity';
+import { PersonalizedProduct } from './entities/product/product-types/product/personalized-product.entity';
 import { SimpleProductController } from './controllers/simple/simple-product.controller';
 import { SimpleProductService } from './services/simple/simple-product.service';
 import { ProductAttributes } from './entities/attributes/attributes-product.entity';
@@ -20,6 +20,7 @@ import { ProductOptionsService } from './services/attributes/options/product-opt
 import { ProductAttributeController } from './controllers/attributes/attribute.controller';
 import { ProductRulesController } from './controllers/attributes/rules/rules.controller';
 import { ProductOptionsController } from './controllers/attributes/options/options.controller';
+import { SimpleProductOptionValues } from './entities/attributes/options/simple-product.entity';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { ProductOptionsController } from './controllers/attributes/options/optio
             ProductOptionValues,
             ProductVariants,
             SimpleProduct,
+            SimpleProductOptionValues,
             ConfigurableProduct,
             PersonalizedProduct,
             GroupedProduct,

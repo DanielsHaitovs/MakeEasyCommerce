@@ -1,6 +1,6 @@
 import { Entity, Index, ManyToOne } from 'typeorm';
-import { ConfigurableProduct } from './configurable-product.entity';
-import { BaseProduct } from './base-product.entity';
+import { ConfigurableProduct } from '../configurable-product.entity';
+import { BaseProduct } from '../base-product.entity';
 
 @Entity('product_type_variants')
 @Index('product_index_variants', ['id', 'sku', 'name'])

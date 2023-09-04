@@ -8,7 +8,7 @@ import {
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { GetSimpleProductDto } from '@src/product/dto/get-product.dto';
-import { SimpleProduct } from '@src/product/entities/product-types/simple-product.entity';
+import { SimpleProduct } from '@src/product/entities/product/product-types/product/simple-product.entity';
 import { AttributeConditionsDto } from '@src/base/dto/attributes/requests/attribute-requests.dto';
 
 @Injectable()
