@@ -10,9 +10,19 @@ import {
 } from './create-product.dto';
 import { ProductTypes } from '../../base/enum/product/product-types.enum';
 import { GetResponseOptions } from './requests/product-response.dto';
+import { GetAttributeOptionsDto } from '@src/base/dto/attributes/get-attribute.dto';
 
 export class GetVirtualProductDto extends CreateVirtualProductDto {}
-export class GetSimpleProductDto extends CreateSimpleProductDto {}
+export class GetSimpleProductDto extends CreateSimpleProductDto {
+    @ApiProperty({ type: Number })
+    @IsNotEmpty()
+    @IsNumber()
+    id: number;
+
+    @ApiProperty({ type: [GetAttributeOptionsDto] })
+    @ValidateNested({ each: true })
+    attributes: GetAttributeOptionsDto[];
+}
 export class GetConfigurableProduct extends CreateConfigurableProduct {
     @ApiProperty({ type: [GetSimpleProductDto] })
     @ValidateNested({ each: true })

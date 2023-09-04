@@ -22,7 +22,8 @@ export class SimpleProductService {
         createProductDto,
     }: {
         createProductDto: CreateSimpleProductDto;
-    }): Promise<ProductError | ProductSuccess> {
+    }): Promise<GetSimpleProductDto | any> {
+    // }): Promise<ProductError | ProductSuccess> {
         try {
             const validate = await this.productExists({
                 name: createProductDto.name,
