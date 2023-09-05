@@ -1,20 +1,10 @@
-import {
-    Column,
-    Entity,
-    Index,
-    ManyToOne,
-    OneToMany,
-    RelationId,
-} from 'typeorm';
-import { SimpleProduct } from './simple-product.entity';
-import { ConfigurableProduct } from './configurable-product.entity';
-import { PersonalizedProduct } from './personalized-product.entity';
+import { Column, Entity, Index, Unique } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { GroupTypes } from '@src/base/enum/product/group-types.enum';
-import { Product } from '@src/product/entities/product.entity';
-import { BaseProduct } from '../product-inheritance/product-base.entity';
+import { BaseProduct } from '../inheritance/product-base.entity';
 
 @Entity('product_type_grouped')
+@Unique('product_unique_grouped', ['id', 'sku', 'name'])
 @Index('product_index_grouped', ['id', 'sku', 'name'])
 export class GroupedProduct extends BaseProduct {
     @Column()

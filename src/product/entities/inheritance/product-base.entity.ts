@@ -2,9 +2,8 @@ import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 import { ProductVisibility } from '@src/base/enum/product/product-visibility.enum';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
-import { Column, Unique } from 'typeorm';
+import { Column } from 'typeorm';
 
-@Unique(['sku', 'name'])
 export class BaseProduct extends MecBaseEntity {
     @Column()
     @IsEnum(ProductTypes)
@@ -12,11 +11,11 @@ export class BaseProduct extends MecBaseEntity {
 
     @Column()
     @IsString()
-    sku: string;
+    name: string;
 
     @Column()
     @IsString()
-    name: string;
+    sku: string;
 
     @Column()
     @IsEnum(ProductVisibility)

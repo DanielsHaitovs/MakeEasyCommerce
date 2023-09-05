@@ -40,7 +40,6 @@ export class AttributeDescriptionDto {
 export class AttributeOptionsDto {
     @ApiProperty()
     @IsNotEmpty()
-    // value: JSON;
     value: string | number | boolean | Date | JSON;
 }
 

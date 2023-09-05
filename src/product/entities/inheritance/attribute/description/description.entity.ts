@@ -1,10 +1,16 @@
+import { AttributeType } from '@src/base/enum/attributes/attribute-type.enum';
+import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Column, Index, Unique } from 'typeorm';
-import { AttributeType } from '../../../../base/enum/attributes/attribute-type.enum';
 
-@Unique('attribute_description_unique', ['name', 'code'])
+@Unique('product_unique_attribute_description', ['name', 'code'])
 @Index('product_index_attribute_description', ['name', 'code'])
 export abstract class AttributeDescription {
+    @Column({ default: false })
+    @IsNotEmpty()
+    @IsBoolean()
+    isActive: boolean;
+
     @Column()
     @IsNotEmpty()
     @IsString()
@@ -29,4 +35,8 @@ export abstract class AttributeDescription {
     @IsNotEmpty()
     @IsBoolean()
     isArray: boolean;
+
+    @Column('simple-array')
+    @IsEnum([ProductTypes])
+    appliesTo: ProductTypes[];
 }

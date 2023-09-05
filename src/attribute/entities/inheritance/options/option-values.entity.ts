@@ -1,7 +1,7 @@
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { Attribute } from '../../attribute.entity';
 import { IsEnum } from 'class-validator';
-import { AttributeType } from '../../enum/type.enum';
+import { AttributeType } from '../../../../base/enum/attributes/attribute-type.enum';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
 
 @Entity('attribute_options')
