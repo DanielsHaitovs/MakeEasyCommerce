@@ -36,7 +36,7 @@ export abstract class AttributeDescription {
     @IsBoolean()
     isArray: boolean;
 
-    @Column('simple-array')
-    @IsEnum([ProductTypes])
-    appliesTo: ProductTypes[];
+    @Column()
+    @IsEnum(ProductTypes)
+    appliesTo: string;
 }

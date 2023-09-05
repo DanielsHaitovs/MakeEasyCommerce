@@ -15,6 +15,7 @@ import { UpdateAttributeDto } from '@src/product/dto/attributes/update-attribute
 import { GetUpdatedOptionsDto } from '@src/product/dto/attributes/option/get-option.dto';
 import { ProductAttributeOption } from '@src/product/entities/inheritance/attribute/options/attribute-option.entity';
 import { ProductAttributeRule } from '@src/product/entities/inheritance/attribute/rule/attribute-rule.entity';
+import { AttributeResponse } from '@src/base/dto/response/attribute.response.dto';
 
 @Injectable()
 export class ProductAttributeService {
@@ -53,6 +54,10 @@ export class ProductAttributeService {
             };
         }
 
+        // Order should be changed
+        // currently if I do save and error occurs when saving attribute
+        // there will appear records for options and rules
+        // Lets take risk and try with cascade approach
         const newAttribute: CreateAttributeDto = this.entityManager.create(
             ProductAttributes,
             {
@@ -79,21 +84,30 @@ export class ProductAttributeService {
     }: {
         id: number;
         loadRelations: AttributeRelationsDto;
-    }): Promise<GetAttributeDto> {
+    }): Promise<AttributeResponse> {
         try {
-            return (
-                await this.findAttributeQuery({
-                    condition: {
-                        page: 1,
-                        limit: 1,
-                        code: 'id',
-                        value: `${id}`,
-                        includeRule: loadRelations.includeRule,
-                        includeOptions: loadRelations.includeOptions,
+            const res: GetAttributeDto = await this.findAttributeQuery({
+                condition: {
+                    page: 1,
+                    limit: 1,
+                    code: 'id',
+                    value: `${id}`,
+                    includeRule: loadRelations.includeRule,
+                    includeOptions: loadRelations.includeOptions,
+                },
+                many: false,
+            });
+
+            if (res.id != null) {
+                return {
+                    result: {
+                        message:
+                            'Successfully retrieved list of product attributes',
+                        status: 999,
+                        result: res,
                     },
-                    many: false,
-                })
-            ).shift();
+                };
+            }
         } catch (e) {
             return e.message;
         }
@@ -138,11 +152,9 @@ export class ProductAttributeService {
 
     async update({
         id,
-        keepOldOptions,
         updateAttributeDto,
     }: {
         id: number;
-        keepOldOptions: boolean;
         updateAttributeDto: UpdateAttributeDto;
     }): Promise<any> {
         const attribute: GetAttributeDto = await this.entityManager.preload(
@@ -168,12 +180,16 @@ export class ProductAttributeService {
     }
 
     async remove({ id }: { id: number }): Promise<any> {
-        const attribute: GetAttributeDto = await this.findOneById({
-            id: id,
-            loadRelations: {
+        const attribute: GetAttributeDto = await this.findAttributeQuery({
+            condition: {
+                page: 1,
+                limit: 0,
+                code: 'id',
+                value: `${id}`,
                 includeOptions: true,
                 includeRule: true,
             },
+            many: true,
         });
 
         if (attribute.options != null && attribute.options != undefined) {
@@ -256,7 +272,7 @@ export class ProductAttributeService {
     }: {
         condition: PaginationFilterDto;
         many: boolean;
-    }): Promise<any[]> {
+    }): Promise<any[] | any> {
         let where = '';
         let query = null;
         if (condition.code && condition.value) {

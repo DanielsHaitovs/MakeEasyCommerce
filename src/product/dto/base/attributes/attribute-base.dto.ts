@@ -32,8 +32,8 @@ export class AttributeDescriptionDto {
     @IsBoolean()
     isArray: boolean;
 
-    @ApiProperty({ type: 'simple-array' })
+    @ApiProperty()
     @IsNotEmpty()
     @IsEnum(ProductTypes)
-    appliesTo: ProductTypes[];
+    appliesTo: string;
 }
