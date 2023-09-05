@@ -7,6 +7,7 @@ import { SimpleProduct } from './product/entities/types/simple-product.entity';
 import { ProductAttributes } from './product/entities/attributes/product-attribute.entity';
 import { ProductAttributeOption } from './product/entities/inheritance/attribute/options/attribute-option.entity';
 import { SimpleProductOptions } from './product/entities/inheritance/attribute/options/simple/simple-product-option.entity';
+import { ProductAttributeRule } from './product/entities/inheritance/attribute/rule/attribute-rule.entity';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { SimpleProductOptions } from './product/entities/inheritance/attribute/o
                 SimpleProduct,
                 ProductAttributes,
                 ProductAttributeOption,
+                ProductAttributeRule,
                 SimpleProductOptions,
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
