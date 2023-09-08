@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { PaginationDto } from '@src/base/dto/filters/pagination.dto';
-import { CreateAttributeOptionsDto } from '@src/product/dto/attributes/option/create-option.dto';
+import { CreateAttributeOptionsDto } from '@src/product/dto/attributes/options/create-option.dto';
 import {
     GetAttributeOptionsDto,
     GetUpdatedOptionsDto,
-} from '@src/product/dto/attributes/option/get-option.dto';
-import { UpdateAttributeOptionsDto } from '@src/product/dto/attributes/option/update-option.dto';
-import { ProductAttributeOption } from '@src/product/entities/inheritance/attribute/options/attribute-option.entity';
+} from '@src/product/dto/attributes/options/get-option.dto';
+import { UpdateAttributeOptionsDto } from '@src/product/dto/attributes/options/update-option.dto';
+import { ProductAttributeOption } from '@src/product/entities/attributes/options/attribute-option.entity';
 import { EntityManager } from 'typeorm';
 
 @Injectable()

@@ -6,9 +6,9 @@ import {
     IsOptional,
     ValidateNested,
 } from 'class-validator';
-import { GetAttributeOptionsDto } from './option/get-option.dto';
-import { GetAttributeRulesDto } from './rule/get-rule.dto';
-import { AttributeDescriptionDto } from '../base/attributes/attribute-base.dto';
+import { AttributeDescriptionDto } from '../../base/attributes/attribute-base.dto';
+import { GetAttributeOptionsDto } from '../options/get-option.dto';
+import { GetAttributeRulesDto } from '../rules/get-rule.dto';
 
 export class GetAttributeShortDto {
     @ApiProperty({ type: Number })

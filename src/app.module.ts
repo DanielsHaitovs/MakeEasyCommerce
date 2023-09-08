@@ -3,11 +3,11 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductModule } from './product/product.module';
 import { Product } from './product/entities/product.entity';
-import { SimpleProduct } from './product/entities/types/simple-product.entity';
+import { SimpleProduct } from './product/entities/products/types/simple-product.entity';
 import { ProductAttributes } from './product/entities/attributes/product-attribute.entity';
-import { ProductAttributeOption } from './product/entities/inheritance/attribute/options/attribute-option.entity';
-import { SimpleProductOptions } from './product/entities/inheritance/attribute/options/simple/simple-product-option.entity';
-import { ProductAttributeRule } from './product/entities/inheritance/attribute/rule/attribute-rule.entity';
+import { ProductAttributeRule } from './product/entities/attributes/rule/attribute-rule.entity';
+import { ProductAttributeOption } from './product/entities/attributes/options/attribute-option.entity';
+import { SimpleProductOptions } from './product/entities/attributes/options/simple/simple-product-option.entity';
 
 @Module({
     imports: [

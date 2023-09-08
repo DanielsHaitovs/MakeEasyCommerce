@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { CreateAttributeRulesDto } from './rule/create-rule.dto';
-import { AttributeDescriptionDto } from '../base/attributes/attribute-base.dto';
-import { CreateAttributeOptionsDto } from './option/create-option.dto';
+import { CreateAttributeRulesDto } from '../rules/create-rule.dto';
+import { AttributeDescriptionDto } from '../../base/attributes/attribute-base.dto';
+import { CreateAttributeOptionsDto } from '../options/create-option.dto';
 
 export class CreateAttributeDto {
     @ApiProperty({ type: AttributeDescriptionDto })

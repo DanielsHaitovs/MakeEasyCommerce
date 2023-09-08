@@ -21,9 +21,9 @@ import {
 import { FilterAttributeDto } from '@src/base/dto/filters/attribute/attribute-relation.dto';
 import { PaginationDto } from '@src/base/dto/filters/pagination.dto';
 import { AttributeResponse } from '@src/base/dto/response/attribute.response.dto';
-import { CreateAttributeDto } from '@src/product/dto/attributes/create-attribute.dto';
-import { GetAttributeDto } from '@src/product/dto/attributes/get-attribute.dto';
-import { UpdateAttributeDto } from '@src/product/dto/attributes/update-attribute.dto';
+import { CreateAttributeDto } from '@src/product/dto/attributes/attribute/create-attribute.dto';
+import { GetAttributeDto } from '@src/product/dto/attributes/attribute/get-attribute.dto';
+import { UpdateAttributeDto } from '@src/product/dto/attributes/attribute/update-attribute.dto';
 import { ProductAttributeService } from '@src/product/services/attributes/product-attribute.service';
 
 @Controller('product_attributes')

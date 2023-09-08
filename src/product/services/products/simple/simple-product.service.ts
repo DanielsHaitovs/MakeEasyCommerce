@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { CreateSimpleProductDto } from '@src/product/dto/product-types/create-simple-product.dto';
-import { UpdateSimpleProductDto } from '@src/product/dto/product-types/update-simple-product.dto';
-import { SimpleProduct } from '@src/product/entities/types/simple-product.entity';
+import { UpdateSimpleProductDto } from '@src/product/dto/product-types/simple/update-simple-product.dto';
 import { EntityManager } from 'typeorm';
 import { ProductAttributeService } from '../../attributes/product-attribute.service';
 import { ProductAttributes } from '@src/product/entities/attributes/product-attribute.entity';
-import { GetSimpleProductDto } from '@src/product/dto/product-types/get-simple-product.dto';
 import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 import {
     GetAttributeOptionsDto,
     GetProductAttributeOptionsList,
-} from '@src/product/dto/attributes/option/get-option.dto';
-import { SimpleProductOptions } from '@src/product/entities/inheritance/attribute/options/simple/simple-product-option.entity';
+} from '@src/product/dto/attributes/options/get-option.dto';
+import { SimpleProduct } from '@src/product/entities/products/types/simple-product.entity';
+import { SimpleProductOptions } from '@src/product/entities/attributes/options/simple/simple-product-option.entity';
+import { CreateSimpleProductDto } from '@src/product/dto/product-types/simple/create-simple-product.dto';
+import { GetSimpleProductDto } from '@src/product/dto/product-types/simple/get-simple-product.dto';
 
 @Injectable()
 export class SimpleProductService {

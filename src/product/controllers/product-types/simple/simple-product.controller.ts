@@ -8,9 +8,9 @@ import {
     Delete,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateSimpleProductDto } from '@src/product/dto/product-types/create-simple-product.dto';
-import { UpdateSimpleProductDto } from '@src/product/dto/product-types/update-simple-product.dto';
-import { SimpleProductService } from '@src/product/services/product-types/simple/simple-product.service';
+import { CreateSimpleProductDto } from '@src/product/dto/product-types/simple/create-simple-product.dto';
+import { UpdateSimpleProductDto } from '@src/product/dto/product-types/simple/update-simple-product.dto';
+import { SimpleProductService } from '@src/product/services/products/simple/simple-product.service';
 
 @Controller('simple_product')
 @ApiTags('Simple Product')

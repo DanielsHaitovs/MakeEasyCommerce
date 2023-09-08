@@ -1,6 +1,6 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { Entity, Index, OneToMany, OneToOne, RelationId } from 'typeorm';
-import { SimpleProduct } from './types/simple-product.entity';
+import { SimpleProduct } from './products/types/simple-product.entity';
 import { ProductAttributes } from './attributes/product-attribute.entity';
 
 @Entity('product_index')

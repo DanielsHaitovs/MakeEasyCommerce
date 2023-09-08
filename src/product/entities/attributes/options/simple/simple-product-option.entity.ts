@@ -2,9 +2,9 @@ import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { AttributeType } from '@src/base/enum/attributes/attribute-type.enum';
-import { SimpleProduct } from '@src/product/entities/types/simple-product.entity';
 import { ProductAttributeOption } from '../attribute-option.entity';
 import { ProductAttributes } from '@src/product/entities/attributes/product-attribute.entity';
+import { SimpleProduct } from '@src/product/entities/products/types/simple-product.entity';
 
 @Entity('product_simple_attribute_options')
 @Index('product_simple_index_option', ['id', 'value'])

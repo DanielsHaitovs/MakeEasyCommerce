@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { CreateAttributeDto } from '@src/product/dto/attributes/create-attribute.dto';
+import { CreateAttributeDto } from '@src/product/dto/attributes/attribute/create-attribute.dto';
 import { ProductAttributes } from '@src/product/entities/attributes/product-attribute.entity';
 import { EntityManager } from 'typeorm';
 import { ProductOptionsService } from './options/product-options.service';
@@ -10,12 +10,12 @@ import {
     PaginateAttributeRelationsDto,
     PaginationFilterDto,
 } from '@src/base/dto/filters/attribute/attribute-relation.dto';
-import { GetAttributeDto } from '@src/product/dto/attributes/get-attribute.dto';
-import { UpdateAttributeDto } from '@src/product/dto/attributes/update-attribute.dto';
-import { GetUpdatedOptionsDto } from '@src/product/dto/attributes/option/get-option.dto';
-import { ProductAttributeOption } from '@src/product/entities/inheritance/attribute/options/attribute-option.entity';
-import { ProductAttributeRule } from '@src/product/entities/inheritance/attribute/rule/attribute-rule.entity';
+import { GetUpdatedOptionsDto } from '@src/product/dto/attributes/options/get-option.dto';
+import { ProductAttributeRule } from '@src/product/entities/attributes/rule/attribute-rule.entity';
 import { AttributeResponse } from '@src/base/dto/response/attribute.response.dto';
+import { ProductAttributeOption } from '@src/product/entities/attributes/options/attribute-option.entity';
+import { GetAttributeDto } from '@src/product/dto/attributes/attribute/get-attribute.dto';
+import { UpdateAttributeDto } from '@src/product/dto/attributes/attribute/update-attribute.dto';
 
 @Injectable()
 export class ProductAttributeService {

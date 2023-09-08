@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { PaginationDto } from '@src/base/dto/filters/pagination.dto';
-import { CreateAttributeRulesDto } from '@src/product/dto/attributes/rule/create-rule.dto';
-import { GetAttributeRulesDto } from '@src/product/dto/attributes/rule/get-rule.dto';
-import { UpdateAttributeRulesDto } from '@src/product/dto/attributes/rule/update-rule.dto';
-import { ProductAttributeRule } from '@src/product/entities/inheritance/attribute/rule/attribute-rule.entity';
+import { CreateAttributeRulesDto } from '@src/product/dto/attributes/rules/create-rule.dto';
+import { GetAttributeRulesDto } from '@src/product/dto/attributes/rules/get-rule.dto';
+import { UpdateAttributeRulesDto } from '@src/product/dto/attributes/rules/update-rule.dto';
+import { ProductAttributeRule } from '@src/product/entities/attributes/rule/attribute-rule.entity';
 import { EntityManager } from 'typeorm';
 
 @Injectable()

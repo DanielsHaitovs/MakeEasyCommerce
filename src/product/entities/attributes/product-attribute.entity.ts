@@ -9,11 +9,11 @@ import {
     PrimaryGeneratedColumn,
     RelationId,
 } from 'typeorm';
-import { AttributeDescription } from '../inheritance/attribute/description/description.entity';
-import { ProductAttributeOption } from '../inheritance/attribute/options/attribute-option.entity';
 import { Product } from '../product.entity';
-import { ProductAttributeRule } from '../inheritance/attribute/rule/attribute-rule.entity';
-import { SimpleProductOptions } from '../inheritance/attribute/options/simple/simple-product-option.entity';
+import { ProductAttributeRule } from './rule/attribute-rule.entity';
+import { ProductAttributeOption } from './options/attribute-option.entity';
+import { SimpleProductOptions } from './options/simple/simple-product-option.entity';
+import { AttributeDescription } from './attribute-description.entity';
 
 @Entity('product_attribute_index')
 @Index('product_index_attribute', ['id'])

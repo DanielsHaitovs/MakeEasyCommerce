@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
-import { ProductDto } from '../base/products/product-base.dto';
-import { GetAttributeOptionsDto } from '../attributes/option/get-option.dto';
+import { ProductDto } from '../../base/products/product-base.dto';
+import { GetAttributeOptionsDto } from '../../attributes/options/get-option.dto';
 
 export class GetSimpleProductDto {
     @ApiProperty({ type: Number })
