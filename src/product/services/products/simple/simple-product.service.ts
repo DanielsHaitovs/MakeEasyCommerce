@@ -14,6 +14,7 @@ import { SimpleProduct } from '@src/product/entities/products/types/simple-produ
 import { SimpleProductOptions } from '@src/product/entities/attributes/options/simple/simple-product-option.entity';
 import { CreateSimpleProductDto } from '@src/product/dto/product-types/simple/create-simple-product.dto';
 import { GetSimpleProductDto } from '@src/product/dto/product-types/simple/get-simple-product.dto';
+import { AttributeType } from '@src/base/enum/attributes/attribute-type.enum';
 
 @Injectable()
 export class SimpleProductService {
@@ -26,13 +27,16 @@ export class SimpleProductService {
         createProductDto,
     }: {
         createProductDto: CreateSimpleProductDto;
-    }): Promise<any> {
+    }): Promise<GetSimpleProductDto> {
         createProductDto.product_type = ProductTypes.SIMPLE;
         const { attribute_values, ...product } = createProductDto;
         const newSimpleProduct: GetSimpleProductDto =
             await this.entityManager.save(
                 SimpleProduct,
-                this.entityManager.create(SimpleProduct, product),
+                this.entityManager.create(SimpleProduct, {
+                    product_type: ProductTypes.SIMPLE,
+                    ...product,
+                }),
             );
         const productAttributes: GetProductAttributeOptionsList[] =
             await this.entityManager
@@ -43,6 +47,7 @@ export class SimpleProductService {
                     'attribute.description.name',
                     'attribute.description.code',
                     'attribute.description.isRequired',
+                    'attribute.description.dataType',
                 ])
                 .leftJoinAndMapMany(
                     'attribute.options',
@@ -54,7 +59,6 @@ export class SimpleProductService {
                     {
                         description: {
                             isActive: 'true',
-                            // isRequired: 'true',
                         },
                     },
                 ])
@@ -66,29 +70,49 @@ export class SimpleProductService {
                 (attribute) =>
                     attribute.description.code === requestedValues.code,
             );
-            if (attribute) {
+            if (attribute != undefined) {
                 const option = attribute.options.find(
                     (option) => option.value === requestedValues.value,
                 );
-                requestedOptionsEntities.push({
-                    id: attribute.id,
-                    name: attribute.description.name,
-                    code: attribute.description.code,
-                    isRequired: attribute.description.isRequired,
-                    options: {
-                        id: option.id,
-                        value: option.value,
-                        parentAttributeId: attribute.id,
-                        parentOptionId: option.id,
-                    },
-                });
-            } else {
-                throw new Error('Missing data for required attribute');
+
+                if (option != undefined) {
+                    requestedOptionsEntities.push({
+                        id: attribute.id,
+                        name: attribute.description.name,
+                        code: attribute.description.code,
+                        isRequired: attribute.description.isRequired,
+                        options: {
+                            id: option.id,
+                            value: option.value,
+                            parentAttributeId: attribute.id,
+                            parentOptionId: option.id,
+                        },
+                    });
+                } else {
+                    if (attribute.description.isRequired) {
+                        throw new Error(`Missing data for required attribute`);
+                    }
+                    requestedOptionsEntities.push({
+                        id: attribute.id,
+                        name: attribute.description.name,
+                        code: attribute.description.code,
+                        isRequired: attribute.description.isRequired,
+                        options: null,
+                    });
+                }
             }
         }
-        console.log(requestedOptionsEntities);
 
         for (const entity of requestedOptionsEntities) {
+            if (entity.options === null) {
+                entity.options = {
+                    parentAttributeId: entity.id,
+                    parentOptionId: null,
+                    id: null,
+                    value: null,
+                };
+            }
+
             const newProductAttributeOption = this.entityManager.create(
                 SimpleProductOptions,
                 {
@@ -100,12 +124,19 @@ export class SimpleProductService {
                     },
                 },
             );
-            await this.entityManager.save(
-                SimpleProductOptions,
-                newProductAttributeOption,
-            );
+            const savedOptions: GetAttributeOptionsDto =
+                await this.entityManager.save(
+                    SimpleProductOptions,
+                    newProductAttributeOption,
+                );
+
+            newSimpleProduct.options = [savedOptions];
         }
-        return 'This action adds a new product';
+
+        // I need to review this!
+        // return does not make sense.
+        // I don't need mentioning of product in each object...
+        return newSimpleProduct;
     }
 
     findAll() {

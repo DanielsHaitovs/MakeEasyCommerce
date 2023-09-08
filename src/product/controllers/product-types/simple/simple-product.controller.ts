@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateSimpleProductDto } from '@src/product/dto/product-types/simple/create-simple-product.dto';
+import { GetSimpleProductDto } from '@src/product/dto/product-types/simple/get-simple-product.dto';
 import { UpdateSimpleProductDto } from '@src/product/dto/product-types/simple/update-simple-product.dto';
 import { SimpleProductService } from '@src/product/services/products/simple/simple-product.service';
 
@@ -30,7 +31,7 @@ export class SimpleProductController {
     })
     async create(
         @Body() createProductDto: CreateSimpleProductDto,
-    ): Promise<any> {
+    ): Promise<GetSimpleProductDto> {
         return await this.productService.create({ createProductDto });
     }
     @Get()

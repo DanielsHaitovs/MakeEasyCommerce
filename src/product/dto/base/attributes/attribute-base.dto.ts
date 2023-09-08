@@ -23,6 +23,11 @@ export class AttributeShortDescriptionDto {
     @IsNotEmpty()
     @IsBoolean()
     isRequired: boolean;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    dataType: string;
 }
 
 export class AttributeDescriptionDto extends AttributeShortDescriptionDto {
@@ -35,11 +40,6 @@ export class AttributeDescriptionDto extends AttributeShortDescriptionDto {
     @IsNotEmpty()
     @IsString()
     description: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsString()
-    dataType: string;
 
     @ApiProperty()
     @IsBoolean()

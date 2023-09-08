@@ -10,9 +10,6 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { AttributeShortDescriptionDto } from '../../base/attributes/attribute-base.dto';
-import { GetAttributeDto } from '../attribute/get-attribute.dto';
-import { GetSimpleProductDto } from '../../product-types/simple/get-simple-product.dto';
-import { SimpleProduct } from '@src/product/entities/products/types/simple-product.entity';
 
 export class GetAttributeOptionsDto extends CreateAttributeOptionsDto {
     @ApiProperty({ type: Number })

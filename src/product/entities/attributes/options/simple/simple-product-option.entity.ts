@@ -9,7 +9,7 @@ import { SimpleProduct } from '@src/product/entities/products/types/simple-produ
 @Entity('product_simple_attribute_options')
 @Index('product_simple_index_option', ['id', 'value'])
 export class SimpleProductOptions extends MecBaseEntity {
-    @Column('jsonb', { nullable: false })
+    @Column('jsonb', { nullable: true })
     @IsEnum(AttributeType)
     value: string | number | boolean | Date | JSON;
 

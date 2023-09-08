@@ -9,9 +9,9 @@ export class GetSimpleProductDto {
     @IsNumber()
     id: number;
 
-    @ApiProperty({ type: ProductDto })
-    @IsNotEmpty()
-    description: ProductDto;
+    // @ApiProperty({ type: ProductDto })
+    // @IsNotEmpty()
+    // description: ProductDto;
 
     @ApiProperty({ type: GetAttributeOptionsDto })
     @ValidateNested({ each: true })
