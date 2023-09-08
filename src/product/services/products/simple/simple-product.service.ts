@@ -7,6 +7,7 @@ import { ProductAttributes } from '@src/product/entities/attributes/product-attr
 import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 import {
     GetAttributeOptionsDto,
+    GetMappedAttributeOptionsDto,
     GetProductAttributeOptionsList,
 } from '@src/product/dto/attributes/options/get-option.dto';
 import { SimpleProduct } from '@src/product/entities/products/types/simple-product.entity';
@@ -52,14 +53,14 @@ export class SimpleProductService {
                 .where([
                     {
                         description: {
-                            // isActive: 'true',
-                            isRequired: 'true',
+                            isActive: 'true',
+                            // isRequired: 'true',
                         },
                     },
                 ])
                 .getMany();
 
-        const requestedOptionsEntities: GetAttributeOptionsDto[] = [];
+        const requestedOptionsEntities: GetMappedAttributeOptionsDto[] = [];
         for (const requestedValues of attribute_values) {
             const attribute = productAttributes.find(
                 (attribute) =>
@@ -69,20 +70,34 @@ export class SimpleProductService {
                 const option = attribute.options.find(
                     (option) => option.value === requestedValues.value,
                 );
-                requestedOptionsEntities.push(option);
+                requestedOptionsEntities.push({
+                    id: attribute.id,
+                    name: attribute.description.name,
+                    code: attribute.description.code,
+                    isRequired: attribute.description.isRequired,
+                    options: {
+                        id: option.id,
+                        value: option.value,
+                        parentAttributeId: attribute.id,
+                        parentOptionId: option.id,
+                    },
+                });
             } else {
                 throw new Error('Missing data for required attribute');
             }
         }
+        console.log(requestedOptionsEntities);
 
-        for (const option of requestedOptionsEntities) {
+        for (const entity of requestedOptionsEntities) {
             const newProductAttributeOption = this.entityManager.create(
                 SimpleProductOptions,
                 {
                     simpleProduct: newSimpleProduct,
-                    parentOption: option,
-                    value: option.value,
-                    parentAttribute: null,
+                    parentOption: entity.options,
+                    value: entity.options.value,
+                    parentAttribute: {
+                        id: entity.id,
+                    },
                 },
             );
             await this.entityManager.save(
