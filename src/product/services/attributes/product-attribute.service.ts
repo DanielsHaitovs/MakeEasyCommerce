@@ -86,19 +86,20 @@ export class ProductAttributeService {
         loadRelations: AttributeRelationsDto;
     }): Promise<AttributeResponse> {
         try {
-            const res: GetAttributeDto = await this.findAttributeQuery({
-                condition: {
-                    page: 1,
-                    limit: 1,
-                    code: 'id',
-                    value: `${id}`,
-                    includeRule: loadRelations.includeRule,
-                    includeOptions: loadRelations.includeOptions,
-                },
-                many: false,
-            });
+            const res: GetAttributeDto | GetAttributeDto[] =
+                await this.findAttributeQuery({
+                    condition: {
+                        page: 1,
+                        limit: 1,
+                        code: 'id',
+                        value: `${id}`,
+                        includeRule: loadRelations.includeRule,
+                        includeOptions: loadRelations.includeOptions,
+                    },
+                    many: false,
+                });
 
-            if (res.id != null) {
+            if (res != null) {
                 return {
                     result: {
                         message:
@@ -117,21 +118,35 @@ export class ProductAttributeService {
         condition,
     }: {
         condition: PaginateAttributeRelationsDto;
-    }): Promise<GetAttributeDto[]> {
+    }): Promise<AttributeResponse> {
         try {
-            return await this.findAttributeQuery({
-                condition: {
-                    limit: condition.limit,
-                    page: condition.page,
-                    includeOptions: condition.includeOptions,
-                    includeRule: condition.includeRule,
-                    code: '',
-                    value: '',
+            return {
+                result: {
+                    message: 'Successfully retrieved list of attributes',
+                    status: 999,
+                    result: await this.findAttributeQuery({
+                        condition: {
+                            limit: condition.limit,
+                            page: condition.page,
+                            includeOptions: condition.includeOptions,
+                            includeRule: condition.includeRule,
+                            code: '',
+                            value: '',
+                        },
+                        many: true,
+                    }),
                 },
-                many: true,
-            });
+            };
         } catch (e) {
-            return e.message;
+            return {
+                result: {
+                    message: 'Failed to retrieve list of attributes',
+                    result: {
+                        message: `${e.message}`,
+                        status: 999,
+                    },
+                },
+            };
         }
     }
 
@@ -139,14 +154,28 @@ export class ProductAttributeService {
         condition,
     }: {
         condition: PaginationFilterDto;
-    }): Promise<GetAttributeDto[]> {
+    }): Promise<AttributeResponse> {
         try {
-            return await this.findAttributeQuery({
-                condition: condition,
-                many: true,
-            });
+            return {
+                result: {
+                    message: 'Successfully retrieved list of attributes',
+                    status: 999,
+                    result: await this.findAttributeQuery({
+                        condition: condition,
+                        many: true,
+                    }),
+                },
+            };
         } catch (e) {
-            return e.message;
+            return {
+                result: {
+                    message: 'Failed to retrieve list of attributes',
+                    result: {
+                        message: `${e.message}`,
+                        status: 999,
+                    },
+                },
+            };
         }
     }
 
@@ -180,17 +209,18 @@ export class ProductAttributeService {
     }
 
     async remove({ id }: { id: number }): Promise<any> {
-        const attribute: GetAttributeDto = await this.findAttributeQuery({
-            condition: {
-                page: 1,
-                limit: 0,
-                code: 'id',
-                value: `${id}`,
-                includeOptions: true,
-                includeRule: true,
-            },
-            many: true,
-        });
+        const attribute: GetAttributeDto = (
+            await this.findBy({
+                condition: {
+                    page: 1,
+                    limit: 0,
+                    code: 'id',
+                    value: `${id}`,
+                    includeOptions: true,
+                    includeRule: true,
+                },
+            })
+        ).result.result;
 
         if (attribute.options != null && attribute.options != undefined) {
             for (const option of attribute.options) {
@@ -272,7 +302,7 @@ export class ProductAttributeService {
     }: {
         condition: PaginationFilterDto;
         many: boolean;
-    }): Promise<any[] | any> {
+    }): Promise<GetAttributeDto[] | GetAttributeDto> {
         let where = '';
         let query = null;
         if (condition.code && condition.value) {
@@ -280,6 +310,8 @@ export class ProductAttributeService {
             query = {};
             query[condition.code] = condition.value;
         }
+
+        console.log(where, query);
 
         if (!many && condition.includeOptions && condition.includeRule) {
             return [
@@ -333,46 +365,40 @@ export class ProductAttributeService {
         const skip = (condition.page - 1) * condition.limit;
 
         if (many && condition.includeOptions && condition.includeRule) {
-            return [
-                await this.entityManager
-                    .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
-                    .leftJoinAndSelect('attribute.options', 'options')
-                    .where(where, query)
-                    .orderBy('options.id', 'ASC')
-                    .skip(skip)
-                    .take(condition.limit)
-                    .getMany(),
-            ];
+            return await this.entityManager
+                .getRepository(ProductAttributes)
+                .createQueryBuilder('attribute')
+                .leftJoinAndSelect('attribute.rule', 'rule')
+                .leftJoinAndSelect('attribute.options', 'options')
+                .where(where, query)
+                .orderBy('options.id', 'ASC')
+                .skip(skip)
+                .take(condition.limit)
+                .getMany();
         }
 
         if (many && !condition.includeOptions && condition.includeRule) {
-            return [
-                await this.entityManager
-                    .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.rule', 'rule')
-                    .where(where, query)
-                    .orderBy('options.id', 'ASC')
-                    .skip(skip)
-                    .take(condition.limit)
-                    .getMany(),
-            ];
+            return await this.entityManager
+                .getRepository(ProductAttributes)
+                .createQueryBuilder('attribute')
+                .leftJoinAndSelect('attribute.rule', 'rule')
+                .where(where, query)
+                .orderBy('options.id', 'ASC')
+                .skip(skip)
+                .take(condition.limit)
+                .getMany();
         }
 
         if (many && condition.includeOptions && !condition.includeRule) {
-            return [
-                await this.entityManager
-                    .getRepository(ProductAttributes)
-                    .createQueryBuilder('attribute')
-                    .leftJoinAndSelect('attribute.options', 'options')
-                    .where(where, query)
-                    .orderBy('options.id', 'ASC')
-                    .skip(skip)
-                    .take(condition.limit)
-                    .getMany(),
-            ];
+            return await this.entityManager
+                .getRepository(ProductAttributes)
+                .createQueryBuilder('attribute')
+                .leftJoinAndSelect('attribute.options', 'options')
+                .where(where, query)
+                .orderBy('options.id', 'ASC')
+                .skip(skip)
+                .take(condition.limit)
+                .getMany();
         }
 
         return await this.entityManager

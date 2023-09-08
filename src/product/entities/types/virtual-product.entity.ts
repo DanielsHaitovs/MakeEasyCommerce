@@ -1,5 +1,4 @@
-import { Entity, Index, ManyToOne, Unique } from 'typeorm';
-import { Product } from '@src/product/entities/product.entity';
+import { Entity, Index, Unique } from 'typeorm';
 import { BaseProduct } from '../inheritance/product-base.entity';
 
 @Entity('product_type_virtual')

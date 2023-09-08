@@ -1,10 +1,19 @@
 import { ProductDto } from '../base/products/product-base.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { ValidateNested } from 'class-validator';
-import { AttributeOptionsDto } from '../base/attributes/options/option-base.dto';
+import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { AssignedOptionsDto } from '../base/attributes/options/option-base.dto';
+import { Exclude } from 'class-transformer';
+import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 
-export class CreateSimpleProductDto extends ProductDto {
-    @ApiProperty({ type: [AttributeOptionsDto] })
+export class CreateSimpleProductDto {
+    @ApiProperty({ type: ProductDto })
+    @IsNotEmpty()
+    description: ProductDto;
+
+    @ApiProperty({ type: [AssignedOptionsDto] })
     @ValidateNested({ each: true })
-    options: AttributeOptionsDto[];
+    attribute_values: [AssignedOptionsDto];
+
+    @Exclude()
+    product_type: ProductTypes;
 }

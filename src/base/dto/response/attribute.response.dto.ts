@@ -1,6 +1,6 @@
 export class AttributeError {
     message: string;
-    errors: {
+    result: {
         message: string;
         status: number;
     };

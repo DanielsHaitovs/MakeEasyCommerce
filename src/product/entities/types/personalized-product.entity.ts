@@ -1,4 +1,4 @@
-import { Entity, Index, ManyToOne, Unique } from 'typeorm';
+import { Entity, Index, Unique } from 'typeorm';
 import { BaseProduct } from '../inheritance/product-base.entity';
 
 @Entity('product_type_personalized')

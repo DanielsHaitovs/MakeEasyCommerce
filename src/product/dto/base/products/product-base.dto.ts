@@ -22,7 +22,7 @@ export class ProductDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsEnum(ProductVisibility)
-    visibility: ProductTypes;
+    visibility: ProductVisibility;
 
     @ApiProperty({ type: Number })
     @IsNotEmpty()

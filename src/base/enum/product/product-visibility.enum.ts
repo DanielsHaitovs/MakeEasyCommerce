@@ -1,7 +1,7 @@
 export enum ProductVisibility {
+    AVAILABLE = 'available',
     CATALOG = 'catalog',
     SEARCH = 'search',
     NOT_VISIBLE = 'not_visible',
-    VISIBLE = 'visible',
-    SOLDOUT = 'soldout',
+    SOLD_OUT = 'sold_out',
 }

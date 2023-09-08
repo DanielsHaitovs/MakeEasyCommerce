@@ -6,17 +6,21 @@ import {
     ManyToOne,
     OneToMany,
     OneToOne,
+    PrimaryGeneratedColumn,
     RelationId,
 } from 'typeorm';
-import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { AttributeDescription } from '../inheritance/attribute/description/description.entity';
 import { ProductAttributeOption } from '../inheritance/attribute/options/attribute-option.entity';
 import { Product } from '../product.entity';
 import { ProductAttributeRule } from '../inheritance/attribute/rule/attribute-rule.entity';
+import { SimpleProductOptions } from '../inheritance/attribute/options/simple/simple-product-option.entity';
 
 @Entity('product_attribute_index')
-@Index('product_index_attribute', ['id', 'createdAt', 'updatedAt'])
-export class ProductAttributes extends MecBaseEntity {
+@Index('product_index_attribute', ['id'])
+export class ProductAttributes {
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @Column(() => AttributeDescription)
     description: AttributeDescription;
 
@@ -30,6 +34,9 @@ export class ProductAttributes extends MecBaseEntity {
     options: ProductAttributeOption[];
     @RelationId((attribute: ProductAttributes) => attribute.options)
     options_ids: number[];
+
+    @OneToMany(() => SimpleProductOptions, (option) => option.simpleProduct)
+    simpleProductAttribute: SimpleProductOptions[];
 
     @OneToOne(() => ProductAttributeRule, (rule) => rule.attribute, {
         cascade: true,

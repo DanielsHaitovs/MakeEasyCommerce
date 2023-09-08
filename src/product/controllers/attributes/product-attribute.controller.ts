@@ -18,10 +18,7 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import {
-    PaginateAttributeRelationsDto,
-    PaginationFilterDto,
-} from '@src/base/dto/filters/attribute/attribute-relation.dto';
+import { FilterAttributeDto } from '@src/base/dto/filters/attribute/attribute-relation.dto';
 import { PaginationDto } from '@src/base/dto/filters/pagination.dto';
 import { AttributeResponse } from '@src/base/dto/response/attribute.response.dto';
 import { CreateAttributeDto } from '@src/product/dto/attributes/create-attribute.dto';
@@ -36,13 +33,13 @@ export class ProductAttributeController {
 
     @Post('new')
     @ApiOperation({
-        summary: 'Create Attribute',
+        summary: 'Create Product Attribute',
         description:
             'Creates record (specifically) for product attribute entity',
     })
     @ApiBody({
         type: CreateAttributeDto,
-        description: 'Create Attribute',
+        description: 'Create Product Attribute',
         required: true,
     })
     async create(@Body() createAttributeDto: CreateAttributeDto): Promise<any> {
@@ -54,10 +51,14 @@ export class ProductAttributeController {
     @Get('get/all')
     @ApiOperation({
         summary: 'Find All Product Attributes',
-        description: 'Get data of all Attributes, good luck!',
+        description: 'Get data of all Product Attributes, good luck!',
+    })
+    @ApiOkResponse({
+        description: 'All Product Attributes and theirs details',
+        type: [GetAttributeDto],
     })
     @ApiQuery({
-        name: 'paginate',
+        name: 'Pagination',
         description:
             'Way how you can optimize your response! Page | Limit | Include Attribute Rule Relation | Include Attribute Options Relation',
         type: PaginationDto,
@@ -66,10 +67,6 @@ export class ProductAttributeController {
             limit: 10,
         },
         required: true,
-    })
-    @ApiOkResponse({
-        description: 'All Product Attributes and theirs details',
-        type: [GetAttributeDto],
     })
     @ApiQuery({
         type: Boolean,
@@ -88,7 +85,7 @@ export class ProductAttributeController {
         @Query() filter,
         @Query('includeRule', ParseBoolPipe) includeRule: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<GetAttributeDto[]> {
+    ): Promise<AttributeResponse> {
         return await this.attributeService.findAll({
             condition: {
                 page: filter.page,
@@ -101,14 +98,15 @@ export class ProductAttributeController {
 
     @Get('get/by')
     @ApiOperation({
-        summary: 'Find Attributes by attribute column name and its value',
+        summary:
+            'Find Product Attributes by attribute column name and its value',
         description: 'Get data of 1 specific Attribute',
     })
     @ApiQuery({
         name: 'Query Filtering and Pagination',
         description:
             'Way how you can optimize your response! Page | Limit | Include Attribute Rule Relation | Include Attribute Options Relation',
-        type: PaginationFilterDto,
+        type: FilterAttributeDto,
         example: {
             code: 'id',
             value: 1,
@@ -118,14 +116,14 @@ export class ProductAttributeController {
         required: false,
     })
     @ApiOkResponse({
-        description: 'All Attributes and theirs details',
+        description: 'All Product Attributes and theirs details',
         type: [GetAttributeDto],
     })
     async findBy(
-        @Query() filter: PaginationFilterDto,
+        @Query() filter,
         @Query('includeRule', ParseBoolPipe) includeRule: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<GetAttributeDto[]> {
+    ): Promise<AttributeResponse> {
         return await this.attributeService.findBy({
             condition: {
                 page: filter.page,

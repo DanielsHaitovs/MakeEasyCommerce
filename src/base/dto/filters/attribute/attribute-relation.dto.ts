@@ -41,7 +41,27 @@ export class PaginationFilterDto extends AttributeRelationsDto {
     code: string;
 
     @ApiProperty()
-    @IsString()
     @IsOptional()
-    value: string;
+    value: string | number | boolean | Date | JSON;
+}
+
+export class FilterAttributeDto {
+    @ApiProperty({ type: Number })
+    @IsNumber()
+    @IsOptional()
+    page: number;
+
+    @ApiProperty({ type: Number })
+    @IsNumber()
+    @IsOptional()
+    limit: number;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsString()
+    code: string;
+
+    @ApiProperty()
+    @IsOptional()
+    value: string | number | boolean | Date | JSON;
 }

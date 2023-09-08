@@ -11,6 +11,11 @@ export abstract class AttributeDescription {
     @IsBoolean()
     isActive: boolean;
 
+    @Column({ default: false })
+    @IsNotEmpty()
+    @IsBoolean()
+    isRequired: boolean;
+
     @Column()
     @IsNotEmpty()
     @IsString()
