@@ -17,7 +17,7 @@ export class AttributeOption extends MecBaseEntity {
     value: string | number | boolean | Date | JSON;
 
     @ManyToOne(() => ProductAttributes, (attribute) => attribute.id)
-    relatedAttributeId: ProductAttributes;
+    parentAttributeId: ProductAttributes;
 
     @OneToMany(() => SingleAttributeOption, (option) => option, {
         cascade: false,

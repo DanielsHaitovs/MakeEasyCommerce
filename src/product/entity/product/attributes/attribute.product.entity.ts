@@ -39,7 +39,7 @@ export class ProductAttributes {
     @ManyToOne(() => ProductAttributes, { onDelete: 'CASCADE' })
     parent: ProductAttributes; // Optional parent attribute for handling arrays
 
-    @OneToMany(() => AttributeOption, (option) => option, {
+    @OneToMany(() => AttributeOption, (options) => options, {
         cascade: true,
         onDelete: 'CASCADE',
     })
@@ -57,9 +57,9 @@ export class ProductAttributes {
     })
     rules: AttributeRule;
 
-    @ManyToOne(() => Product, (product) => product.productAttributes)
-    product: Product;
+    // @ManyToOne(() => Product, (product) => product.productAttributes)
+    // product: Product;
 
-    @ManyToOne(() => SimpleProduct, (product) => product.productAttributes)
-    simpleProduct: SimpleProduct;
+    // @ManyToOne(() => SimpleProduct, (product) => product.productAttributes)
+    // simpleProduct: SimpleProduct;
 }

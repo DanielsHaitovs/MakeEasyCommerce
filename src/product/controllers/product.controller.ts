@@ -7,8 +7,11 @@ import {
     Param,
     Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { CreateProductDto } from '../dto/products/product/create-product.dto';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+    CreateProductDto,
+    CreateProductShortDto,
+} from '../dto/products/product/create-product.dto';
 import { ProductService } from '../services/product/product.service';
 import { UpdateProductDto } from '../dto/products/product/update-product.dto';
 
@@ -17,9 +20,35 @@ import { UpdateProductDto } from '../dto/products/product/update-product.dto';
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
-    @Post()
-    create(@Body() createProductDto: CreateProductDto) {
-        // return this.productService.create(createProductDto);
+    @Post('new')
+    @ApiOperation({
+        summary: 'Create Product Attribute',
+        description:
+            'Creates record (specifically) for product attribute entity',
+    })
+    @ApiBody({
+        type: CreateProductDto,
+        description: 'Create Product Attribute',
+        required: true,
+    })
+    async create(@Body() createProductDto: CreateProductDto): Promise<any> {
+        return await this.productService.create({ createProductDto });
+    }
+
+    @Post('short/new')
+    @ApiOperation({
+        summary: 'Create Short Product Attribute',
+        description: 'Creates record (specifically) for product entity',
+    })
+    @ApiBody({
+        type: CreateProductShortDto,
+        description: 'Create Product Short Attribute',
+        required: true,
+    })
+    async createShort(
+        @Body() createProductDto: CreateProductShortDto,
+    ): Promise<any> {
+        return await this.productService.createShort({ createProductDto });
     }
 
     @Get()

@@ -6,12 +6,14 @@ import { CreateSimpleProductDto } from '../type/simple/create-simple.product.dto
 import { CreateConfigurableProductDto } from '../type/configurable/create-configurable.product.dto';
 import { CreateAttributeDto } from '../../attributes/attribute/create-attribute.dto';
 
-export class CreateProductDto extends ProductDto {
+export class CreateProductShortDto extends ProductDto {
     @ApiProperty({ title: 'product type', type: ProductTypes })
     @IsNotEmpty()
     @IsEnum(ProductTypes)
-    productType: string;
+    productType: ProductTypes;
+}
 
+export class CreateProductDto extends CreateProductShortDto {
     @ApiProperty({
         type: CreateSimpleProductDto || CreateConfigurableProductDto,
     })

@@ -1,8 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductVisibility } from '@src/base/enum/product/product-visibility.enum';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+    IsDate,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+} from 'class-validator';
 
 export class ProductDto {
+    @IsDate()
+    createdAt: Date;
+
+    @IsDate()
+    updatedAt: Date;
+
     @ApiProperty({ title: 'product name', type: String })
     @IsNotEmpty()
     @IsString()
@@ -32,5 +44,5 @@ export class ProductDto {
     @ApiProperty({ type: Number })
     @IsNotEmpty()
     @IsNumber()
-    final_price: number;
+    totalPrice: number;
 }

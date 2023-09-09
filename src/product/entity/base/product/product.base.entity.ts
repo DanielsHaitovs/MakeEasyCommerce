@@ -22,7 +22,7 @@ export abstract class MecProductBase {
 
     @Column()
     @IsEnum(ProductTypes)
-    product_type: ProductTypes;
+    productType: ProductTypes;
 
     @Column()
     @IsString()
@@ -45,5 +45,5 @@ export abstract class MecProductBase {
         precision: 20,
         scale: 2,
     })
-    final_price: number;
+    totalPrice: number;
 }

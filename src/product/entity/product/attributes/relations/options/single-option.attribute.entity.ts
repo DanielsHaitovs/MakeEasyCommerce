@@ -11,11 +11,11 @@ export class SingleAttributeOption extends MecBaseEntity {
     value: string | number | boolean | Date | JSON;
 
     @ManyToOne(() => ProductAttributes, (attribute) => attribute.id)
-    relatedAttributeId: ProductAttributes;
+    parentAttributeId: ProductAttributes;
 
     @ManyToOne(() => AttributeOption, (attribute) => attribute.id)
-    relatedOptionId: AttributeOption;
+    parentOptionId: AttributeOption;
 
     @ManyToOne(() => SimpleProduct, (attribute) => attribute.id)
-    relatedProductId: SimpleProduct;
+    parentProductId: SimpleProduct;
 }

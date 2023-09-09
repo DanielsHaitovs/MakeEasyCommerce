@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductDto } from '../../base/product/product.base.dto';
 import { ProductTypes } from '@src/base/enum/product/product-types.enum';
-import { IsEnum, IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    ValidateNested,
+} from 'class-validator';
 import { CreateSimpleProductDto } from '../type/simple/create-simple.product.dto';
 import { CreateConfigurableProductDto } from '../type/configurable/create-configurable.product.dto';
 import { CreateAttributeDto } from '../../attributes/attribute/create-attribute.dto';
@@ -23,8 +29,10 @@ export class GetProductShortDto extends ProductDto {
 
 export class GetProductDto extends GetProductShortDto {
     @ApiProperty({
+        title: 'Creates One of available Product types',
         type: CreateSimpleProductDto || CreateConfigurableProductDto,
     })
+    @IsOptional()
     @ValidateNested({ each: true })
     product: CreateSimpleProductDto | CreateConfigurableProductDto;
 
