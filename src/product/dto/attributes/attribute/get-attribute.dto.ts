@@ -1,37 +1,43 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AttributeDescriptionDto } from '../../base/attribute/attribute.base.dto';
+import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import { GetRulesDto } from '../rule/get-rule.attribute.dto';
 import {
-    IsArray,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    ValidateNested,
-} from 'class-validator';
-import { AttributeDescriptionDto } from '../../base/attributes/attribute-base.dto';
-import { GetAttributeOptionsDto } from '../options/get-option.dto';
-import { GetAttributeRulesDto } from '../rules/get-rule.dto';
+    GetOptionsDto,
+    GetSimpleProductOption,
+} from '../option/get-option.attribute.dto';
 
-export class GetAttributeShortDto {
-    @ApiProperty({ type: Number })
+export class GetAttributeShortDto extends AttributeDescriptionDto {
+    @ApiProperty({
+        title: 'Product Attribute Id',
+        type: Number,
+    })
     @IsNotEmpty()
     @IsNumber()
     id: number;
 
-    @ApiProperty({ type: AttributeDescriptionDto })
+    @ApiProperty({
+        title: 'Get Attribute Rule',
+        type: GetRulesDto,
+    })
     @ValidateNested({ each: true })
-    description: AttributeDescriptionDto;
+    rules: GetRulesDto;
 }
 
 export class GetAttributeDto extends GetAttributeShortDto {
-    @ApiProperty({ type: [GetAttributeOptionsDto] })
+    @ApiProperty({
+        title: 'Get Attribute Options List',
+        type: GetOptionsDto,
+    })
     @ValidateNested({ each: true })
-    options: GetAttributeOptionsDto[];
+    options: GetOptionsDto;
+}
 
-    @ApiProperty({ type: GetAttributeRulesDto })
-    @IsNotEmpty()
-    rule: GetAttributeRulesDto;
-
-    @ApiProperty({ type: [Number] })
-    @IsOptional()
-    @IsArray()
-    options_ids: number[];
+export class GetSimpleProductAttributes extends GetAttributeShortDto {
+    @ApiProperty({
+        title: 'Get Attribute Options List',
+        type: [GetSimpleProductOption],
+    })
+    @ValidateNested({ each: true })
+    options: GetSimpleProductOption[];
 }

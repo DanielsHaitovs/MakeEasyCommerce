@@ -1,19 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { CreateAttributeRulesDto } from '../rules/create-rule.dto';
-import { AttributeDescriptionDto } from '../../base/attributes/attribute-base.dto';
-import { CreateAttributeOptionsDto } from '../options/create-option.dto';
+import { CreateOptionsDto } from '../option/create-option.attribute.dto';
+import { IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { AttributeDescriptionDto } from '../../base/attribute/attribute.base.dto';
+import { CreateRuleDto } from '../rule/create-rule.attribute.dto';
 
-export class CreateAttributeDto {
-    @ApiProperty({ type: AttributeDescriptionDto })
+export class CreateAttributeDto extends AttributeDescriptionDto {
+    @ApiProperty({
+        title: 'Create Options for this Attribute',
+        type: CreateOptionsDto,
+    })
     @ValidateNested({ each: true })
-    description: AttributeDescriptionDto;
+    options: CreateOptionsDto;
 
-    @ApiProperty({ type: [CreateAttributeOptionsDto] })
+    @ApiProperty({
+        title: 'Create Rules for this Attribute',
+        type: CreateRuleDto,
+    })
     @ValidateNested({ each: true })
-    options: CreateAttributeOptionsDto[];
+    rules: CreateRuleDto;
 
-    @ApiProperty({ type: CreateAttributeRulesDto })
-    @IsNotEmpty()
-    rule: CreateAttributeRulesDto;
+    @ApiProperty({
+        title: 'Parent Attribute ID',
+        default: null,
+        nullable: true,
+        type: Number,
+    })
+    @IsOptional()
+    @IsNumber()
+    parentAttributeId: number;
 }

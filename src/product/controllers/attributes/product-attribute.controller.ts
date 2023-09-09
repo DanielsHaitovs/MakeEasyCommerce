@@ -24,12 +24,12 @@ import { AttributeResponse } from '@src/base/dto/response/attribute.response.dto
 import { CreateAttributeDto } from '@src/product/dto/attributes/attribute/create-attribute.dto';
 import { GetAttributeDto } from '@src/product/dto/attributes/attribute/get-attribute.dto';
 import { UpdateAttributeDto } from '@src/product/dto/attributes/attribute/update-attribute.dto';
-import { ProductAttributeService } from '@src/product/services/attributes/product-attribute.service';
+import { AttributeService } from '@src/product/services/attribute/attribute.service';
 
 @Controller('product_attributes')
 @ApiTags('Product Attributes')
 export class ProductAttributeController {
-    constructor(private readonly attributeService: ProductAttributeService) {}
+    constructor(private readonly attributeService: AttributeService) {}
 
     @Post('new')
     @ApiOperation({
@@ -43,9 +43,9 @@ export class ProductAttributeController {
         required: true,
     })
     async create(@Body() createAttributeDto: CreateAttributeDto): Promise<any> {
-        return await this.attributeService.create({
-            createAttributeDto,
-        });
+        // return await this.attributeService.create({
+        //     createAttributeDto,
+        // });
     }
 
     @Get('get/all')
@@ -85,15 +85,15 @@ export class ProductAttributeController {
         @Query() filter,
         @Query('includeRule', ParseBoolPipe) includeRule: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<AttributeResponse> {
-        return await this.attributeService.findAll({
-            condition: {
-                page: filter.page,
-                limit: filter.limit,
-                includeOptions: includeOptions,
-                includeRule: includeRule,
-            },
-        });
+    ): Promise<AttributeResponse | any> {
+        // return await this.attributeService.findAll({
+        //     condition: {
+        //         page: filter.page,
+        //         limit: filter.limit,
+        //         includeOptions: includeOptions,
+        //         includeRule: includeRule,
+        //     },
+        // });
     }
 
     @Get('get/by')
@@ -123,17 +123,17 @@ export class ProductAttributeController {
         @Query() filter,
         @Query('includeRule', ParseBoolPipe) includeRule: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<AttributeResponse> {
-        return await this.attributeService.findBy({
-            condition: {
-                page: filter.page,
-                limit: filter.limit,
-                code: filter.code,
-                value: filter.value,
-                includeOptions: includeOptions,
-                includeRule: includeRule,
-            },
-        });
+    ): Promise<AttributeResponse | any> {
+        // return await this.attributeService.findBy({
+        //     condition: {
+        //         page: filter.page,
+        //         limit: filter.limit,
+        //         code: filter.code,
+        //         value: filter.value,
+        //         includeOptions: includeOptions,
+        //         includeRule: includeRule,
+        //     },
+        // });
     }
 
     @Get('get/by/:id')
@@ -150,14 +150,14 @@ export class ProductAttributeController {
         @Param('id') id: number,
         @Query('includeRule', ParseBoolPipe) includeRule: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<AttributeResponse> {
-        return await this.attributeService.findOneById({
-            id: id,
-            loadRelations: {
-                includeOptions: includeOptions,
-                includeRule: includeRule,
-            },
-        });
+    ): Promise<AttributeResponse | any> {
+        // return await this.attributeService.findOneById({
+        //     id: id,
+        //     loadRelations: {
+        //         includeOptions: includeOptions,
+        //         includeRule: includeRule,
+        //     },
+        // });
     }
 
     @Patch('update/:id')
@@ -174,11 +174,11 @@ export class ProductAttributeController {
     async update(
         @Param('id') id: number,
         @Body() updateAttributeDto: UpdateAttributeDto,
-    ): Promise<AttributeResponse> {
-        return this.attributeService.update({
-            id: id,
-            updateAttributeDto: updateAttributeDto,
-        });
+    ): Promise<AttributeResponse | any> {
+        // return this.attributeService.update({
+        //     id: id,
+        //     updateAttributeDto: updateAttributeDto,
+        // });
     }
 
     @Delete(':id')
@@ -186,7 +186,9 @@ export class ProductAttributeController {
         summary: 'Delete Product Attribute by ID',
         description: 'Delete specifically product attribute data by id',
     })
-    async removeBasket(@Param('id') id: string): Promise<AttributeResponse> {
-        return await this.attributeService.remove({ id: +id });
+    async removeBasket(
+        @Param('id') id: string,
+    ): Promise<AttributeResponse | any> {
+        // return await this.attributeService.remove({ id: +id });
     }
 }

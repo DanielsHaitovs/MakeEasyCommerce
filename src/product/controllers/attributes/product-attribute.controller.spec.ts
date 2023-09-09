@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductAttributeService } from '@src/product/services/attributes/product-attribute.service';
+import { ProductAttributeService } from '';
 import { ProductAttributeController } from './product-attribute.controller';
 
 describe('ProductAttributeController', () => {

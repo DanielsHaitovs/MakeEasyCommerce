@@ -1,0 +1,30 @@
+[
+{
+    "rules": null,
+    "description": {
+        "name": "a1",
+        "code": "a1_code",
+        "description": "string"
+    },
+    "parent_id": 1,
+    "children": [
+        {
+            "rules": null,
+            "description": {
+                "name": "a1-1",
+                "code": "a1-1_code",
+                "description": "string"
+            }
+        }
+    ]
+},
+{
+    "rules": null,
+    "description": {
+        "name": "a1",
+        "code": "a1_code",
+        "description": "string"
+    },
+    "parent_id": 1
+}
+]

@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+// Product ->
 import { ProductModule } from './product/product.module';
-import { Product } from './product/entities/product.entity';
-import { SimpleProduct } from './product/entities/products/types/simple-product.entity';
-import { ProductAttributes } from './product/entities/attributes/product-attribute.entity';
-import { ProductAttributeRule } from './product/entities/attributes/rule/attribute-rule.entity';
-import { ProductAttributeOption } from './product/entities/attributes/options/attribute-option.entity';
-import { SimpleProductOptions } from './product/entities/attributes/options/simple/simple-product-option.entity';
-
+import { Product } from './product/entity/product/product.entity';
+import { SimpleProduct } from './product/entity/product/types/simple.product.entity';
+import { ProductAttributes } from './product/entity/product/attributes/attribute.product.entity';
+import { AttributeRule } from './product/entity/product/attributes/relations/rule.attribute.entity';
+import { AttributeOption } from './product/entity/product/attributes/relations/options/option.attribute.entity';
+import { SingleAttributeOption } from './product/entity/product/attributes/relations/options/single-option.attribute.entity';
+// <- Product
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -19,12 +20,14 @@ import { SimpleProductOptions } from './product/entities/attributes/options/simp
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
             entities: [
+                // Product ->
                 Product,
                 SimpleProduct,
                 ProductAttributes,
-                ProductAttributeOption,
-                ProductAttributeRule,
-                SimpleProductOptions,
+                AttributeRule,
+                AttributeOption,
+                SingleAttributeOption,
+                // <- Product
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',

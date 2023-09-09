@@ -7,10 +7,10 @@ import {
     Param,
     Delete,
 } from '@nestjs/common';
-import { ProductService } from '../services/product.service';
-import { CreateProductDto } from '../dto/create-product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateProductDto } from '../dto/products/product/create-product.dto';
+import { ProductService } from '../services/product/product.service';
+import { UpdateProductDto } from '../dto/products/product/update-product.dto';
 
 @Controller('product')
 @ApiTags('Product')
@@ -19,17 +19,17 @@ export class ProductController {
 
     @Post()
     create(@Body() createProductDto: CreateProductDto) {
-        return this.productService.create(createProductDto);
+        // return this.productService.create(createProductDto);
     }
 
     @Get()
     findAll() {
-        return this.productService.findAll();
+        // return this.productService.findAll();
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.productService.findOne(+id);
+        // return this.productService.findOne(+id);
     }
 
     @Patch(':id')
@@ -37,11 +37,11 @@ export class ProductController {
         @Param('id') id: string,
         @Body() updateProductDto: UpdateProductDto,
     ) {
-        return this.productService.update(+id, updateProductDto);
+        // return this.productService.update(+id, updateProductDto);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.productService.remove(+id);
+        // return this.productService.remove(+id);
     }
 }
