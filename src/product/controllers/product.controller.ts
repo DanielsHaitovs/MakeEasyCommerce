@@ -6,6 +6,7 @@ import {
     Patch,
     Param,
     Delete,
+    ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -53,24 +54,24 @@ export class ProductController {
 
     @Get()
     findAll() {
-        // return this.productService.findAll();
+        return this.productService.findAll();
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        // return this.productService.findOne(+id);
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.productService.findOne(+id);
     }
 
     @Patch(':id')
     update(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body() updateProductDto: UpdateProductDto,
     ) {
-        // return this.productService.update(+id, updateProductDto);
+        return this.productService.update(+id, updateProductDto);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        // return this.productService.remove(+id);
+    remove(@Param('id', ParseIntPipe) id: number) {
+        return this.productService.remove(+id);
     }
 }

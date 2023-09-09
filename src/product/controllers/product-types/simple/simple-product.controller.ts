@@ -31,16 +31,16 @@ export class SimpleProductController {
     async create(
         @Body() createProductDto: CreateSimpleProductDto,
     ): Promise<any> {
-        // return await this.productService.create({ createProductDto });
+        return await this.productService.create({ createProductDto });
     }
     @Get()
     findAll() {
-        // return this.productService.findAll();
+        return this.productService.findAll();
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        // return this.productService.findOne(+id);
+        return this.productService.findOne(+id);
     }
 
     @Patch(':id')
@@ -48,11 +48,11 @@ export class SimpleProductController {
         @Param('id') id: string,
         @Body() updateProductDto: UpdateSimpleProductDto,
     ) {
-        // return this.productService.update(+id, updateProductDto);
+        return this.productService.update(+id, updateProductDto);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        // return this.productService.remove(+id);
+        return this.productService.remove(+id);
     }
 }

@@ -13,8 +13,6 @@ import {
 import { AttributeDescription } from '../../base/attribute/description.attribute.entity';
 import { AttributeRule } from './relations/rule.attribute.entity';
 import { AttributeOption } from './relations/options/option.attribute.entity';
-import { Product } from '../product.entity';
-import { SimpleProduct } from '../types/simple.product.entity';
 
 @Entity('product_attribute_index')
 @Index('product_index_attribute', [
@@ -56,10 +54,4 @@ export class ProductAttributes {
         foreignKeyConstraintName: 'fk_product_attribute_index_rule',
     })
     rules: AttributeRule;
-
-    // @ManyToOne(() => Product, (product) => product.productAttributes)
-    // product: Product;
-
-    // @ManyToOne(() => SimpleProduct, (product) => product.productAttributes)
-    // simpleProduct: SimpleProduct;
 }

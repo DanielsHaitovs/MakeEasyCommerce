@@ -1,3 +1,3 @@
-import { CreateAttributeDto } from "./create-attribute.dto";
+import { CreateAttributeDto } from './create-attribute.dto';
 
 export class UpdateAttributeDto extends CreateAttributeDto {}

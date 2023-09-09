@@ -5,8 +5,8 @@ import {
     CreateProductShortDto,
 } from '@src/product/dto/products/product/create-product.dto';
 import { GetProductDto } from '@src/product/dto/products/product/get-product.dto';
+import { UpdateProductDto } from '@src/product/dto/products/product/update-product.dto';
 import { Product } from '@src/product/entity/product/product.entity';
-import { nativeSync } from 'rimraf';
 import { EntityManager } from 'typeorm';
 
 @Injectable()
@@ -21,6 +21,7 @@ export class ProductService {
     }: {
         createProductDto: CreateProductDto;
     }): Promise<GetProductDto> {
+        console.log(createProductDto.productType);
         return null;
     }
 
@@ -38,5 +39,25 @@ export class ProductService {
             attributes: null,
             ...newProduct,
         };
+    }
+
+    findAll() {
+        return null;
+    }
+
+    findOne(id: number) {
+        console.log(id);
+        return null;
+    }
+
+    update(id: number, updateProductDto: UpdateProductDto) {
+        console.log(id);
+        console.log(updateProductDto.productType);
+        return null;
+    }
+
+    remove(id: number) {
+        console.log(id);
+        return null;
     }
 }
