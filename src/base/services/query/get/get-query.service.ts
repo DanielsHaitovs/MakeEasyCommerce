@@ -4,7 +4,7 @@ import { EntityManager, EntityTarget } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
-export class CreateQueryService {
+export class GetQueryService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
