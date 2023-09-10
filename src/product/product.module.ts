@@ -6,6 +6,14 @@ import { ProductAttributes } from './entity/product/attributes/attribute.product
 import { AttributeRule } from './entity/product/attributes/relations/rule.attribute.entity';
 import { AttributeOption } from './entity/product/attributes/relations/options/option.attribute.entity';
 import { SingleAttributeOption } from './entity/product/attributes/relations/options/single-option.attribute.entity';
+import { ProductAttributeController } from './controllers/attributes/product-attribute.controller';
+import { ProductService } from './services/product/product.service';
+import { ProductAttributeService } from './services/product/attribute.product.service';
+import { SimpleProductService } from './services/product/product-type/simple.product.service';
+import { AttributeService } from './services/attribute/attribute.service';
+import { BaseModule } from '@src/base/base.module';
+import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
+import { OptionService } from './services/attribute/options/option.service';
 
 @Module({
     imports: [
@@ -17,8 +25,16 @@ import { SingleAttributeOption } from './entity/product/attributes/relations/opt
             AttributeOption,
             SingleAttributeOption,
         ]),
+        BaseModule,
     ],
-    controllers: [],
-    providers: [],
+    controllers: [ProductAttributeController],
+    providers: [
+        ProductService,
+        SimpleProductService,
+        AttributeService,
+        OptionService,
+        ProductAttributeService,
+        CreateQueryService,
+    ],
 })
 export class ProductModule {}

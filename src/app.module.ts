@@ -9,6 +9,7 @@ import { ProductAttributes } from './product/entity/product/attributes/attribute
 import { AttributeRule } from './product/entity/product/attributes/relations/rule.attribute.entity';
 import { AttributeOption } from './product/entity/product/attributes/relations/options/option.attribute.entity';
 import { SingleAttributeOption } from './product/entity/product/attributes/relations/options/single-option.attribute.entity';
+import { BaseModule } from './base/base.module';
 // <- Product
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import { SingleAttributeOption } from './product/entity/product/attributes/relat
             synchronize: true, // never use TRUE in production!
         }),
         ProductModule,
+        BaseModule,
     ],
     controllers: [],
     providers: [AppService],

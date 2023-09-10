@@ -1,0 +1,54 @@
+[
+    {
+        "description": {
+            "name": "Shoe sizes",
+            "code": "shoe_size",
+            "isRequired": false,
+            "dataType": "Number",
+            "isActive": true,
+            "description": "Product Shoe",
+            "isArray": true,
+            "appliesTo": [
+                "all"
+            ]
+        },
+        "options": [
+            {
+                "value": 31
+            },
+            {
+                "value": 32
+            },
+            {
+                "value": 33
+            },
+            {
+                "value": 34
+            }
+        ],
+        "rules": {
+            "front": {
+                "useInCatalog": false,
+                "useInListing": true,
+                "useInLayeredNavigation": false,
+                "useInFilter": false,
+                "useInOptionFilter": true,
+                "useInSort": true,
+                "useInSearch": true,
+                "useInPromo": true,
+                "useInReport": true
+            },
+            "back": {
+                "useInCatalog": true,
+                "useInListing": false,
+                "useInLayeredNavigation": true,
+                "useInFilter": true,
+                "useInOptionFilter": true,
+                "useInSort": false,
+                "useInSearch": true,
+                "useInPromo": true,
+                "useInReport": false
+            }
+        }
+    }
+]

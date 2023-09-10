@@ -43,9 +43,9 @@ export class ProductAttributeController {
         required: true,
     })
     async create(@Body() createAttributeDto: CreateAttributeDto): Promise<any> {
-        // return await this.attributeService.create({
-        //     createAttributeDto,
-        // });
+        return await this.attributeService.create({
+            createAttributeDto,
+        });
     }
 
     @Get('get/all')

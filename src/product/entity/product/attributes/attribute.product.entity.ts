@@ -38,7 +38,7 @@ export class ProductAttributes {
     parent: ProductAttributes; // Optional parent attribute for handling arrays
 
     @OneToMany(() => AttributeOption, (options) => options, {
-        cascade: true,
+        cascade: false,
         onDelete: 'CASCADE',
     })
     options: AttributeOption[];

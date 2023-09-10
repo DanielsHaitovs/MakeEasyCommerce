@@ -13,11 +13,13 @@ import { SingleAttributeOption } from './single-option.attribute.entity';
 @Entity('product_attribute_option')
 @Index('product_attribute_option_index', ['id', 'value'])
 export class AttributeOption extends MecBaseEntity {
-    @Column('jsonb', { nullable: false })
+    @Column('jsonb', { nullable: true })
     value: string | number | boolean | Date | JSON;
 
-    @ManyToOne(() => ProductAttributes, (attribute) => attribute.id)
-    parentAttributeId: ProductAttributes;
+    @ManyToOne(() => ProductAttributes, (attribute) => attribute.options, {
+        cascade: false,
+    })
+    parentAttribute: ProductAttributes;
 
     @OneToMany(() => SingleAttributeOption, (option) => option, {
         cascade: false,
