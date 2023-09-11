@@ -1,7 +1,11 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, EntityTarget } from 'typeorm';
-import { plainToClass } from 'class-transformer';
+import {
+    FilterDto,
+    FilterOrderPaginationDto,
+    OrderedPaginationDto,
+} from '@src/base/dto/filter/filters.dto';
 
 @Injectable()
 export class GetQueryService {
@@ -10,42 +14,57 @@ export class GetQueryService {
         private readonly entityManager: EntityManager,
     ) {}
 
-    async prepareEntityQuery<Entity, DTO>(
-        entity: EntityTarget<Entity>,
-        dto: DTO,
-        dtoClass: Type<Entity>,
-    ): Promise<Entity | any> {
-        const testResult = plainToClass(dtoClass, dto);
-        if (testResult != null) {
-            return await this.entityManager.create(
-                entity,
-                plainToClass(dtoClass, dto),
-            );
+    async findQuery<Entity>({
+        entity,
+        alias,
+        conditions,
+    }: {
+        entity: EntityTarget<Entity>;
+        alias: string;
+        conditions: OrderedPaginationDto;
+    }): Promise<Entity[]> {
+        const skip = (conditions.page - 1) * conditions.limit;
+        const orderBy = alias + '.' + conditions.by;
+        if (conditions.by === null || conditions.by === undefined) {
+            return await this.entityManager
+                .getRepository(entity)
+                .createQueryBuilder(alias)
+                .skip(skip)
+                .take(conditions.limit)
+                .getMany();
         }
 
-        return 'smth went wrong';
+        return await this.entityManager
+            .getRepository(entity)
+            .createQueryBuilder(alias)
+            .orderBy(orderBy, conditions.type)
+            .skip(skip)
+            .take(conditions.limit)
+            .getMany();
     }
 
-    async createAndSave<Entity, DTO>(
-        entity: EntityTarget<Entity>,
-        dto: DTO,
-        dtoClass: Type<Entity>,
-    ): Promise<Entity | any> {
-        return await this.entityManager.save(
-            entity,
-            await this.prepareEntityQuery(entity, dto, dtoClass),
-        );
-    }
-
-    async prepareAndUpdate<Entity, DTO>(
-        entity: EntityTarget<Entity>,
-        dto: DTO,
-        dtoClass: Type<Entity>,
-    ): Promise<Entity | any> {
-        return null;
-        // return await this.entityManager.save(
-        //     entity,
-        //     await this.prepareEntityQuery(entity, dto, dtoClass),
-        // );
+    async findByQuery<Entity>({
+        entity,
+        alias,
+        order,
+        filters,
+    }: {
+        entity: EntityTarget<Entity>;
+        alias: string;
+        order: {
+            by: string;
+            type: 'ASC' | 'DESC';
+        };
+        filters: FilterDto;
+    }): Promise<Entity[]> {
+        const skip = (filters.page - 1) * filters.limit;
+        const orderBy = alias + '.' + order.by;
+        return await this.entityManager
+            .getRepository(entity)
+            .createQueryBuilder(alias)
+            .orderBy(orderBy, order.type)
+            .skip(skip)
+            .take(filters.limit)
+            .getMany();
     }
 }

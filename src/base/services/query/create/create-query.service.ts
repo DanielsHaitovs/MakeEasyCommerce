@@ -1,7 +1,7 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, EntityTarget } from 'typeorm';
-import { plainToClass } from 'class-transformer';
+import { QueryErrorResponse } from '@src/base/dto/responses/response.create-query.dto';
 
 @Injectable()
 export class CreateQueryService {
@@ -10,42 +10,54 @@ export class CreateQueryService {
         private readonly entityManager: EntityManager,
     ) {}
 
-    async prepareEntityQuery<Entity, DTO>(
+    async prepareQuery<Entity>(
         entity: EntityTarget<Entity>,
-        dto: DTO,
-        dtoClass: Type<Entity>,
-    ): Promise<Entity | any> {
-        const testResult = plainToClass(dtoClass, dto);
-        if (testResult != null) {
-            return await this.entityManager.create(
+        toEntity: Entity,
+    ): Promise<Entity> {
+        return await this.entityManager.create(entity, toEntity);
+    }
+
+    async saveQuery<Entity, GetDTO>({
+        entity,
+        newObj,
+        getDto,
+    }: {
+        entity: EntityTarget<Entity>;
+        newObj: any | any[];
+        getDto: GetDTO;
+    }): Promise<GetDTO | QueryErrorResponse> {
+        try {
+            return await this.entityManager.save(
                 entity,
-                plainToClass(dtoClass, dto),
+                this.entityManager.create(entity, newObj),
             );
+        } catch (e) {
+            return {
+                result: getDto,
+                error: {
+                    message: e.message,
+                    in: `Error happened while saving new ${entity.constructor.name} entity, trying to create`,
+                },
+            };
         }
-
-        return 'smth went wrong';
     }
+    // async saveQuery<Entity>(
+    //     entity: EntityTarget<Entity>,
+    //     toEntity: Entity,
+    // ): Promise<QueryResponse<Entity>> {
+    //     const newEntity = await this.prepareQuery(entity, toEntity);
 
-    async createAndSave<Entity, DTO>(
-        entity: EntityTarget<Entity>,
-        dto: DTO,
-        dtoClass: Type<Entity>,
-    ): Promise<Entity | any> {
-        return await this.entityManager.save(
-            entity,
-            await this.prepareEntityQuery(entity, dto, dtoClass),
-        );
-    }
-
-    async prepareAndUpdate<Entity, DTO>(
-        entity: EntityTarget<Entity>,
-        dto: DTO,
-        dtoClass: Type<Entity>,
-    ): Promise<Entity | any> {
-        return null;
-        // return await this.entityManager.save(
-        //     entity,
-        //     await this.prepareEntityQuery(entity, dto, dtoClass),
-        // );
-    }
+    //     try {
+    //         if (newEntity != null) {
+    //             return await this.entityManager.save(entity, newEntity);
+    //         }
+    //     } catch (e) {
+    //         return {
+    //             result: {
+    //                 message: e.message,
+    //                 for: newEntity,
+    //             },
+    //         };
+    //     }
+    // }
 }
