@@ -1,8 +1,6 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { QueryErrorResponse } from '@src/base/dto/responses/response.create-query.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { QueryResponse } from '@src/base/dto/responses/response.create-query.dto';
 import { IsBoolean, IsNotEmpty, ValidateNested } from 'class-validator';
-import { GetRulesDto } from './get-rule.dto';
-import { Type } from '@nestjs/common';
 
 export class RuleBaseDto {
     @ApiProperty()
@@ -67,4 +65,4 @@ export class RuleDto {
     back: RuleBaseDto;
 }
 
-export class RuleResponseDto extends PartialType(QueryErrorResponse) {}
+export class RuleResponseDto extends QueryResponse {}

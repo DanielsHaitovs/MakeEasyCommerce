@@ -3,9 +3,10 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, EntityTarget } from 'typeorm';
 import {
     FilterDto,
-    FilterOrderPaginationDto,
     OrderedPaginationDto,
+    SimpleConditionsDto,
 } from '@src/base/dto/filter/filters.dto';
+import { QueryBaseResponse } from '@src/base/dto/responses/response.create-query.dto';
 
 @Injectable()
 export class GetQueryService {
@@ -14,57 +15,37 @@ export class GetQueryService {
         private readonly entityManager: EntityManager,
     ) {}
 
-    async findQuery<Entity>({
+    async findSingleQuery<Entity, GetDTO>({
         entity,
+        getDto,
         alias,
-        conditions,
+        simpleFilters,
     }: {
         entity: EntityTarget<Entity>;
+        getDto: GetDTO;
         alias: string;
-        conditions: OrderedPaginationDto;
-    }): Promise<Entity[]> {
-        const skip = (conditions.page - 1) * conditions.limit;
-        const orderBy = alias + '.' + conditions.by;
-        if (conditions.by === null || conditions.by === undefined) {
+        simpleFilters: SimpleConditionsDto;
+    }): Promise<GetDTO | GetDTO[] | QueryBaseResponse> {
+        try {
+            console.log('simpleFilters');
+            console.log(simpleFilters);
+            const where = alias + '.' + simpleFilters.columnName + ' = :value';
+            console.log('where');
+            console.log(where);
             return await this.entityManager
                 .getRepository(entity)
                 .createQueryBuilder(alias)
-                .skip(skip)
-                .take(conditions.limit)
-                .getMany();
+                .where(where, {
+                    value: simpleFilters.value,
+                })
+                .getOne();
+        } catch (e) {
+            return {
+                error: {
+                    message: e.message,
+                    in: `Error happened while retrieving ${entity.constructor.name} entity`,
+                },
+            };
         }
-
-        return await this.entityManager
-            .getRepository(entity)
-            .createQueryBuilder(alias)
-            .orderBy(orderBy, conditions.type)
-            .skip(skip)
-            .take(conditions.limit)
-            .getMany();
-    }
-
-    async findByQuery<Entity>({
-        entity,
-        alias,
-        order,
-        filters,
-    }: {
-        entity: EntityTarget<Entity>;
-        alias: string;
-        order: {
-            by: string;
-            type: 'ASC' | 'DESC';
-        };
-        filters: FilterDto;
-    }): Promise<Entity[]> {
-        const skip = (filters.page - 1) * filters.limit;
-        const orderBy = alias + '.' + order.by;
-        return await this.entityManager
-            .getRepository(entity)
-            .createQueryBuilder(alias)
-            .orderBy(orderBy, order.type)
-            .skip(skip)
-            .take(filters.limit)
-            .getMany();
     }
 }

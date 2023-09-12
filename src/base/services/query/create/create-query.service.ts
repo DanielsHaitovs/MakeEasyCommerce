@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, EntityTarget } from 'typeorm';
-import { QueryErrorResponse } from '@src/base/dto/responses/response.create-query.dto';
+import { QueryBaseResponse } from '@src/base/dto/responses/response.create-query.dto';
 
 @Injectable()
 export class CreateQueryService {
@@ -25,7 +25,7 @@ export class CreateQueryService {
         entity: EntityTarget<Entity>;
         newObj: any | any[];
         getDto: GetDTO;
-    }): Promise<GetDTO | QueryErrorResponse> {
+    }): Promise<GetDTO | QueryBaseResponse> {
         try {
             return await this.entityManager.save(
                 entity,
@@ -33,7 +33,6 @@ export class CreateQueryService {
             );
         } catch (e) {
             return {
-                result: getDto,
                 error: {
                     message: e.message,
                     in: `Error happened while saving new ${entity.constructor.name} entity, trying to create`,
@@ -41,23 +40,4 @@ export class CreateQueryService {
             };
         }
     }
-    // async saveQuery<Entity>(
-    //     entity: EntityTarget<Entity>,
-    //     toEntity: Entity,
-    // ): Promise<QueryResponse<Entity>> {
-    //     const newEntity = await this.prepareQuery(entity, toEntity);
-
-    //     try {
-    //         if (newEntity != null) {
-    //             return await this.entityManager.save(entity, newEntity);
-    //         }
-    //     } catch (e) {
-    //         return {
-    //             result: {
-    //                 message: e.message,
-    //                 for: newEntity,
-    //             },
-    //         };
-    //     }
-    // }
 }

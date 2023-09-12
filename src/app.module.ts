@@ -3,7 +3,6 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BaseModule } from './base/base.module';
 import { AttributeModule } from './attribute/attribute.module';
-import { RuleModule } from './attribute/relations/rule/rule.module';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
 // Product ->
 // <- Product

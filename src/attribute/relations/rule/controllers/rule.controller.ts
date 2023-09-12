@@ -21,7 +21,7 @@ import { CreateRulesDto } from '../dto/post-rule.dto';
 import { UpdateRulesDto } from '../dto/update-rule.dto';
 import {
     OrderedPaginationDto,
-    PaginationDto,
+    SimpleFilterDto,
 } from '@src/base/dto/filter/filters.dto';
 import { GetRulesDto } from '../dto/get-rule.dto';
 import { RuleResponseDto } from '../dto/rule-base.dto';
@@ -43,7 +43,7 @@ export class RuleController {
     })
     async create(
         @Body() createRulesDto: CreateRulesDto,
-    ): Promise<GetRulesDto | RuleResponseDto> {
+    ): Promise<RuleResponseDto> {
         return this.ruleService.create({ createRulesDto });
     }
 
@@ -53,7 +53,7 @@ export class RuleController {
         description: 'Get data of all Attributes Rules, good luck!',
     })
     @ApiQuery({
-        name: 'paginate',
+        name: 'paginate and order',
         description:
             'Its basically will try to find all your attributes rules. You can set page and limit for this query.',
         type: OrderedPaginationDto,
@@ -69,22 +69,22 @@ export class RuleController {
         description: 'All Attributes and theirs details',
         type: [GetRulesDto],
     })
-    async findAll(@Query() orderedPagination) {
+    async findAll(@Query() orderedPagination): Promise<RuleResponseDto> {
         return await this.ruleService.findAll({
             condition: orderedPagination,
         });
     }
 
-    @Get('get/by')
+    @Get('get/one/by')
     @ApiOperation({
-        summary: 'Find Attributes Rule by attribute Column Name and its value',
+        summary: 'Find 1 Attribute Rule by attribute Column Name and its value',
         description: 'Get data of specific Rule condition, good luck!',
     })
     @ApiQuery({
-        name: 'Pagination',
+        name: 'filters',
         description:
-            'Its basically will try to find your all attribute rules by mentioned code and value. You can set page and limit for this query.',
-        type: PaginationDto,
+            'Its basically will try to find your 1 attribute rule by mentioned code and value. You can set page and limit for this query.',
+        type: SimpleFilterDto,
         example: {
             page: 1,
             limit: 10,
@@ -93,12 +93,11 @@ export class RuleController {
     })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
-        type: [GetRulesDto],
+        type: GetRulesDto,
     })
-    async findOne(@Param('id', ParseIntPipe) id: number, @Query() pagination) {
+    async findOneBy(@Query() filters): Promise<RuleResponseDto> {
         return this.ruleService.findOne({
-            id: id,
-            condition: pagination,
+            condition: filters,
         });
     }
 

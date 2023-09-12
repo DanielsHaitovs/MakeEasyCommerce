@@ -1,5 +1,4 @@
-export class QueryErrorResponse {
-    result: any | any[];
+export class QueryBaseResponse {
     error?: {
         message: string;
         in: string;
@@ -7,7 +6,7 @@ export class QueryErrorResponse {
 }
 
 export class QueryResponse {
-    result: any | any[];
+    result?: any | any[];
     error?: {
         message: string;
         in: string;

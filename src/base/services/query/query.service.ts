@@ -4,11 +4,8 @@ import { EntityManager, EntityTarget } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { CreateQueryService } from './create/create-query.service';
 import { GetQueryService } from './get/get-query.service';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
-import {
-    QueryErrorResponse,
-    QueryResponse,
-} from '@src/base/dto/responses/response.create-query.dto';
+import { SimpleConditionsDto } from '@src/base/dto/filter/filters.dto';
+import { QueryBaseResponse } from '@src/base/dto/responses/response.create-query.dto';
 
 @Injectable()
 export class QueryService {
@@ -23,7 +20,7 @@ export class QueryService {
         entity: EntityTarget<Entity>,
         dto: createDTO,
         dtoClass: Type<Entity>,
-    ): Promise<Entity | QueryErrorResponse> {
+    ): Promise<Entity | any> {
         const toEntity = plainToClass(dtoClass, dto);
         if (toEntity != null) {
             switch (dtoClass.name) {
@@ -73,7 +70,7 @@ export class QueryService {
         dto: createDTO;
         dtoClass: Type<createDTO>;
         getDto: GetDTO;
-    }): Promise<QueryResponse> {
+    }): Promise<GetDTO | GetDTO[] | QueryBaseResponse> {
         const toEntity = plainToClass(dtoClass, dto);
         if (toEntity != null) {
             switch (dtoClass.name) {
@@ -81,13 +78,11 @@ export class QueryService {
                     console.log('Option');
                     break;
                 case 'CreateRulesDto':
-                    return {
-                        result: await this.createQueryService.saveQuery({
-                            entity: target,
-                            newObj: dto,
-                            getDto: getDto,
-                        }),
-                    };
+                    return await this.createQueryService.saveQuery({
+                        entity: target,
+                        newObj: dto,
+                        getDto: getDto,
+                    });
                 case 'Attribute':
                     console.log('Attribute');
                     break;
@@ -97,16 +92,14 @@ export class QueryService {
             }
 
             return {
-                result: null,
                 error: {
-                    message: 'Requested entity for MEC-Query was not found',
+                    message:
+                        'Could not find Requested entity for MEC-Query was not found',
                     in: toEntity.constructor.name,
                 },
             };
         }
-
         return {
-            result: null,
             error: {
                 message: 'Something went wrong saving new Rule entity',
                 in: toEntity.constructor.name,
@@ -114,71 +107,51 @@ export class QueryService {
         };
     }
 
-    async findEntityQuery<Entity>({
+    async findEntityByQuery<Entity, GetDTO, GetDTOClass>({
         entity,
-        filters,
+        getDto,
         dtoClass,
+        filters,
     }: {
         entity: EntityTarget<Entity>;
-        filters: OrderedPaginationDto;
-        dtoClass: Type<Entity>;
-    }): Promise<any> {
-        switch (dtoClass.name) {
-            case 'GetRulesDto':
-                return await this.getQueryService.findQuery({
-                    entity,
-                    alias: 'rule',
-                    conditions: {
-                        by: filters.by,
-                        type: filters.type,
-                        page: filters.page,
-                        limit: filters.limit,
-                    },
-                });
-            case 'Option':
-                console.log('Option');
-                break;
-            case 'Attribute':
-                console.log('Attribute');
-                break;
-            default:
-                console.log('default');
-                break;
-        }
-    }
+        getDto: GetDTO;
+        dtoClass: Type<GetDTOClass>;
+        filters: SimpleConditionsDto;
+    }): Promise<GetDTO | GetDTO[] | QueryBaseResponse> {
+        const toEntity = plainToClass(dtoClass, getDto);
+        if (toEntity != null) {
+            switch (dtoClass.name) {
+                case 'Option':
+                    console.log('Option');
+                    break;
+                case 'GetRulesDto':
+                    return await this.getQueryService.findSingleQuery({
+                        entity: entity,
+                        getDto: getDto,
+                        alias: 'rule',
+                        simpleFilters: filters,
+                    });
+                case 'Attribute':
+                    console.log('Attribute');
+                    break;
+                default:
+                    console.log('default');
+                    break;
+            }
 
-    async findSingleEntityQuery<Entity>({
-        entity,
-        many,
-        filters,
-        dtoClass,
-    }: {
-        entity: EntityTarget<Entity>;
-        many: boolean;
-        filters: OrderedPaginationDto;
-        dtoClass: Type<Entity>;
-    }): Promise<any> {
-        switch (dtoClass.name) {
-            case 'GetRulesDto':
-                return await this.getQueryService.findQuery({
-                    entity,
-                    alias: 'rule',
-                    conditions: {
-                        by: filters.by,
-                        type: filters.type,
-                        page: filters.page,
-                        limit: filters.limit,
-                    },
-                });
-            case 'Option':
-                console.log('Option');
-                break;
-            case 'Attribute':
-                console.log('Attribute');
-                break;
-            default:
-                console.log('default');
-                break;
+            return {
+                error: {
+                    message:
+                        'Could not find Requested entity for MEC-Query was not found',
+                    in: toEntity.constructor.name,
+                },
+            };
         }
+        return {
+            error: {
+                message: 'Something went wrong saving new Rule entity',
+                in: toEntity.constructor.name,
+            },
+        };
     }
 }
