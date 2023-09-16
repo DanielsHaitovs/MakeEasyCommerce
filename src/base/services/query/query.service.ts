@@ -4,7 +4,7 @@ import { EntityManager, EntityTarget } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { CreateQueryService } from './create/create-query.service';
 import { GetQueryService } from './get/get-query.service';
-import { SimpleConditionsDto } from '@src/base/dto/filter/filters.dto';
+import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { QueryBaseResponse } from '@src/base/dto/responses/response.create-query.dto';
 
 @Injectable()
@@ -116,10 +116,9 @@ export class QueryService {
         entity: EntityTarget<Entity>;
         getDto: GetDTO;
         dtoClass: Type<GetDTOClass>;
-        filters: SimpleConditionsDto;
-    }): Promise<GetDTO | GetDTO[] | QueryBaseResponse> {
-        const toEntity = plainToClass(dtoClass, getDto);
-        if (toEntity != null) {
+        filters: SingleConditionDto;
+    }): Promise<GetDTO | QueryBaseResponse> {
+        if (dtoClass.name != null) {
             switch (dtoClass.name) {
                 case 'Option':
                     console.log('Option');
@@ -143,15 +142,97 @@ export class QueryService {
                 error: {
                     message:
                         'Could not find Requested entity for MEC-Query was not found',
-                    in: toEntity.constructor.name,
+                    in: dtoClass.name,
                 },
             };
         }
         return {
             error: {
                 message: 'Something went wrong saving new Rule entity',
-                in: toEntity.constructor.name,
+                in: dtoClass.name,
             },
         };
+    }
+
+    async findEntityByAndSelectQuery<Entity, GetDTO, GetDTOClass>({
+        entity,
+        getDto,
+        dtoClass,
+        filters,
+    }: {
+        entity: EntityTarget<Entity>;
+        getDto: GetDTO;
+        dtoClass: Type<GetDTOClass>;
+        filters: SingleConditionDto;
+    }): Promise<GetDTO | QueryBaseResponse> {
+        if (dtoClass.name != null) {
+            switch (dtoClass.name) {
+                case 'Option':
+                    console.log('Option');
+                    break;
+                case 'GetRulesDto':
+                    return await this.getQueryService.findSingleAndSelectQuery({
+                        entity: entity,
+                        getDto: getDto,
+                        alias: 'rule',
+                        simpleFilters: filters,
+                    });
+                case 'Attribute':
+                    console.log('Attribute');
+                    break;
+                default:
+                    console.log('default');
+                    break;
+            }
+
+            return {
+                error: {
+                    message:
+                        'Could not find Requested entity for MEC-Query was not found',
+                    in: dtoClass.name,
+                },
+            };
+        }
+        return {
+            error: {
+                message: 'Something went wrong saving new Rule entity',
+                in: dtoClass.name,
+            },
+        };
+    }
+
+    async findAllEntityQuery<Entity, GetDTO, GetDTOClass>({
+        entity,
+        getDto,
+        dtoClass,
+        filters,
+    }: {
+        entity: EntityTarget<Entity>;
+        getDto: GetDTO;
+        dtoClass: Type<GetDTOClass>;
+        filters: SingleConditionDto;
+    }): Promise<any[] | QueryBaseResponse> {
+        if (dtoClass.name != null) {
+            switch (dtoClass.name) {
+                case 'Option':
+                    console.log('Option');
+                    break;
+                case 'GetRulesDto':
+                    console.log(filters);
+                    return await this.getQueryService.findAllSimpleQuery({
+                        entity: entity,
+                        getDto: getDto,
+                        alias: 'rule',
+                        simpleFilters: filters,
+                    });
+                case 'Attribute':
+                    console.log('Attribute');
+                    break;
+                default:
+                    console.log('default');
+                    break;
+            }
+        }
+        return null;
     }
 }

@@ -5,3 +5,8 @@ export enum AttributeType {
     JSON = 'JSON',
     Date = 'Date',
 }
+
+export enum AttributeRuleType {
+    Front = 'front',
+    Back = 'back',
+}

@@ -1,1 +1,52 @@
-export class Attribute {}
+import {
+    Column,
+    Entity,
+    Index,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    RelationId,
+    Unique,
+} from 'typeorm';
+import { AttributeDescription } from './attribute-description.entity';
+import { Option } from '../relations/option/entities/option.entity';
+import { Rule } from '../relations/rule/entities/rule.entity';
+
+@Entity('product_attribute_index')
+@Index('product_index_attribute', [
+    'id',
+    'description.code',
+    'description.isActive',
+    'description.isRequired',
+])
+@Unique('product_unique_attribute', ['description.name', 'description.code'])
+export class Attributes {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column(() => AttributeDescription)
+    description: AttributeDescription;
+
+    @ManyToOne(() => Attributes, { onDelete: 'CASCADE' })
+    parent: Attributes; // Optional parent attribute for handling arrays
+
+    @OneToMany(() => Option, (options) => options, {
+        cascade: false,
+        onDelete: 'CASCADE',
+    })
+    options: Option[];
+    @RelationId((attribute: Attributes) => attribute.options)
+    optionsIds: number[];
+
+    @OneToOne(() => Rule, (rule) => rule, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({
+        name: 'rule_id',
+        foreignKeyConstraintName: 'fk_product_attribute_index_rule',
+    })
+    rules: Rule;
+}

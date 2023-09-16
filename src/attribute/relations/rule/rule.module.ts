@@ -6,10 +6,17 @@ import { Rule } from './entities/rule.entity';
 import { QueryService } from '@src/base/services/query/query.service';
 import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
 import { GetQueryService } from '@src/base/services/query/get/get-query.service';
+import { RuleHelperService } from '@src/base/services/helper/attributes/rule-helper.service';
 
 @Module({
     controllers: [RuleController],
-    providers: [RuleService, QueryService, CreateQueryService, GetQueryService],
+    providers: [
+        RuleService,
+        RuleHelperService,
+        QueryService,
+        CreateQueryService,
+        GetQueryService,
+    ],
     imports: [TypeOrmModule.forFeature([Rule])],
 })
 export class RuleModule {}

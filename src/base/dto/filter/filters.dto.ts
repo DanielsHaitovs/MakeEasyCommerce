@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { OrderType } from '@src/base/enum/query/query.enum';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class PaginationDto {
     @ApiProperty({ type: Number })
@@ -21,7 +22,7 @@ export class FilterDto extends PaginationDto {
 
     @ApiProperty()
     @IsOptional()
-    value: any;
+    value: string | number | boolean | Date | JSON;
 }
 
 export class SimpleFilterDto {
@@ -38,11 +39,14 @@ export class SimpleFilterDto {
 export class OrderedPaginationDto extends PaginationDto {
     @ApiProperty()
     @IsOptional()
-    by: string;
+    orderBy: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Order Direction for Query',
+    })
     @IsOptional()
-    type: 'ASC' | 'DESC';
+    @IsEnum(OrderType)
+    orderDirection: OrderType;
 }
 
 export class FilterOrderPaginationDto extends FilterDto {
@@ -50,12 +54,15 @@ export class FilterOrderPaginationDto extends FilterDto {
     @IsOptional()
     by: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Order Direction for Query',
+    })
     @IsOptional()
-    type: 'ASC' | 'DESC';
+    @IsEnum(OrderType)
+    orderDirection: OrderType;
 }
 
-export class SimpleConditionsDto {
+export class SingleConditionDto {
     @ApiProperty({ type: Number })
     @IsNumber()
     @IsOptional()
@@ -68,18 +75,26 @@ export class SimpleConditionsDto {
 
     @ApiProperty()
     @IsOptional()
+    orderBy: string;
+
+    @ApiProperty({
+        title: 'Order Direction for Query',
+    })
+    @IsOptional()
+    @IsEnum(OrderType)
+    orderDirection: OrderType;
+
+    @ApiProperty()
+    @IsOptional()
     @IsString()
     columnName: string;
 
     @ApiProperty()
     @IsOptional()
-    value: any;
+    value: string | number | boolean | Date | JSON;
 
     @ApiProperty()
     @IsOptional()
-    orderBy: string;
-
-    @ApiProperty()
-    @IsOptional()
-    type: 'ASC' | 'DESC';
+    @IsString()
+    select: string;
 }

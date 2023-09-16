@@ -4,8 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BaseModule } from './base/base.module';
 import { AttributeModule } from './attribute/attribute.module';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
-// Product ->
-// <- Product
+import { ProductModule } from './product/product.module';
+import { Option } from './attribute/relations/option/entities/option.entity';
+import { Attributes } from './attribute/entities/attribute.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -16,7 +17,11 @@ import { Rule } from './attribute/relations/rule/entities/rule.entity';
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
             entities: [
+                // Attribute ->
+                Attributes,
                 Rule,
+                Option,
+                // <- Attribute
                 // Product ->
                 // <- Product
             ],
@@ -27,6 +32,7 @@ import { Rule } from './attribute/relations/rule/entities/rule.entity';
         }),
         BaseModule,
         AttributeModule,
+        ProductModule,
     ],
     controllers: [],
     providers: [AppService],

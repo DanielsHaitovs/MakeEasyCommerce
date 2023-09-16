@@ -3,12 +3,12 @@ import { RuleBaseDto, RuleDto } from './rule-base.dto';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class GetRulesDto extends RuleDto {
-    // @ApiProperty({
-    //     title: 'Attribute Rule ID',
-    //     type: Number,
-    // })
-    // @IsNotEmpty()
-    // @IsNumber()
+    @ApiProperty({
+        title: 'Attribute Rule ID',
+        type: Number,
+    })
+    @IsNotEmpty()
+    @IsNumber()
     id: number;
 }
 

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OptionController } from './option.controller';
-import { OptionService } from './option.service';
+import { OptionService } from '../services/option.service';
 
 describe('OptionController', () => {
     let controller: OptionController;
