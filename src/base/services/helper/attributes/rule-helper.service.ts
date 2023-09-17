@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { RuleResponseDto } from '@src/attribute/relations/rule/dto/rule-base.dto';
 import { Rule } from '@src/attribute/relations/rule/entities/rule.entity';
+import { RuleResponseInterface } from '@src/attribute/relations/rule/interface/rule.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { EntityManager } from 'typeorm';
 
@@ -29,16 +29,18 @@ export class RuleHelperService {
     }: {
         alias: string;
         filters: SingleConditionDto;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         const skip = (filters.page - 1) * filters.limit;
         const rulesList: string[] = [];
         let whereCondition = '';
         let select = false;
         let where = false;
         let order = false;
-        if (filters.select && filters.select != null) {
+        if (filters.select.shift() && filters.select.shift() != null) {
             for (const rule of RuleList) {
-                rulesList.push(alias + '.' + filters.select + '.' + rule);
+                rulesList.push(
+                    alias + '.' + filters.select.shift() + '.' + rule,
+                );
             }
             select = true;
         }

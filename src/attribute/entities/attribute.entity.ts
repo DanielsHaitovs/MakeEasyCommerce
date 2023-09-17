@@ -14,14 +14,14 @@ import { AttributeDescription } from './attribute-description.entity';
 import { Option } from '../relations/option/entities/option.entity';
 import { Rule } from '../relations/rule/entities/rule.entity';
 
-@Entity('product_attribute_index')
-@Index('product_index_attribute', [
+@Entity('eav_attribute_index')
+@Index('eav_index_attribute', [
     'id',
     'description.code',
     'description.isActive',
     'description.isRequired',
 ])
-@Unique('product_unique_attribute', ['description.name', 'description.code'])
+@Unique('eav_unique_attribute', ['description.name', 'description.code'])
 export class Attributes {
     @PrimaryGeneratedColumn()
     id: number;

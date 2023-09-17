@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AttributeType } from '@src/base/enum/attributes/attribute-type.enum';
-import { ProductTypes } from '@src/base/enum/product/product-types.enum';
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class AttributeShortDto {
@@ -14,15 +13,22 @@ export class AttributeShortDto {
     @IsString()
     code: string;
 
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    description: string;
+
     @ApiProperty({ default: false })
     @IsNotEmpty()
     @IsBoolean()
     isRequired: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        enum: AttributeType,
+    })
     @IsNotEmpty()
     @IsEnum(AttributeType)
-    dataType: AttributeType;
+    dataType: string;
 }
 
 export class AttributeDescriptionDto extends AttributeShortDto {
@@ -32,16 +38,11 @@ export class AttributeDescriptionDto extends AttributeShortDto {
     isActive: boolean;
 
     @ApiProperty()
-    @IsNotEmpty()
-    @IsString()
-    description: string;
-
-    @ApiProperty()
     @IsBoolean()
     isArray: boolean;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsEnum(ProductTypes)
-    appliesTo: ProductTypes[];
+    // @ApiProperty()
+    // @IsNotEmpty()
+    // @IsEnum(ProductTypes)
+    // appliesTo: ProductTypes[];
 }

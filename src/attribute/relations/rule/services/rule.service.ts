@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateRulesDto } from '../dto/update-rule.dto';
-import { CreateRulesDto } from '../dto/post-rule.dto';
+import { CreateRulesDto } from '../dto/create-rule.dto';
 import { QueryService } from '@src/base/services/query/query.service';
 import { Rule } from '../entities/rule.entity';
 import {
@@ -14,6 +14,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { RuleHelperService } from '@src/base/services/helper/attributes/rule-helper.service';
 import { OrderType } from '@src/base/enum/query/query.enum';
+import { RuleResponseInterface } from '../interface/rule.interface';
 
 @Injectable()
 export class RuleService {
@@ -28,7 +29,7 @@ export class RuleService {
         createRulesDto,
     }: {
         createRulesDto: CreateRulesDto;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         try {
             return {
                 result: await this.entityManager.save(
@@ -46,7 +47,7 @@ export class RuleService {
         }
     }
 
-    async findOneById({ id }: { id: number }): Promise<RuleResponseDto> {
+    async findOneById({ id }: { id: number }): Promise<RuleResponseInterface> {
         return await this.ruleHelper.singleConditionRuleQuery({
             alias: 'rule',
             filters: {
@@ -67,7 +68,7 @@ export class RuleService {
     }: {
         id: number;
         type: RuleFindByType;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         return await this.ruleHelper.singleConditionRuleQuery({
             alias: 'rule',
             filters: {
@@ -77,7 +78,7 @@ export class RuleService {
                 orderDirection: OrderType.ASC,
                 columnName: 'id',
                 value: id,
-                select: type.ruleType,
+                select: [type.ruleType],
             },
         });
     }
@@ -86,7 +87,7 @@ export class RuleService {
         condition,
     }: {
         condition: OrderedPaginationDto;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         return await this.ruleHelper.singleConditionRuleQuery({
             alias: 'rule',
             filters: {
@@ -107,12 +108,26 @@ export class RuleService {
     }: {
         id: number;
         rules: UpdateRulesDto;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         return (await this.entityManager.update(Rule, id, rules)).raw;
     }
 
-    async remove({ id }: { id: number }): Promise<number> {
-        return (await this.entityManager.delete(Rule, id)).affected;
+    async remove({ id }: { id: number }): Promise<RuleResponseInterface> {
+        try {
+            if ((await this.entityManager.delete(Rule, id)).affected > 0) {
+                return {
+                    message: `Record with id ${id} was removed`,
+                };
+            }
+        } catch (e) {
+            return {
+                message: 'Something went wrong during remove of this entity',
+                error: {
+                    message: e.message,
+                    in: 'Rule Entity',
+                },
+            };
+        }
     }
 
     protected async prepareRule({
@@ -127,7 +142,7 @@ export class RuleService {
         createRulesDto,
     }: {
         createRulesDto: CreateRulesDto;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         try {
             return {
                 result: plainToClass(
@@ -154,7 +169,7 @@ export class RuleService {
         condition,
     }: {
         condition: FilterDto;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         return {
             result: plainToClass(
                 GetRulesDto,
@@ -179,7 +194,7 @@ export class RuleService {
     }: {
         id: number;
         type: RuleFindByType;
-    }): Promise<RuleResponseDto> {
+    }): Promise<RuleResponseInterface> {
         return {
             result: plainToClass(
                 GetRulesDto,
@@ -194,7 +209,7 @@ export class RuleService {
                         orderDirection: OrderType.ASC,
                         columnName: 'id',
                         value: id,
-                        select: type.ruleType.toLowerCase(),
+                        select: [type.ruleType.toLowerCase()],
                     },
                 }),
             ),

@@ -1,53 +1,106 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { QueryResponse } from '@src/base/dto/responses/response.create-query.dto';
-import { IsBoolean, IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNotEmpty, ValidateNested } from 'class-validator';
 import { GetRulesDto } from './get-rule.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
+import { Transform } from 'class-transformer';
+import { isBooleanObject } from 'util/types';
+
+// export class BooleanTransformer {
+//     to(value: string): boolean {
+//         console.log(value);
+//         if (value.toString() == 'false') {
+//             return false;
+//         }
+//         if (value.toString() == 'true') {
+//             return true;
+//         } else {
+//             throw 'error';
+//         }
+//     }
+// }
+
+// export class dataConversion {
+//     valueToBoolean(value: string): boolean {
+//         if (value === null && value === undefined) {
+//             return undefined;
+//         }
+
+//         if (['true', 'on', 'yes', '1'].includes(value.toString())) {
+//             console.log(value);
+//             return true;
+//         }
+//         if (['false', 'off', 'no', '0'].includes(value.toString())) {
+//             return false;
+//         }
+
+//         throw 'Value Should be type of boolean';
+//     }
+// }
 
 export class RuleBaseDto {
-    @ApiProperty()
+    @ApiProperty({
+        type: Boolean,
+        nullable: false,
+    })
+    // @Transform(({ value }) => new dataConversion().valueToBoolean(value))
     @IsNotEmpty()
-    @IsBoolean()
     useInCatalog: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInListing: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInLayeredNavigation: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInFilter: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInOptionFilter: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInSort: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInSearch: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInPromo: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Attribute Rule Boolean',
+        type: Boolean,
+    })
     @IsNotEmpty()
-    @IsBoolean()
     useInReport: boolean;
 }
 

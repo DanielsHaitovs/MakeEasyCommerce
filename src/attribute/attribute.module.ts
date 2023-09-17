@@ -12,11 +12,15 @@ import { GetQueryService } from '@src/base/services/query/get/get-query.service'
 import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
 import { Option } from './relations/option/entities/option.entity';
 import { Attributes } from './entities/attribute.entity';
+import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
+import { OptionService } from './relations/option/services/option.service';
 
 @Module({
     controllers: [AttributeController],
     providers: [
         AttributeService,
+        OptionService,
+        OptionHelperService,
         QueryService,
         CreateQueryService,
         GetQueryService,

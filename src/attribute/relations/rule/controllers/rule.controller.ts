@@ -18,16 +18,13 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { CreateRulesDto } from '../dto/post-rule.dto';
+import { CreateRulesDto } from '../dto/create-rule.dto';
 import { UpdateRulesDto } from '../dto/update-rule.dto';
-import {
-    OrderedPaginationDto,
-    SingleConditionDto,
-    SimpleFilterDto,
-} from '@src/base/dto/filter/filters.dto';
+import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { GetRulesDto } from '../dto/get-rule.dto';
-import { RuleFindByType, RuleResponseDto } from '../dto/rule-base.dto';
+import { RuleFindByType } from '../dto/rule-base.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
+import { RuleResponseInterface } from '../interface/rule.interface';
 
 @Controller('rule')
 @ApiTags('Rule')
@@ -46,7 +43,7 @@ export class RuleController {
     })
     async create(
         @Body() createRulesDto: CreateRulesDto,
-    ): Promise<RuleResponseDto> {
+    ): Promise<RuleResponseInterface> {
         return this.ruleService.create({ createRulesDto });
     }
 
@@ -72,7 +69,7 @@ export class RuleController {
         description: 'All Attributes and theirs details',
         type: [GetRulesDto],
     })
-    async findAll(@Query() orderedPagination): Promise<any> {
+    async findAll(@Query() orderedPagination): Promise<RuleResponseInterface> {
         return await this.ruleService.findAll({
             condition: orderedPagination,
         });
@@ -88,7 +85,7 @@ export class RuleController {
         description: 'Specific Attribute Rule and its details',
         type: GetRulesDto,
     })
-    async findOneById(@Param('id') id: number): Promise<RuleResponseDto> {
+    async findOneById(@Param('id') id: number): Promise<RuleResponseInterface> {
         return await this.ruleService.findOneById({ id });
     }
 
@@ -115,7 +112,7 @@ export class RuleController {
     async findOneBy(
         @Param('id', ParseIntPipe) id: number,
         @Query() type, // this needs to be with specific type, for some reason it did not worked out, investigate
-    ): Promise<RuleResponseDto> {
+    ): Promise<RuleResponseInterface> {
         return this.ruleService.findThisRuleType({
             id: id,
             type: type,
@@ -135,7 +132,7 @@ export class RuleController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateRulesDto: UpdateRulesDto,
-    ): Promise<any> {
+    ): Promise<RuleResponseInterface> {
         return this.ruleService.update({
             id: id,
             rules: updateRulesDto,
@@ -147,7 +144,9 @@ export class RuleController {
         summary: 'Delete Attribute Rule by ID',
         description: 'Delete specifically attribute rule data by id',
     })
-    async removeBasket(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    async removeBasket(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<RuleResponseInterface> {
         return await this.ruleService.remove({ id });
     }
 }

@@ -1,14 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
 import { OptionDto } from './option.dto';
 
-export class UpdateOptionDto extends OptionDto {
-    @ApiProperty({
-        title: 'Related Attribute ID',
-        type: Number,
-        nullable: true,
-    })
-    @IsOptional()
-    @IsNumber()
-    relatedAttributeID: number;
-}
+export class UpdateOptionDto extends OptionDto {}

@@ -15,11 +15,3 @@ export class OptionDto {
 export class OptionResponseDto extends QueryResponse {
     result?: GetOptionDto | GetOptionDto[];
 }
-
-// @ApiProperty({
-//     title: 'Parent Attribute Short Dto',
-//     // type: GetAttributeShortDto,
-// })
-// @ValidateNested({ each: true })
-// parentAttribute: GetAttributeShortDto;
-// simpleProductOptions: GetSingleAttributeOptions[]

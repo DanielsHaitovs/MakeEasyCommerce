@@ -96,5 +96,5 @@ export class SingleConditionDto {
     @ApiProperty()
     @IsOptional()
     @IsString()
-    select: string;
+    select: string[];
 }
