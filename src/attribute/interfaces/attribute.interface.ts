@@ -47,7 +47,7 @@ export interface GetAttributeInterface extends GetAttributeShortInterface {
 }
 
 export interface AttributeResponseInterface extends QueryResponseInterface {
-    status?: string;
+    status?: any;
     message?: string;
     result?:
         | GetAttributeInterface

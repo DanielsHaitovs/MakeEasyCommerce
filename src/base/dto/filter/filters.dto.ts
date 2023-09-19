@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class PaginationDto {
     @ApiProperty({ type: Number })
@@ -97,4 +97,16 @@ export class SingleConditionDto {
     @IsOptional()
     @IsString()
     select: string[];
+}
+
+export class AttributeSingleConditionDto extends SingleConditionDto {
+    @ApiProperty()
+    @IsOptional()
+    @IsBoolean()
+    joinOptions: boolean;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsBoolean()
+    joinRules: boolean;
 }

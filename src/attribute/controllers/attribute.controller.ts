@@ -18,12 +18,17 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
+    ApiParam,
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
 import { AttributeResponseInterface } from '../interfaces/attribute.interface';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
-import { GetAttributeOptions } from '../dto/get-attribute.dto';
+import {
+    GetAttributeDto,
+    GetAttributeOptions,
+    GetAttributeShortDto,
+} from '../dto/get-attribute.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -63,7 +68,7 @@ export class AttributeController {
     }
     @Get('get/all')
     @ApiOperation({
-        summary: 'Find All Attributes Rules',
+        summary: 'Find All Attributes',
         description: 'Get data of all Attributes Rules, good luck!',
     })
     @ApiQuery({
@@ -79,10 +84,10 @@ export class AttributeController {
         },
         required: false,
     })
-    // @ApiOkResponse({
-    //     description: 'All Attributes and theirs details',
-    //     type: [GetAttributeOptions],
-    // })
+    @ApiOkResponse({
+        description: 'All Attributes and theirs details',
+        type: [GetAttributeShortDto],
+    })
     async findAll(
         @Query() orderedPagination,
     ): Promise<AttributeResponseInterface> {
@@ -91,9 +96,21 @@ export class AttributeController {
         });
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.attributeService.findOne(+id);
+    @Get('get/one/by/:id')
+    @ApiOperation({
+        summary: 'Find 1 Attribute by id',
+        description:
+            'Get data of specific Attribute and its data condition, good luck!',
+    })
+    @ApiParam({ name: 'id', description: 'Attribute Data' })
+    @ApiOkResponse({
+        description: 'Specific Attribute Rule and its details',
+        type: GetAttributeDto,
+    })
+    async findOneById(
+        @Param('id') id: number,
+    ): Promise<AttributeResponseInterface> {
+        return await this.attributeService.findOneById({ id });
     }
 
     @Patch(':id')
