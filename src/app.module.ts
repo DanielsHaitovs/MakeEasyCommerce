@@ -6,7 +6,7 @@ import { AttributeModule } from './attribute/attribute.module';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
 import { ProductModule } from './product/product.module';
 import { Option } from './attribute/relations/option/entities/option.entity';
-import { Attributes } from './attribute/entities/attribute.entity';
+import { Attributes } from './attribute/entities/attributes.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({

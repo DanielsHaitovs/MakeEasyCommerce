@@ -11,25 +11,27 @@ import { QueryService } from '@src/base/services/query/query.service';
 import { GetQueryService } from '@src/base/services/query/get/get-query.service';
 import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
 import { Option } from './relations/option/entities/option.entity';
-import { Attributes } from './entities/attribute.entity';
 import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
 import { OptionService } from './relations/option/services/option.service';
+import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
+import { Attributes } from './entities/attributes.entity';
 
 @Module({
+    imports: [
+        TypeOrmModule.forFeature([Attributes, Rule, Option, ProductAttribute]),
+        OptionModule,
+        RuleModule,
+        ProductAttributeModule,
+    ],
     controllers: [AttributeController],
     providers: [
         AttributeService,
+        AttributeHelperService,
         OptionService,
         OptionHelperService,
         QueryService,
         CreateQueryService,
         GetQueryService,
-    ],
-    imports: [
-        OptionModule,
-        RuleModule,
-        ProductAttributeModule,
-        TypeOrmModule.forFeature([Attributes, Rule, Option, ProductAttribute]),
     ],
 })
 export class AttributeModule {}

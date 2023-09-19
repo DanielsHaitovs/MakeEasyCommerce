@@ -7,7 +7,6 @@ import { QueryService } from '@src/base/services/query/query.service';
 import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
 import { GetQueryService } from '@src/base/services/query/get/get-query.service';
 import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
-import { Attributes } from '@src/attribute/entities/attribute.entity';
 
 @Module({
     controllers: [OptionController],
@@ -18,6 +17,6 @@ import { Attributes } from '@src/attribute/entities/attribute.entity';
         CreateQueryService,
         GetQueryService,
     ],
-    imports: [TypeOrmModule.forFeature([Attributes, Option])],
+    imports: [TypeOrmModule.forFeature([Option])],
 })
 export class OptionModule {}

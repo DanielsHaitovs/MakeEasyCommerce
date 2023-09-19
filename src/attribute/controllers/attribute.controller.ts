@@ -6,6 +6,7 @@ import {
     Patch,
     Param,
     Delete,
+    Query,
 } from '@nestjs/common';
 import { AttributeService } from '../services/attribute.service';
 import {
@@ -13,8 +14,16 @@ import {
     CreateAttributeShortDto,
 } from '../dto/create-attribute.dto';
 import { UpdateAttributeDto } from '../dto/update-attribute.dto';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBody,
+    ApiOkResponse,
+    ApiOperation,
+    ApiQuery,
+    ApiTags,
+} from '@nestjs/swagger';
 import { AttributeResponseInterface } from '../interfaces/attribute.interface';
+import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
+import { GetAttributeOptions } from '../dto/get-attribute.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -52,10 +61,34 @@ export class AttributeController {
     ): Promise<AttributeResponseInterface> {
         return await this.attributeService.create({ createAttribute });
     }
-
-    @Get()
-    findAll() {
-        return this.attributeService.findAll();
+    @Get('get/all')
+    @ApiOperation({
+        summary: 'Find All Attributes Rules',
+        description: 'Get data of all Attributes Rules, good luck!',
+    })
+    @ApiQuery({
+        name: 'paginate and order',
+        description:
+            'Its basically will try to find all your attributes rules. You can set page and limit for this query.',
+        type: OrderedPaginationDto,
+        example: {
+            by: 'id',
+            type: 'ASC',
+            page: 1,
+            limit: 10,
+        },
+        required: false,
+    })
+    // @ApiOkResponse({
+    //     description: 'All Attributes and theirs details',
+    //     type: [GetAttributeOptions],
+    // })
+    async findAll(
+        @Query() orderedPagination,
+    ): Promise<AttributeResponseInterface> {
+        return await this.attributeService.findAll({
+            condition: orderedPagination,
+        });
     }
 
     @Get(':id')

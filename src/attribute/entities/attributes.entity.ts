@@ -32,8 +32,7 @@ export class Attributes {
     @ManyToOne(() => Attributes, { onDelete: 'CASCADE' })
     parent: Attributes; // Optional parent attribute for handling arrays
 
-    @OneToMany(() => Option, (options) => options, {
-        cascade: false,
+    @OneToMany(() => Option, (options) => options.relatedAttribute, {
         onDelete: 'CASCADE',
     })
     options: Option[];

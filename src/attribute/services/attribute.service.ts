@@ -6,10 +6,12 @@ import {
 import { UpdateAttributeDto } from '../dto/update-attribute.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { Attributes } from '../entities/attribute.entity';
 import { AttributeResponseInterface } from '../interfaces/attribute.interface';
 import { OptionService } from '../relations/option/services/option.service';
 import { GetAttributeDto } from '../dto/get-attribute.dto';
+import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
+import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
+import { Attributes } from '../entities/attributes.entity';
 
 @Injectable()
 export class AttributeService {
@@ -17,6 +19,7 @@ export class AttributeService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         private readonly optionService: OptionService,
+        private readonly attributeHelper: AttributeHelperService,
     ) {}
     async create({
         createAttribute,
@@ -74,8 +77,23 @@ export class AttributeService {
         }
     }
 
-    findAll() {
-        return `This action returns all attribute`;
+    async findAll({
+        condition,
+    }: {
+        condition: OrderedPaginationDto;
+    }): Promise<AttributeResponseInterface> {
+        return await this.attributeHelper.singleConditionAttributeQuery({
+            alias: 'attributes',
+            filters: {
+                page: condition.page,
+                limit: condition.limit,
+                orderBy: condition.orderBy,
+                orderDirection: condition.orderDirection,
+                columnName: null,
+                value: null,
+                select: null,
+            },
+        });
     }
 
     findOne(id: number) {
