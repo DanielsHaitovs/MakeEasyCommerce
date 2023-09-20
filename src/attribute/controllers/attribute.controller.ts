@@ -7,6 +7,7 @@ import {
     Param,
     Delete,
     Query,
+    ParseBoolPipe,
 } from '@nestjs/common';
 import { AttributeService } from '../services/attribute.service';
 import {
@@ -23,7 +24,10 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { AttributeResponseInterface } from '../interfaces/attribute.interface';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
+import {
+    AttributerRelations,
+    OrderedPaginationDto,
+} from '@src/base/dto/filter/filters.dto';
 import {
     GetAttributeDto,
     GetAttributeOptions,
@@ -111,6 +115,31 @@ export class AttributeController {
         @Param('id') id: number,
     ): Promise<AttributeResponseInterface> {
         return await this.attributeService.findOneById({ id });
+    }
+
+    @Get('get/one/relations/by/:id')
+    @ApiOperation({
+        summary: 'Find 1 Attribute by id',
+        description:
+            'Its basically will try to find your attributes with mentioned relations.',
+    })
+    @ApiParam({ name: 'id', description: 'Attribute Data' })
+    @ApiOkResponse({
+        description: 'Specific Attribute Rule and its details',
+        type: GetAttributeDto,
+    })
+    async findOneWithRelationsById(
+        @Param('id') id: number,
+        @Query('includeRules', ParseBoolPipe) includeRules: boolean,
+        @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
+    ): Promise<AttributeResponseInterface> {
+        return await this.attributeService.findOneWithRelationById({
+            id: id,
+            relations: {
+                joinRules: includeRules,
+                joinOptions: includeOptions,
+            },
+        });
     }
 
     @Patch(':id')

@@ -39,7 +39,6 @@ export class AttributeHelperService {
         if (filters.orderBy != null) {
             filters.orderBy = alias + '.' + filters.orderBy;
         }
-
         try {
             if (filters.joinOptions === true && filters.joinRules === true) {
                 return await this.joinMultipleRelationQuery({
@@ -70,6 +69,7 @@ export class AttributeHelperService {
                     orderDirection: filters.orderDirection,
                 });
             }
+
             return await this.nonRelationQuery({
                 skip: skip,
                 limit: filters.limit,
@@ -151,7 +151,6 @@ export class AttributeHelperService {
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<AttributeResponseInterface> {
-        console.log(relation);
         return {
             result: await this.entityManager
                 .getRepository(Attributes)

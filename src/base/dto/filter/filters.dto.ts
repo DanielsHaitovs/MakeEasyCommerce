@@ -1,7 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type.enum';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+    IsBoolean,
+    IsEnum,
+    IsNumber,
+    IsOptional,
+    IsString,
+} from 'class-validator';
 
 export class PaginationDto {
     @ApiProperty({ type: Number })
@@ -99,6 +104,24 @@ export class SingleConditionDto {
     @IsOptional()
     @IsString()
     select: string[];
+}
+
+export class AttributerRelations {
+    @ApiProperty({
+        title: 'Join Options Relation for Attribute Query',
+        default: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    joinOptions: boolean;
+
+    @ApiProperty({
+        title: 'Join Rule Relation for Attribute Query',
+        default: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    joinRules: boolean;
 }
 
 export class AttributeSingleConditionDto extends SingleConditionDto {
