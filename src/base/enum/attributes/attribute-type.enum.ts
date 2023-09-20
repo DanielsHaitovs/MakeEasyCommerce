@@ -10,3 +10,9 @@ export enum AttributeRuleType {
     Front = 'front',
     Back = 'back',
 }
+
+export enum JoinAttributeRelations {
+    All = 'all',
+    Options = 'options',
+    Rules = 'rules',
+}

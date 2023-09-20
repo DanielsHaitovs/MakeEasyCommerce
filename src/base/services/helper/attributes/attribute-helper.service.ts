@@ -3,8 +3,11 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { Attributes } from '@src/attribute/entities/attributes.entity';
 import { AttributeResponseInterface } from '@src/attribute/interfaces/attribute.interface';
 import { AttributeSingleConditionDto } from '@src/base/dto/filter/filters.dto';
+import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type.enum';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
+
+export const alias = 'attributes';
 
 @Injectable()
 export class AttributeHelperService {
@@ -18,43 +21,64 @@ export class AttributeHelperService {
         filters: AttributeSingleConditionDto;
     }): Promise<AttributeResponseInterface> {
         const skip = (filters.page - 1) * filters.limit;
-        const selectList: string[] = [];
-        const alias = 'attributes';
-        let select = false;
-        let where = false;
-        let order = false;
+        const selectList: string[] = null;
+        let rawValue = null;
+        let columnName = '';
         if (filters.select != null) {
             for (const addToSelect of filters.select) {
                 selectList.push(alias + '.' + addToSelect);
             }
+        }
+        if (filters.columnName != null && filters.columnName != '') {
+            columnName = alias + '.' + filters.columnName + ' = :value';
+            rawValue = {
+                value: filters.value,
+            };
+        }
 
-            console.log(selectList);
-            select = true;
-        }
-        if (alias == 'attributes' && filters.columnName != null) {
-            filters.columnName = alias + '.' + filters.columnName + ' = :value';
-            where = true;
-        }
         if (filters.orderBy != null) {
             filters.orderBy = alias + '.' + filters.orderBy;
-            order = true;
         }
+
         try {
             if (filters.joinOptions === true && filters.joinRules === true) {
+                return await this.joinMultipleRelationQuery({
+                    skip: skip,
+                    limit: filters.limit,
+                    selectList: selectList,
+                    alias: alias,
+                    columnName: columnName,
+                    rawValue: rawValue,
+                    orderBy: filters.orderBy,
+                    orderDirection: filters.orderDirection,
+                });
             }
 
             if (filters.joinRules === true || filters.joinOptions === true) {
+                return await this.joinSingleRelationQuery({
+                    relation:
+                        JoinAttributeRelations[
+                            filters.joinOptions ? 'Options' : 'Rules'
+                        ],
+                    skip: skip,
+                    limit: filters.limit,
+                    selectList: selectList,
+                    alias: alias,
+                    columnName: columnName,
+                    rawValue: rawValue,
+                    orderBy: filters.orderBy,
+                    orderDirection: filters.orderDirection,
+                });
             }
             return await this.nonRelationQuery({
                 skip: skip,
                 limit: filters.limit,
-                select: select,
                 selectList: selectList,
                 alias: alias,
-                where: where,
-                columnName: filters.columnName,
-                rawValue: filters.value,
-                order: order,
+                columnName: columnName,
+                rawValue: {
+                    value: filters.value,
+                },
                 orderBy: filters.orderBy,
                 orderDirection: filters.orderDirection,
             });
@@ -71,148 +95,114 @@ export class AttributeHelperService {
     async nonRelationQuery({
         skip,
         limit,
-        select,
         selectList,
         alias,
-        where,
         columnName,
         rawValue,
-        order,
         orderBy,
         orderDirection,
     }: {
         skip: number;
         limit: number;
-        select: boolean;
         selectList: string[];
         alias: string;
-        where: boolean;
         columnName: string;
-        rawValue: string | number | boolean | Date | JSON;
-        order: boolean;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
         orderBy: string;
-        orderDirection: OrderType;
+        orderDirection: OrderType | OrderType.ASC;
     }): Promise<AttributeResponseInterface> {
-        if (where && columnName != '') {
-            if (select) {
-                if (order) {
-                    return {
-                        result: await this.entityManager
-                            .getRepository(Attributes)
-                            .createQueryBuilder(alias)
-                            .where(columnName, {
-                                value: rawValue,
-                            })
-                            .select(selectList)
-                            .orderBy(orderBy, orderDirection)
-                            .skip(skip)
-                            .take(limit)
-                            .cache(true)
-                            .useIndex('fk_attribute_where_condition_query')
-                            .getMany(),
-                    };
-                }
-                return {
-                    result: await this.entityManager
-                        .getRepository(Attributes)
-                        .createQueryBuilder(alias)
-                        .where(columnName, {
-                            value: rawValue,
-                        })
-                        .select(selectList)
-                        .skip(skip)
-                        .take(limit)
-                        .cache(true)
-                        .useIndex('fk_attribute_where_condition_query')
-                        .getMany(),
-                };
-            }
-
-            if (order) {
-                return {
-                    result: await this.entityManager
-                        .getRepository(Attributes)
-                        .createQueryBuilder(alias)
-                        .where(columnName, {
-                            value: rawValue,
-                        })
-                        .orderBy(orderBy, orderDirection)
-                        .skip(skip)
-                        .take(limit)
-                        .cache(true)
-                        .useIndex('fk_attribute_where_condition_query')
-                        .getMany(),
-                };
-            }
-            return {
-                result: await this.entityManager
-                    .getRepository(Attributes)
-                    .createQueryBuilder(alias)
-                    .where(columnName, {
-                        value: rawValue,
-                    })
-                    .skip(skip)
-                    .take(limit)
-                    .cache(true)
-                    .useIndex('fk_attribute_where_condition_query')
-                    .getMany(),
-            };
-        }
-
-        if (select) {
-            if (order) {
-                return {
-                    result: await this.entityManager
-                        .getRepository(Attributes)
-                        .createQueryBuilder(alias)
-                        .select(selectList)
-                        .orderBy(orderBy, orderDirection)
-                        .skip(skip)
-                        .take(limit)
-                        .cache(true)
-                        .useIndex('fk_attribute_select_condition_query')
-                        .getMany(),
-                };
-            }
-            return {
-                result: await this.entityManager
-                    .getRepository(Attributes)
-                    .createQueryBuilder(alias)
-                    .select([''])
-                    .skip(skip)
-                    .take(limit)
-                    .cache(true)
-                    .useIndex('fk_attribute_select_condition_query')
-                    .getMany(),
-            };
-        }
-
-        if (order) {
-            console.log('here');
-            return {
-                result: await this.entityManager
-                    .getRepository(Attributes)
-                    .createQueryBuilder(alias)
-                    .getMany(),
-            };
-        }
         return {
             result: await this.entityManager
                 .getRepository(Attributes)
                 .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
                 .skip(skip)
                 .take(limit)
                 .cache(true)
-                .useIndex('fk_attribute_query')
+                .useIndex('fk_attribute_simple_condition_query')
                 .getMany(),
         };
     }
-    catch(e) {
+
+    async joinSingleRelationQuery({
+        relation,
+        skip,
+        limit,
+        selectList,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        relation: JoinAttributeRelations;
+        skip: number;
+        limit: number;
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<AttributeResponseInterface> {
+        console.log(relation);
         return {
-            error: {
-                message: e.message,
-                in: 'Attributes Helper Query',
-            },
+            result: await this.entityManager
+                .getRepository(Attributes)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .leftJoinAndSelect(alias + '.' + relation, relation)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
+                .skip(skip)
+                .take(limit)
+                .cache(true)
+                .useIndex('fk_attribute_single_relation_query')
+                .getMany(),
+        };
+    }
+
+    async joinMultipleRelationQuery({
+        skip,
+        limit,
+        selectList,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        skip: number;
+        limit: number;
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<AttributeResponseInterface> {
+        return {
+            result: await this.entityManager
+                .getRepository(Attributes)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .leftJoinAndSelect('attributes.options', 'options')
+                .leftJoinAndSelect('attributes.rules', 'rules')
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
+                .skip(skip)
+                .take(limit)
+                .cache(true)
+                .useIndex('fk_attribute_single_relation_query')
+                .getMany(),
         };
     }
 }

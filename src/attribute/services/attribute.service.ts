@@ -13,6 +13,7 @@ import { AttributeHelperService } from '@src/base/services/helper/attributes/att
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { Attributes } from '../entities/attributes.entity';
 import { OrderType } from '@src/base/enum/query/query.enum';
+import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type.enum';
 
 // There is option to load data about table columns from database
 export const AttributeDescriptionList = {
@@ -23,6 +24,7 @@ export const AttributeDescriptionList = {
         'description.isActive',
         'description.isRequired',
     ],
+    id: ['id'],
     // short: ['id', 'description.name', 'description.code', 'description.isActive', 'description.isRequired'],
 };
 @Injectable()
@@ -129,7 +131,7 @@ export class AttributeService {
                 orderDirection: condition.orderDirection,
                 columnName: null,
                 value: null,
-                select: AttributeDescriptionList.all,
+                select: null,
                 joinOptions: false,
                 joinRules: false,
             },
@@ -150,7 +152,7 @@ export class AttributeService {
                 columnName: 'id',
                 value: id,
                 select: null,
-                joinOptions: true,
+                joinOptions: false,
                 joinRules: false,
             },
         });

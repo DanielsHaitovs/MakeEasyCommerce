@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type.enum';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
@@ -79,6 +80,7 @@ export class SingleConditionDto {
 
     @ApiProperty({
         title: 'Order Direction for Query',
+        default: OrderType.ASC,
     })
     @IsOptional()
     @IsEnum(OrderType)
@@ -100,12 +102,18 @@ export class SingleConditionDto {
 }
 
 export class AttributeSingleConditionDto extends SingleConditionDto {
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Join Options Relation for Attribute Query',
+        default: false,
+    })
     @IsOptional()
     @IsBoolean()
     joinOptions: boolean;
 
-    @ApiProperty()
+    @ApiProperty({
+        title: 'Join Rule Relation for Attribute Query',
+        default: false,
+    })
     @IsOptional()
     @IsBoolean()
     joinRules: boolean;
