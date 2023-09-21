@@ -1,10 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { QueryResponse } from '@src/base/dto/responses/response.create-query.dto';
-import { IsBoolean, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsNotEmpty, ValidateNested } from 'class-validator';
 import { GetRulesDto } from './get-rule.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
-import { Transform } from 'class-transformer';
-import { isBooleanObject } from 'util/types';
 
 // export class BooleanTransformer {
 //     to(value: string): boolean {

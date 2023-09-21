@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, EntityTarget } from 'typeorm';
-import {
-    FilterDto,
-    OrderedPaginationDto,
-    SingleConditionDto,
-} from '@src/base/dto/filter/filters.dto';
+import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { QueryBaseResponse } from '@src/base/dto/responses/response.create-query.dto';
 
 @Injectable()

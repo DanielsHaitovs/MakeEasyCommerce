@@ -20,7 +20,6 @@ export class CreateQueryService {
     async saveQuery<Entity, GetDTO>({
         entity,
         newObj,
-        getDto,
     }: {
         entity: EntityTarget<Entity>;
         newObj: any | any[];

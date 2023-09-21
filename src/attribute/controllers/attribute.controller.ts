@@ -15,10 +15,7 @@ import {
     CreateAttributeDto,
     CreateAttributeShortDto,
 } from '../dto/create-attribute.dto';
-import {
-    UpdateAttributeDto,
-    UpdateAttributeShortDto,
-} from '../dto/update-attribute.dto';
+import { UpdateAttributeShortDto } from '../dto/update-attribute.dto';
 import {
     ApiBody,
     ApiOkResponse,
@@ -34,10 +31,7 @@ import {
     GetAttributeShortDto,
 } from '../dto/get-attribute.dto';
 import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
-import {
-    UpdateManyOptionsDto,
-    UpdateOptionDto,
-} from '../relations/option/dto/update-option.dto';
+import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')

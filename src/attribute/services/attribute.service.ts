@@ -17,11 +17,11 @@ import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto'
 import { InjectEntityManager } from '@nestjs/typeorm';
 import {
     AttributeResponseInterface,
-    AttributeRuleInterface,
     GetAttributeInterface,
 } from '../interfaces/attribute.interface';
 import { OptionService } from '../relations/option/services/option.service';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
+import { Option } from '../relations/option/entities/option.entity';
 
 // There is option to load data about table columns from database
 export const AttributeDescriptionList = {
@@ -245,12 +245,6 @@ export class AttributeService {
         id: number;
         attribute: UpdateAttributeShortDto;
     }): Promise<AttributeResponseInterface> {
-        const test = this.entityManager.create(Attributes, {
-            description: {
-                ...attribute,
-            },
-        });
-        console.log(test);
         return (
             await this.entityManager.update(
                 Attributes,
@@ -298,8 +292,7 @@ export class AttributeService {
                 rules.id,
                 updateRules,
             );
-            console.log(affected.generatedMaps);
-            if (affected) {
+            if (affected.affected > 0) {
                 return {
                     status: 200,
                     message: 'Attribute Rules Successfully updated',
@@ -309,23 +302,19 @@ export class AttributeService {
                         ...updateRules,
                     },
                 };
-            } else {
-                return {
-                    error: {
-                        message: 'Failed to update Attribute Rules',
-                        in: 'Attribute Entity',
-                    },
-                };
             }
+            return {
+                error: {
+                    message: 'Failed to update Attribute Rules',
+                    in: 'Attribute Entity',
+                },
+            };
         }
     }
 
     // Here left to extend functionality so there would be
     // opportunity to do following actions
-    // delete on update (const keep old)
-    // create on update
-    // check if exists on update...obvious
-    // if exists then update
+    // Rest validation should happen in other services ->
     // Maybe would be good after all *** to make them unique
     async updateOptions({
         attributeId,
@@ -350,17 +339,19 @@ export class AttributeService {
                     joinRules: false,
                 },
             });
-        const currentOptions = attribute.result[0].optionsIds;
+        const currentOptionsIds = attribute.result[0].optionsIds;
+
         if (keepOld) {
-            console.log(currentOptions);
             const newOptions = await this.optionService.createMany({
                 createOptions: {
                     relatedAttribute: attributeId,
                     options: updateOptions.options,
                 },
             });
-            console.log(newOptions);
             if (newOptions.error === null || newOptions.error === undefined) {
+                currentOptionsIds.push(
+                    newOptions.result.map((option) => option.id),
+                );
                 return {
                     status: 200,
                     message: 'Attribute Options Successfully updated',
@@ -370,20 +361,134 @@ export class AttributeService {
                             description: null,
                             options: { ...newOptions.result },
                             rules: null,
-                            optionsIds: null,
+                            optionsIds: currentOptionsIds,
                         },
                     ],
                 };
-            } else {
+            }
+
+            return {
+                status: 999,
+                error: {
+                    message: 'Failed to update Attribute Options',
+                    in: 'Attribute Entity',
+                },
+            };
+        }
+
+        if (
+            updateOptions.optionsIds != null &&
+            updateOptions.optionsIds != undefined
+        ) {
+            const optionIds: number[] = [];
+            const toRemove: number[] = currentOptionsIds.reduce(
+                (toDelete: number[], optionId: number) => {
+                    if (!updateOptions.optionsIds.includes(optionId)) {
+                        toDelete.push(optionId);
+                    } else {
+                        optionIds.push(optionId);
+                    }
+                    return toDelete;
+                },
+                [],
+            );
+
+            if (toRemove.length > 0) {
+                const deleteOld = await this.entityManager.delete(
+                    Option,
+                    toRemove,
+                );
+                if (deleteOld.affected < 1) {
+                    return {
+                        status: 999,
+                        error: {
+                            message: 'Failed to delete old Attribute Options',
+                            in: 'Attribute Entity',
+                        },
+                    };
+                }
+            }
+
+            const newOptions = await this.optionService.createMany({
+                createOptions: {
+                    relatedAttribute: attributeId,
+                    options: updateOptions.options,
+                },
+            });
+            if (newOptions.error === null || newOptions.error === undefined) {
+                optionIds.push(
+                    ...newOptions.result.flatMap(
+                        (option: { id: number }) => option.id,
+                    ),
+                );
                 return {
-                    status: 999,
-                    error: {
-                        message: 'Failed to update Attribute Options',
-                        in: 'Attribute Entity',
-                    },
+                    status: 200,
+                    message: 'Attribute Options Successfully updated',
+                    result: [
+                        {
+                            id: attributeId,
+                            description: null,
+                            options: { ...newOptions.result },
+                            rules: null,
+                            optionsIds: optionIds,
+                        },
+                    ],
                 };
             }
+            return {
+                status: 999,
+                error: {
+                    message: 'Failed to update Attribute Options',
+                    in: 'Attribute Entity',
+                },
+            };
         }
+
+        const deleteOld = await this.entityManager.delete(
+            Option,
+            currentOptionsIds,
+        );
+
+        if (deleteOld.affected < 1) {
+            return {
+                status: 999,
+                error: {
+                    message: 'Failed to delete old Attribute Options',
+                    in: 'Attribute Entity',
+                },
+            };
+        }
+
+        const newOptions = await this.optionService.createMany({
+            createOptions: {
+                relatedAttribute: attributeId,
+                options: updateOptions.options,
+            },
+        });
+        if (newOptions.error === null || newOptions.error === undefined) {
+            return {
+                status: 200,
+                message: 'Attribute Options Successfully updated',
+                result: [
+                    {
+                        id: attributeId,
+                        description: null,
+                        options: { ...newOptions.result },
+                        rules: null,
+                        optionsIds: null,
+                    },
+                ],
+            };
+        } else {
+            return {
+                status: 999,
+                error: {
+                    message: 'Failed to update Attribute Options',
+                    in: 'Attribute Entity',
+                },
+            };
+        }
+
         return null;
     }
 

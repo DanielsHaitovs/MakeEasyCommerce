@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateOptionsDto } from './create-option.dto';
 import { IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { OptionDto } from './option.dto';
 
@@ -12,6 +11,7 @@ export class UpdateOptionDto extends OptionDto {
         title: 'Parent Attribute ID',
         type: Number,
         nullable: true,
+        default: null,
     })
     @IsOptional()
     @IsNumber()
@@ -25,4 +25,13 @@ export class UpdateManyOptionsDto {
     })
     @ValidateNested({ each: true })
     options: UpdateOptionDto[];
+
+    @ApiProperty({
+        title: 'Options Ids',
+        type: [Number],
+        nullable: true,
+        default: null,
+    })
+    @IsOptional()
+    optionsIds: number[];
 }
