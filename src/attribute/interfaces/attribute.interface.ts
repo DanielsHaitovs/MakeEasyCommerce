@@ -38,7 +38,7 @@ export interface UpdateAttributeInterface {
 
 export interface GetAttributeInterface {
     id?: number;
-    description: AttributeDescriptionInterface;
+    description?: AttributeDescriptionInterface;
     rules?: GetRuleInterface;
     options?: GetOptionInterface[];
     optionsIds?: number[];

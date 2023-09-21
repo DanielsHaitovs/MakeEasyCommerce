@@ -339,7 +339,7 @@ export class AttributeService {
                     joinRules: false,
                 },
             });
-        const currentOptionsIds = attribute.result[0].optionsIds;
+        const currentOptionsIds: number[] = attribute.result[0].optionsIds;
 
         if (keepOld) {
             const newOptions = await this.optionService.createMany({
@@ -350,7 +350,7 @@ export class AttributeService {
             });
             if (newOptions.error === null || newOptions.error === undefined) {
                 currentOptionsIds.push(
-                    newOptions.result.map((option) => option.id),
+                    ...newOptions.result.map((option) => option.id),
                 );
                 return {
                     status: 200,
@@ -358,9 +358,7 @@ export class AttributeService {
                     result: [
                         {
                             id: attributeId,
-                            description: null,
                             options: { ...newOptions.result },
-                            rules: null,
                             optionsIds: currentOptionsIds,
                         },
                     ],
@@ -427,9 +425,7 @@ export class AttributeService {
                     result: [
                         {
                             id: attributeId,
-                            description: null,
                             options: { ...newOptions.result },
-                            rules: null,
                             optionsIds: optionIds,
                         },
                     ],
@@ -472,24 +468,22 @@ export class AttributeService {
                 result: [
                     {
                         id: attributeId,
-                        description: null,
                         options: { ...newOptions.result },
-                        rules: null,
-                        optionsIds: null,
+                        optionsIds: newOptions.result.flatMap(
+                            (option: { id: number }) => option.id,
+                        ),
                     },
                 ],
             };
-        } else {
-            return {
-                status: 999,
-                error: {
-                    message: 'Failed to update Attribute Options',
-                    in: 'Attribute Entity',
-                },
-            };
         }
 
-        return null;
+        return {
+            status: 999,
+            error: {
+                message: 'Failed to update Attribute Options',
+                in: 'Attribute Entity',
+            },
+        };
     }
 
     remove(id: number) {
