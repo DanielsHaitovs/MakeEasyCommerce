@@ -3,8 +3,10 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { Option } from '@src/attribute/relations/option/entities/option.entity';
 import { OptionResponseInterface } from '@src/attribute/relations/option/interfaces/option.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
+import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
+export const alias = 'options';
 @Injectable()
 export class OptionHelperService {
     constructor(
@@ -19,146 +21,40 @@ export class OptionHelperService {
         filters: SingleConditionDto;
     }): Promise<OptionResponseInterface> {
         const skip = (filters.page - 1) * filters.limit;
-        const selectList: string[] = [];
-        let select = false;
-        let where = false;
-        let order = false;
-        if (filters.select != null) {
+        let ruleList: string[] = [];
+        let rawValue = null;
+        let columnName = '';
+        let orderBy = '';
+        if (filters.select != null && filters.select[0] != null) {
             for (const addToSelect of filters.select) {
-                selectList.push(alias + '.' + addToSelect);
+                ruleList.push(
+                    alias + '.' + filters.select[0] + '.' + addToSelect,
+                );
             }
-            select = true;
+        } else {
+            ruleList = null;
         }
-        if (alias == 'option' && filters.columnName != null) {
-            filters.columnName = alias + '.' + filters.columnName + ' = :value';
-            where = true;
-        }
-        if (filters.orderBy != null) {
-            filters.orderBy = alias + '.' + filters.orderBy;
-            order = true;
-        }
-        console.log(filters);
-        try {
-            if (where && filters.columnName != '') {
-                if (select) {
-                    if (order) {
-                        return {
-                            result: await this.entityManager
-                                .getRepository(Option)
-                                .createQueryBuilder(alias)
-                                .where(filters.columnName, {
-                                    value: filters.value,
-                                })
-                                .select(selectList)
-                                .orderBy(
-                                    filters.orderBy,
-                                    filters.orderDirection,
-                                )
-                                .skip(skip)
-                                .take(filters.limit)
-                                .cache(true)
-                                .useIndex('fk_option_where_condition_query')
-                                .getMany(),
-                        };
-                    }
-                    return {
-                        result: await this.entityManager
-                            .getRepository(Option)
-                            .createQueryBuilder(alias)
-                            .where(filters.columnName, {
-                                value: filters.value,
-                            })
-                            .select(selectList)
-                            .skip(skip)
-                            .take(filters.limit)
-                            .cache(true)
-                            .useIndex('fk_option_where_condition_query')
-                            .getMany(),
-                    };
-                }
-
-                if (order) {
-                    return {
-                        result: await this.entityManager
-                            .getRepository(Option)
-                            .createQueryBuilder(alias)
-                            .where(filters.columnName, {
-                                value: filters.value,
-                            })
-                            .orderBy(filters.orderBy, filters.orderDirection)
-                            .skip(skip)
-                            .take(filters.limit)
-                            .cache(true)
-                            .useIndex('fk_option_where_condition_query')
-                            .getMany(),
-                    };
-                }
-                return {
-                    result: await this.entityManager
-                        .getRepository(Option)
-                        .createQueryBuilder(alias)
-                        .where(filters.columnName, {
-                            value: filters.value,
-                        })
-                        .skip(skip)
-                        .take(filters.limit)
-                        .cache(true)
-                        .useIndex('fk_option_where_condition_query')
-                        .getMany(),
-                };
-            }
-
-            if (select) {
-                if (order) {
-                    return {
-                        result: await this.entityManager
-                            .getRepository(Option)
-                            .createQueryBuilder(alias)
-                            .select(selectList)
-                            .orderBy(filters.orderBy, filters.orderDirection)
-                            .skip(skip)
-                            .take(filters.limit)
-                            .cache(true)
-                            .useIndex('fk_option_select_condition_query')
-                            .getMany(),
-                    };
-                }
-                return {
-                    result: await this.entityManager
-                        .getRepository(Option)
-                        .createQueryBuilder(alias)
-                        .select(selectList)
-                        .skip(skip)
-                        .take(filters.limit)
-                        .cache(true)
-                        .useIndex('fk_option_select_condition_query')
-                        .getMany(),
-                };
-            }
-
-            if (order) {
-                return {
-                    result: await this.entityManager
-                        .getRepository(Option)
-                        .createQueryBuilder(alias)
-                        .orderBy(filters.orderBy, filters.orderDirection)
-                        .skip(skip)
-                        .take(filters.limit)
-                        .cache(true)
-                        .useIndex('fk_option_ordered_condition_query')
-                        .getMany(),
-                };
-            }
-            return {
-                result: await this.entityManager
-                    .getRepository(Option)
-                    .createQueryBuilder(alias)
-                    .skip(skip)
-                    .take(filters.limit)
-                    .cache(true)
-                    .useIndex('fk_option_query')
-                    .getMany(),
+        if (filters.columnName != null && filters.columnName != '') {
+            columnName = alias + '.' + filters.columnName + ' = :value';
+            rawValue = {
+                value: filters.value,
             };
+        }
+
+        if (filters.orderBy != null) {
+            orderBy = alias + '.' + filters.orderBy;
+        }
+        try {
+            return await this.nonRelationQuery({
+                skip: skip,
+                limit: filters.limit,
+                selectList: ruleList,
+                alias: alias,
+                columnName: columnName,
+                rawValue: rawValue,
+                orderBy: orderBy,
+                orderDirection: filters.orderDirection,
+            });
         } catch (e) {
             return {
                 error: {
@@ -167,5 +63,41 @@ export class OptionHelperService {
                 },
             };
         }
+    }
+
+    async nonRelationQuery({
+        skip,
+        limit,
+        selectList,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        skip: number;
+        limit: number;
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<OptionResponseInterface> {
+        return {
+            result: await this.entityManager
+                .getRepository(Option)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
+                .skip(skip)
+                .take(limit)
+                .cache(true)
+                .useIndex('fk_option_simple_condition_query')
+                .getMany(),
+        };
     }
 }

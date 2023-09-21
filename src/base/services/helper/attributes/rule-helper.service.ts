@@ -35,7 +35,8 @@ export class RuleHelperService {
         let ruleList: string[] = [];
         let rawValue = null;
         let columnName = '';
-        if (filters.select[0] != null) {
+        let orderBy = '';
+        if (filters.select != null && filters.select[0] != undefined) {
             for (const addToSelect of RuleList) {
                 ruleList.push(
                     alias + '.' + filters.select[0] + '.' + addToSelect,
@@ -52,7 +53,7 @@ export class RuleHelperService {
         }
 
         if (filters.orderBy != null) {
-            filters.orderBy = alias + '.' + filters.orderBy;
+            orderBy = alias + '.' + filters.orderBy;
         }
         try {
             return await this.nonRelationQuery({
@@ -62,7 +63,7 @@ export class RuleHelperService {
                 alias: alias,
                 columnName: columnName,
                 rawValue: rawValue,
-                orderBy: filters.orderBy,
+                orderBy: orderBy,
                 orderDirection: filters.orderDirection,
             });
         } catch (e) {

@@ -1,28 +1,27 @@
 import { Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { Attributes } from '../entities/attributes.entity';
+import { Rule } from '../relations/rule/entities/rule.entity';
+import { OrderType } from '@src/base/enum/query/query.enum';
 import {
     CreateAttributeDto,
     CreateAttributeShortDto,
 } from '../dto/create-attribute.dto';
 import { UpdateAttributeShortDto } from '../dto/update-attribute.dto';
+import {
+    AttributerRelations,
+    OrderedPaginationDto,
+} from '@src/base/dto/filter/filters.dto';
+import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
+import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { EntityManager } from 'typeorm';
 import {
     AttributeResponseInterface,
     AttributeRuleInterface,
     GetAttributeInterface,
 } from '../interfaces/attribute.interface';
 import { OptionService } from '../relations/option/services/option.service';
-import { GetAttributeDto } from '../dto/get-attribute.dto';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
-import {
-    AttributerRelations,
-    OrderedPaginationDto,
-} from '@src/base/dto/filter/filters.dto';
-import { Attributes } from '../entities/attributes.entity';
-import { OrderType } from '@src/base/enum/query/query.enum';
-import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
-import { GetRulesDto } from '../relations/rule/dto/get-rule.dto';
-import { Rule } from '../relations/rule/entities/rule.entity';
 
 // There is option to load data about table columns from database
 export const AttributeDescriptionList = {
@@ -63,32 +62,32 @@ export class AttributeService {
             };
         }
         try {
-            const newAttribute: GetAttributeDto = await this.entityManager.save(
-                Attributes,
-                this.entityManager.create(Attributes, createAttribute),
-            );
-            const savedOptions = await this.optionService.createMany({
-                createOptions: {
-                    relatedAttribute: newAttribute.id,
-                    options: createAttribute.options,
-                },
-            });
-            if (!Array.isArray(savedOptions.result)) {
-                return {
-                    error: {
-                        message: 'Saved options is not an array',
-                        in: 'Attribute Option Entity',
+            const newAttribute: GetAttributeInterface =
+                await this.entityManager.save(
+                    Attributes,
+                    this.entityManager.create(Attributes, createAttribute),
+                );
+            const { result, ...response } = await this.optionService.createMany(
+                {
+                    createOptions: {
+                        relatedAttribute: newAttribute.id,
+                        options: createAttribute.options,
                     },
+                },
+            );
+
+            if (!Array.isArray(result)) {
+                return {
+                    error: response.error,
                 };
             }
-            newAttribute.optionsIds = savedOptions.result.map(
-                (option) => option.id,
+
+            newAttribute.options = result;
+            newAttribute.optionsIds = newAttribute.options.map(
+                (option: { id: number }) => option.id,
             );
             return {
-                result: {
-                    options: { ...savedOptions.result },
-                    ...newAttribute,
-                },
+                result: newAttribute,
             };
         } catch (e) {
             return {
@@ -167,7 +166,7 @@ export class AttributeService {
                 page: 1,
                 limit: 1,
                 orderBy: null,
-                orderDirection: OrderType.ASC,
+                orderDirection: OrderType.NO,
                 columnName: 'id',
                 value: id,
                 select: null,
@@ -189,7 +188,7 @@ export class AttributeService {
                 page: 1,
                 limit: 1,
                 orderBy: null,
-                orderDirection: OrderType.ASC,
+                orderDirection: OrderType.NO,
                 columnName: 'id',
                 value: id,
                 select: null,
@@ -209,12 +208,32 @@ export class AttributeService {
                 page: 1,
                 limit: 1,
                 orderBy: null,
-                orderDirection: OrderType.ASC,
+                orderDirection: OrderType.NO,
                 columnName: 'id',
                 value: id,
                 select: ['id', 'rules'],
                 joinOptions: false,
                 joinRules: true,
+            },
+        });
+    }
+
+    async findAttributeOptions({
+        id,
+    }: {
+        id: number;
+    }): Promise<AttributeResponseInterface> {
+        return await this.attributeHelper.singleConditionAttributeQuery({
+            filters: {
+                page: 1,
+                limit: 1,
+                orderBy: null,
+                orderDirection: OrderType.NO,
+                columnName: 'id',
+                value: id,
+                select: ['id', 'options'],
+                joinOptions: true,
+                joinRules: false,
             },
         });
     }
@@ -247,52 +266,125 @@ export class AttributeService {
 
     async updateRules({
         attributeId,
-        rules,
+        updateRules,
     }: {
         attributeId: number;
-        rules: UpdateRulesDto;
+        updateRules: UpdateRulesDto;
     }): Promise<AttributeResponseInterface> {
-        const updateRule: AttributeResponseInterface =
+        const { result, ...response } =
             await this.attributeHelper.singleConditionAttributeQuery({
                 filters: {
                     page: 1,
                     limit: 1,
                     orderBy: null,
-                    orderDirection: OrderType.ASC,
+                    orderDirection: OrderType.NO,
                     columnName: 'id',
                     value: attributeId,
-                    select: ['id', 'rules.id'],
+                    select: ['id', 'rules'],
                     joinOptions: false,
                     joinRules: true,
                 },
             });
 
-        const prepared: AttributeRuleInterface = updateRule.result[0];
-        console.log(prepared);
-        const affected = (
-            await this.entityManager.update(Rule, prepared.rules.id, rules)
-        ).affected;
-        console.log(affected);
-        if (affected > 0) {
+        if (!Array.isArray(result)) {
             return {
-                status: 200,
-                message: 'Attribute Rules Successfully updated',
-                result: {
-                    id: prepared.id,
-                    description: null,
-                    options: null,
-                    rules: prepared.rules,
-                    optionsIds: prepared.optionsIds,
-                },
-            };
-        } else {
-            return {
-                error: {
-                    message: 'Failed to update Attribute Rules',
-                    in: 'Attribute Entity',
-                },
+                error: response.error,
             };
         }
+
+        for (const rules of result) {
+            const affected = await this.entityManager.update(
+                Rule,
+                rules.id,
+                updateRules,
+            );
+            console.log(affected.generatedMaps);
+            if (affected) {
+                return {
+                    status: 200,
+                    message: 'Attribute Rules Successfully updated',
+                    result: {
+                        id: attributeId,
+                        description: null,
+                        ...updateRules,
+                    },
+                };
+            } else {
+                return {
+                    error: {
+                        message: 'Failed to update Attribute Rules',
+                        in: 'Attribute Entity',
+                    },
+                };
+            }
+        }
+    }
+
+    // Here left to extend functionality so there would be
+    // opportunity to do following actions
+    // delete on update (const keep old)
+    // create on update
+    // check if exists on update...obvious
+    // if exists then update
+    // Maybe would be good after all *** to make them unique
+    async updateOptions({
+        attributeId,
+        updateOptions,
+        keepOld,
+    }: {
+        attributeId: number;
+        updateOptions: UpdateManyOptionsDto;
+        keepOld: boolean;
+    }): Promise<AttributeResponseInterface> {
+        const attribute: AttributeResponseInterface =
+            await this.attributeHelper.singleConditionAttributeQuery({
+                filters: {
+                    page: 1,
+                    limit: 1,
+                    orderBy: null,
+                    orderDirection: OrderType.NO,
+                    columnName: 'id',
+                    value: attributeId,
+                    select: ['id'],
+                    joinOptions: false,
+                    joinRules: false,
+                },
+            });
+        const currentOptions = attribute.result[0].optionsIds;
+        if (keepOld) {
+            console.log(currentOptions);
+            const newOptions = await this.optionService.createMany({
+                createOptions: {
+                    relatedAttribute: attributeId,
+                    options: updateOptions.options,
+                },
+            });
+            console.log(newOptions);
+            if (newOptions.error === null || newOptions.error === undefined) {
+                return {
+                    status: 200,
+                    message: 'Attribute Options Successfully updated',
+                    result: [
+                        {
+                            id: attributeId,
+                            description: null,
+                            options: { ...newOptions.result },
+                            rules: null,
+                            optionsIds: null,
+                        },
+                    ],
+                };
+            } else {
+                return {
+                    status: 999,
+                    error: {
+                        message: 'Failed to update Attribute Options',
+                        in: 'Attribute Entity',
+                    },
+                };
+            }
+        }
+        return null;
     }
 
     remove(id: number) {

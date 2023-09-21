@@ -36,20 +36,12 @@ export interface UpdateAttributeInterface {
     options: CreateOptionInterface[];
 }
 
-// export interface GetAttributeShortInterface {
-//     id: number;
-//     description: AttributeDescriptionInterface;
-//     rules?: GetRuleInterface;
-//     options?: GetOptionInterface[];
-//     optionsIds?: number[];
-// }
-
 export interface GetAttributeInterface {
     id?: number;
     description: AttributeDescriptionInterface;
     rules?: GetRuleInterface;
-    options: GetOptionInterface[];
-    optionsIds: number[];
+    options?: GetOptionInterface[];
+    optionsIds?: number[];
 }
 
 export class AttributeRuleInterface {
@@ -61,6 +53,4 @@ export interface AttributeResponseInterface extends QueryResponseInterface {
     status?: any;
     message?: string;
     result?: GetAttributeInterface | GetAttributeInterface[];
-    // | GetAttributeShortInterface
-    // | GetAttributeShortInterface[];
 }

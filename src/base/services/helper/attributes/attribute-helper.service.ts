@@ -7,8 +7,8 @@ import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
+export const aliases = ['attributes', 'options', 'rules'];
 export const alias = 'attributes';
-
 @Injectable()
 export class AttributeHelperService {
     constructor(
@@ -25,9 +25,13 @@ export class AttributeHelperService {
         let rawValue = null;
         let columnName = '';
 
-        if (filters.select != null && filters.select.length > 0) {
+        if (filters.select != null && filters.select[0] != null) {
             for (const addToSelect of filters.select) {
-                selectList.push(alias + '.' + addToSelect);
+                if (!aliases.includes(addToSelect)) {
+                    selectList.push(alias + '.' + addToSelect);
+                } else {
+                    selectList.push(addToSelect);
+                }
             }
         } else {
             selectList = null;
@@ -82,7 +86,7 @@ export class AttributeHelperService {
                 columnName: columnName,
                 rawValue: rawValue,
                 orderBy: filters.orderBy,
-                orderDirection: filters.orderDirection,
+                orderDirection: OrderType[filters.orderDirection],
             });
         } catch (e) {
             return {
@@ -113,7 +117,7 @@ export class AttributeHelperService {
             value: string | number | boolean | Date | JSON;
         };
         orderBy: string;
-        orderDirection: OrderType | OrderType.ASC;
+        orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
         return {
             result: await this.entityManager
@@ -151,7 +155,7 @@ export class AttributeHelperService {
             value: string | number | boolean | Date | JSON;
         };
         orderBy: string;
-        orderDirection: OrderType | OrderType.ASC;
+        orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
         return {
             result: await this.entityManager
@@ -188,7 +192,7 @@ export class AttributeHelperService {
             value: string | number | boolean | Date | JSON;
         };
         orderBy: string;
-        orderDirection: OrderType | OrderType.ASC;
+        orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
         return {
             result: await this.entityManager

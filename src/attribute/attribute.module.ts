@@ -15,6 +15,7 @@ import { OptionService } from './relations/option/services/option.service';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
 import { Attributes } from './entities/attributes.entity';
 import { Rule } from './relations/rule/entities/rule.entity';
+import { RuleHelperService } from '@src/base/services/helper/attributes/rule-helper.service';
 
 @Module({
     imports: [

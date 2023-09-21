@@ -5,7 +5,7 @@ import { Column, Entity, Index, ManyToOne } from 'typeorm';
 @Entity('eav_attribute_option')
 @Index('eav_attribute_option_index', ['id', 'value'])
 export class Option extends MecBaseEntity {
-    @Column('jsonb', { nullable: true })
+    @Column('jsonb', { nullable: false })
     value: string | number | boolean | Date | JSON;
 
     // Optional in case if there will be need add only 1 option

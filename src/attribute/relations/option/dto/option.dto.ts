@@ -7,6 +7,7 @@ export class OptionDto {
     @ApiProperty({
         title: 'Attribute Option Value',
         type: JSON,
+        nullable: false,
     })
     @IsNotEmpty()
     value: string | number | boolean | Date | JSON;

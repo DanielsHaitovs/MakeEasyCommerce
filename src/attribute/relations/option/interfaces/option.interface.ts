@@ -21,7 +21,7 @@ export interface GetOptionInterface extends OptionInterface {
 export interface OptionResponseInterface extends QueryResponseInterface {
     status?: string;
     message?: string;
-    result?: GetOptionInterface | GetOptionInterface[];
+    result?: GetOptionInterface[];
 }
 
 export interface OptionsAttributeResponseInterface

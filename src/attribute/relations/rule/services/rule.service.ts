@@ -52,8 +52,8 @@ export class RuleService {
             alias: 'rule',
             filters: {
                 page: 1,
-                limit: 1,
-                orderBy: null,
+                limit: 0,
+                orderBy: 'id',
                 orderDirection: OrderType.ASC,
                 columnName: 'id',
                 value: id,

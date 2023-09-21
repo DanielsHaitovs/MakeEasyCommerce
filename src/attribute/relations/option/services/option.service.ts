@@ -26,13 +26,12 @@ export class OptionService {
         }
         try {
             return {
-                result: await this.entityManager.save(
-                    Option,
-                    this.prepareOption({
-                        createOption: createOption,
-                        parentId: null,
+                result: [
+                    await this.entityManager.save(Option, {
+                        relatedAttribute: createOption.relatedAttribute,
+                        value: createOption.value,
                     }),
-                ),
+                ],
             };
         } catch (e) {
             return {
@@ -54,17 +53,18 @@ export class OptionService {
         }
         const preparedOptions: CreateOptionDto[] = [];
         for (const option of createOptions.options) {
-            preparedOptions.push(
-                this.prepareOption({
-                    createOption: {
-                        relatedAttribute: createOptions.relatedAttribute,
-                        ...option,
-                    },
-                    parentId: createOptions.relatedAttribute,
+            console.log(
+                this.entityManager.create(Option, {
+                    relatedAttribute: createOptions.relatedAttribute,
+                    value: option.value,
                 }),
             );
+            preparedOptions.push({
+                relatedAttribute: createOptions.relatedAttribute,
+                value: option.value,
+            });
         }
-
+        console.log(preparedOptions);
         try {
             return {
                 result: await this.entityManager.save(Option, preparedOptions),
@@ -105,7 +105,7 @@ export class OptionService {
                 page: 1,
                 limit: 0,
                 orderBy: null,
-                orderDirection: null,
+                orderDirection: OrderType.NO,
                 columnName: 'id',
                 value: id,
                 select: null,
@@ -139,19 +139,32 @@ export class OptionService {
         id: number;
         updateOptionDto: UpdateOptionDto;
     }): Promise<OptionResponseInterface> {
-        try {
-            return (
-                await this.entityManager.update(Option, id, updateOptionDto)
-            ).raw;
-        } catch (e) {
-            return {
-                message: 'Something went wrong during update of this entity',
-                error: {
-                    message: e.message,
-                    in: 'Option Entity',
-                },
-            };
+        if (
+            updateOptionDto.relatedAttribute != 0 &&
+            updateOptionDto.relatedAttribute != null
+        ) {
+            try {
+                return (
+                    await this.entityManager.update(Option, id, updateOptionDto)
+                ).raw;
+            } catch (e) {
+                return {
+                    message:
+                        'Something went wrong during update of this entity',
+                    error: {
+                        message: e.message,
+                        in: 'Option Entity',
+                    },
+                };
+            }
         }
+        return {
+            message: 'Something went wrong during update of this entity',
+            error: {
+                message: 'Parent attribute is not defined',
+                in: 'Option Entity',
+            },
+        };
     }
 
     async remove({ id }: { id: number }): Promise<OptionResponseInterface> {
@@ -170,18 +183,5 @@ export class OptionService {
                 },
             };
         }
-    }
-
-    protected prepareOption({
-        createOption,
-        parentId,
-    }: {
-        createOption: CreateOptionDto;
-        parentId: number;
-    }) {
-        if (parentId != null) {
-            createOption.relatedAttribute = parentId;
-        }
-        return this.entityManager.create(Option, createOption);
     }
 }

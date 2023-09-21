@@ -28,14 +28,16 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { AttributeResponseInterface } from '../interfaces/attribute.interface';
-import {
-    OrderedPaginationDto,
-} from '@src/base/dto/filter/filters.dto';
+import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import {
     GetAttributeDto,
     GetAttributeShortDto,
 } from '../dto/get-attribute.dto';
 import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
+import {
+    UpdateManyOptionsDto,
+    UpdateOptionDto,
+} from '../relations/option/dto/update-option.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -121,9 +123,9 @@ export class AttributeController {
         return await this.attributeService.findOneById({ id });
     }
 
-    @Get('get/one/relations/by/:id')
+    @Get('relations/get/one/by/:id')
     @ApiOperation({
-        summary: 'Find 1 Attribute by id',
+        summary: 'Find 1 Attribute with relation(s) by id',
         description:
             'Its basically will try to find your attributes with mentioned relations.',
     })
@@ -162,6 +164,22 @@ export class AttributeController {
         return await this.attributeService.findAttributeRule({ id });
     }
 
+    @Get('options/get/one/by/:id')
+    @ApiOperation({
+        summary: 'Find Options of specific Attribute id',
+        description: 'Its basically will try to find your attributes Rule.',
+    })
+    @ApiParam({ name: 'id', description: 'Attribute Data' })
+    @ApiOkResponse({
+        description: 'Specific Attribute Options and its details',
+        type: GetAttributeDto,
+    })
+    async findAttributeOptions(
+        @Param('id') id: number,
+    ): Promise<AttributeResponseInterface> {
+        return await this.attributeService.findAttributeOptions({ id });
+    }
+
     @Patch('update/description/:id')
     @ApiOperation({
         summary: 'Update Attribute description by ID',
@@ -198,7 +216,30 @@ export class AttributeController {
     ): Promise<AttributeResponseInterface> {
         return this.attributeService.updateRules({
             attributeId: id,
-            rules: updateRules,
+            updateRules,
+        });
+    }
+
+    @Patch('update/options/:id')
+    @ApiOperation({
+        summary: 'Update Attribute options by ID',
+        description:
+            'Update specifically attribute options data, can add, remove, update option by parent attribute id',
+    })
+    @ApiBody({
+        type: UpdateManyOptionsDto,
+        description: 'Attribute Options',
+        required: true,
+    })
+    async updateOptions(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateOptions: UpdateManyOptionsDto,
+        @Query('keepOld', ParseBoolPipe) keepOld: boolean,
+    ): Promise<AttributeResponseInterface> {
+        return this.attributeService.updateOptions({
+            attributeId: id,
+            updateOptions: updateOptions,
+            keepOld: keepOld,
         });
     }
 
