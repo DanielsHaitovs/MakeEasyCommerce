@@ -26,32 +26,41 @@ export interface AttributeDescriptionInterface {
 
 export interface CreateAttributeInterface {
     description: AttributeDescriptionInterface;
-    rule: CreateRulesInterface;
+    rules: CreateRulesInterface;
     options: CreateOptionInterface[];
 }
 
 export interface UpdateAttributeInterface {
     description: AttributeDescriptionInterface;
-    rule: CreateRulesInterface;
+    rules: CreateRulesInterface;
     options: CreateOptionInterface[];
 }
 
-export interface GetAttributeShortInterface {
+// export interface GetAttributeShortInterface {
+//     id: number;
+//     description: AttributeDescriptionInterface;
+//     rules?: GetRuleInterface;
+//     options?: GetOptionInterface[];
+//     optionsIds?: number[];
+// }
+
+export interface GetAttributeInterface {
+    id?: number;
     description: AttributeDescriptionInterface;
-}
-
-export interface GetAttributeInterface extends GetAttributeShortInterface {
-    id: number;
-    rule: GetRuleInterface;
+    rules?: GetRuleInterface;
     options: GetOptionInterface[];
+    optionsIds: number[];
 }
 
+export class AttributeRuleInterface {
+    id: number;
+    rules: GetRuleInterface;
+    optionsIds: number[];
+}
 export interface AttributeResponseInterface extends QueryResponseInterface {
     status?: any;
     message?: string;
-    result?:
-        | GetAttributeInterface
-        | GetAttributeInterface[]
-        | GetAttributeShortInterface
-        | GetAttributeShortInterface[];
+    result?: GetAttributeInterface | GetAttributeInterface[];
+    // | GetAttributeShortInterface
+    // | GetAttributeShortInterface[];
 }

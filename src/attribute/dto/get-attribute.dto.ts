@@ -53,4 +53,6 @@ export class GetAttributeDto extends GetAttributeShortDto {
     })
     @ValidateNested({ each: true })
     options: GetOptionDto[];
+
+    optionsIds: number[];
 }

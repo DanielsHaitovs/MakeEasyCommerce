@@ -21,8 +21,10 @@ export type CreateRulesInterface = RuleInterface;
 
 export type UpdateRulesInterface = RuleInterface;
 
-export interface GetRuleInterface extends RuleInterface {
+export interface GetRuleInterface {
     id: number;
+    front: RuleBaseInterface;
+    back: RuleBaseInterface;
 }
 
 export interface GetRuleFrontInterface extends RuleBaseInterface {

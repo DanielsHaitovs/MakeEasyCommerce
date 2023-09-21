@@ -3,6 +3,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { Rule } from '@src/attribute/relations/rule/entities/rule.entity';
 import { RuleResponseInterface } from '@src/attribute/relations/rule/interface/rule.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
+import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
 export const RuleList: string[] = [
@@ -31,126 +32,81 @@ export class RuleHelperService {
         filters: SingleConditionDto;
     }): Promise<RuleResponseInterface> {
         const skip = (filters.page - 1) * filters.limit;
-        const rulesList: string[] = [];
-        let whereCondition = '';
-        let select = false;
-        let where = false;
-        let order = false;
-        if (filters.select.shift() && filters.select.shift() != null) {
-            for (const rule of RuleList) {
-                rulesList.push(
-                    alias + '.' + filters.select.shift() + '.' + rule,
+        let ruleList: string[] = [];
+        let rawValue = null;
+        let columnName = '';
+        if (filters.select[0] != null) {
+            for (const addToSelect of RuleList) {
+                ruleList.push(
+                    alias + '.' + filters.select[0] + '.' + addToSelect,
                 );
             }
-            select = true;
+        } else {
+            ruleList = null;
         }
-        if (alias == 'rule' && filters.columnName.length != 0) {
-            whereCondition = alias + '.' + filters.columnName + ' = :value';
-            where = true;
+        if (filters.columnName != null && filters.columnName != '') {
+            columnName = alias + '.' + filters.columnName + ' = :value';
+            rawValue = {
+                value: filters.value,
+            };
         }
+
         if (filters.orderBy != null) {
-            order = true;
+            filters.orderBy = alias + '.' + filters.orderBy;
         }
-
-        if (where && whereCondition != '') {
-            if (select) {
-                if (order) {
-                    return {
-                        result: await this.entityManager
-                            .getRepository(Rule)
-                            .createQueryBuilder(alias)
-                            .where(whereCondition, {
-                                value: filters.value,
-                            })
-                            .select(rulesList)
-                            .orderBy(filters.orderBy, filters.orderDirection)
-                            .skip(skip)
-                            .take(filters.limit)
-                            .getMany(),
-                    };
-                }
-                return {
-                    result: await this.entityManager
-                        .getRepository(Rule)
-                        .createQueryBuilder(alias)
-                        .where(whereCondition, {
-                            value: filters.value,
-                        })
-                        .select(rulesList)
-                        .skip(skip)
-                        .take(filters.limit)
-                        .getMany(),
-                };
-            }
-
-            if (order) {
-                return {
-                    result: await this.entityManager
-                        .getRepository(Rule)
-                        .createQueryBuilder(alias)
-                        .where(whereCondition, {
-                            value: filters.value,
-                        })
-                        .orderBy(filters.orderBy, filters.orderDirection)
-                        .skip(skip)
-                        .take(filters.limit)
-                        .getMany(),
-                };
-            }
+        try {
+            return await this.nonRelationQuery({
+                skip: skip,
+                limit: filters.limit,
+                selectList: ruleList,
+                alias: alias,
+                columnName: columnName,
+                rawValue: rawValue,
+                orderBy: filters.orderBy,
+                orderDirection: filters.orderDirection,
+            });
+        } catch (e) {
             return {
-                result: await this.entityManager
-                    .getRepository(Rule)
-                    .createQueryBuilder(alias)
-                    .where(whereCondition, {
-                        value: filters.value,
-                    })
-                    .skip(skip)
-                    .take(filters.limit)
-                    .getMany(),
+                error: {
+                    message: e.message,
+                    in: 'Rule Helper Query',
+                },
             };
         }
+    }
 
-        if (select) {
-            if (order) {
-                return {
-                    result: await this.entityManager
-                        .getRepository(Rule)
-                        .createQueryBuilder(alias)
-                        .select(rulesList)
-                        .orderBy(filters.orderBy, filters.orderDirection)
-                        .skip(skip)
-                        .take(filters.limit)
-                        .getMany(),
-                };
-            }
-            return {
-                result: await this.entityManager
-                    .getRepository(Rule)
-                    .createQueryBuilder(alias)
-                    .select(rulesList)
-                    .skip(skip)
-                    .take(filters.limit)
-                    .getMany(),
-            };
-        }
-
-        if (order) {
-            return {
-                result: await this.entityManager
-                    .getRepository(Rule)
-                    .createQueryBuilder(alias)
-                    .orderBy(filters.orderBy, filters.orderDirection)
-                    .skip(skip)
-                    .take(filters.limit)
-                    .getMany(),
-            };
-        }
+    async nonRelationQuery({
+        skip,
+        limit,
+        selectList,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        skip: number;
+        limit: number;
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<RuleResponseInterface> {
         return {
             result: await this.entityManager
                 .getRepository(Rule)
                 .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
                 .skip(skip)
-                .take(filters.limit)
+                .take(limit)
+                .cache(true)
+                .useIndex('fk_rule_simple_condition_query')
                 .getMany(),
         };
     }

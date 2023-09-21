@@ -8,13 +8,17 @@ import {
     Delete,
     Query,
     ParseBoolPipe,
+    ParseIntPipe,
 } from '@nestjs/common';
 import { AttributeService } from '../services/attribute.service';
 import {
     CreateAttributeDto,
     CreateAttributeShortDto,
 } from '../dto/create-attribute.dto';
-import { UpdateAttributeDto } from '../dto/update-attribute.dto';
+import {
+    UpdateAttributeDto,
+    UpdateAttributeShortDto,
+} from '../dto/update-attribute.dto';
 import {
     ApiBody,
     ApiOkResponse,
@@ -25,14 +29,13 @@ import {
 } from '@nestjs/swagger';
 import { AttributeResponseInterface } from '../interfaces/attribute.interface';
 import {
-    AttributerRelations,
     OrderedPaginationDto,
 } from '@src/base/dto/filter/filters.dto';
 import {
     GetAttributeDto,
-    GetAttributeOptions,
     GetAttributeShortDto,
 } from '../dto/get-attribute.dto';
+import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
 
 @Controller('attribute')
 @ApiTags('Attribute')
@@ -41,12 +44,12 @@ export class AttributeController {
 
     @Post('short/new')
     @ApiOperation({
-        summary: 'Create 1 Attribute Short',
+        summary: 'Create 1 Attribute Description',
         description: 'Create 1 attribute only with description',
     })
     @ApiBody({
         type: CreateAttributeShortDto,
-        description: 'Create Attribute Short',
+        description: 'Create Attribute Description',
         required: true,
     })
     async createShort(
@@ -70,15 +73,16 @@ export class AttributeController {
     ): Promise<AttributeResponseInterface> {
         return await this.attributeService.create({ createAttribute });
     }
+
     @Get('get/all')
     @ApiOperation({
         summary: 'Find All Attributes',
-        description: 'Get data of all Attributes Rules, good luck!',
+        description: 'Get data of all Attributes Descriptions, good luck!',
     })
     @ApiQuery({
         name: 'paginate and order',
         description:
-            'Its basically will try to find all your attributes rules. You can set page and limit for this query.',
+            'Its basically will try to find all your attributes description. You can set page and limit for this query.',
         type: OrderedPaginationDto,
         example: {
             by: 'id',
@@ -89,7 +93,7 @@ export class AttributeController {
         required: false,
     })
     @ApiOkResponse({
-        description: 'All Attributes and theirs details',
+        description: 'All Attributes Descriptions',
         type: [GetAttributeShortDto],
     })
     async findAll(
@@ -142,12 +146,60 @@ export class AttributeController {
         });
     }
 
-    @Patch(':id')
-    update(
-        @Param('id') id: string,
-        @Body() updateAttributeDto: UpdateAttributeDto,
-    ) {
-        return this.attributeService.update(+id, updateAttributeDto);
+    @Get('get/one/rule/by/:id')
+    @ApiOperation({
+        summary: 'Find 1 Attribute Rule by id',
+        description: 'Its basically will try to find your attributes Rule.',
+    })
+    @ApiParam({ name: 'id', description: 'Attribute Data' })
+    @ApiOkResponse({
+        description: 'Specific Attribute Rule and its details',
+        type: GetAttributeDto,
+    })
+    async findAttributeRule(
+        @Param('id') id: number,
+    ): Promise<AttributeResponseInterface> {
+        return await this.attributeService.findAttributeRule({ id });
+    }
+
+    @Patch('update/description/:id')
+    @ApiOperation({
+        summary: 'Update Attribute description by ID',
+        description: 'Update specifically attribute description data by id',
+    })
+    @ApiBody({
+        type: UpdateAttributeShortDto,
+        description: 'Attribute Description',
+        required: true,
+    })
+    async update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateAttribute: UpdateAttributeShortDto,
+    ): Promise<AttributeResponseInterface> {
+        return this.attributeService.update({
+            id,
+            attribute: updateAttribute,
+        });
+    }
+
+    @Patch('update/rules/:id')
+    @ApiOperation({
+        summary: 'Update Attribute rules by ID',
+        description: 'Update specifically attribute rules data by id',
+    })
+    @ApiBody({
+        type: UpdateRulesDto,
+        description: 'Attribute Rules',
+        required: true,
+    })
+    async updateRules(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateRules: UpdateRulesDto,
+    ): Promise<AttributeResponseInterface> {
+        return this.attributeService.updateRules({
+            attributeId: id,
+            rules: updateRules,
+        });
     }
 
     @Delete(':id')

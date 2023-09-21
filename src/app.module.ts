@@ -3,10 +3,10 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BaseModule } from './base/base.module';
 import { AttributeModule } from './attribute/attribute.module';
-import { Rule } from './attribute/relations/rule/entities/rule.entity';
 import { ProductModule } from './product/product.module';
 import { Option } from './attribute/relations/option/entities/option.entity';
 import { Attributes } from './attribute/entities/attributes.entity';
+import { Rule } from './attribute/relations/rule/entities/rule.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({

@@ -21,14 +21,18 @@ export class AttributeHelperService {
         filters: AttributeSingleConditionDto;
     }): Promise<AttributeResponseInterface> {
         const skip = (filters.page - 1) * filters.limit;
-        const selectList: string[] = null;
+        let selectList: string[] = [];
         let rawValue = null;
         let columnName = '';
-        if (filters.select != null) {
+
+        if (filters.select != null && filters.select.length > 0) {
             for (const addToSelect of filters.select) {
                 selectList.push(alias + '.' + addToSelect);
             }
+        } else {
+            selectList = null;
         }
+        console.log(selectList);
         if (filters.columnName != null && filters.columnName != '') {
             columnName = alias + '.' + filters.columnName + ' = :value';
             rawValue = {
@@ -76,9 +80,7 @@ export class AttributeHelperService {
                 selectList: selectList,
                 alias: alias,
                 columnName: columnName,
-                rawValue: {
-                    value: filters.value,
-                },
+                rawValue: rawValue,
                 orderBy: filters.orderBy,
                 orderDirection: filters.orderDirection,
             });
@@ -156,8 +158,8 @@ export class AttributeHelperService {
                 .getRepository(Attributes)
                 .createQueryBuilder(alias)
                 .where(columnName, rawValue)
-                .leftJoinAndSelect(alias + '.' + relation, relation)
                 .select(selectList)
+                .leftJoinAndSelect(alias + '.' + relation, relation)
                 .orderBy(orderBy, orderDirection)
                 .skip(skip)
                 .take(limit)
@@ -193,9 +195,9 @@ export class AttributeHelperService {
                 .getRepository(Attributes)
                 .createQueryBuilder(alias)
                 .where(columnName, rawValue)
+                .select(selectList)
                 .leftJoinAndSelect('attributes.options', 'options')
                 .leftJoinAndSelect('attributes.rules', 'rules')
-                .select(selectList)
                 .orderBy(orderBy, orderDirection)
                 .skip(skip)
                 .take(limit)

@@ -21,6 +21,9 @@ export class OptionService {
     }: {
         createOption: CreateOptionDto;
     }): Promise<OptionResponseInterface> {
+        if (createOption.relatedAttribute === 0) {
+            createOption.relatedAttribute = null;
+        }
         try {
             return {
                 result: await this.entityManager.save(
@@ -46,6 +49,9 @@ export class OptionService {
     }: {
         createOptions: CreateOptionsDto;
     }): Promise<OptionResponseInterface> {
+        if (createOptions.relatedAttribute === 0) {
+            createOptions.relatedAttribute = null;
+        }
         const preparedOptions: CreateOptionDto[] = [];
         for (const option of createOptions.options) {
             preparedOptions.push(
