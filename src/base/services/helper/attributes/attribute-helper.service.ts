@@ -156,8 +156,6 @@ export class AttributeHelperService {
         orderBy: string;
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
-        console.log('here');
-        console.log(selectList);
         return {
             result: await this.entityManager
                 .getRepository(Attributes)

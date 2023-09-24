@@ -50,8 +50,6 @@ export class GetQueryService {
         alias: string;
         simpleFilters: SingleConditionDto;
     }): Promise<GetDTO | QueryBaseResponse> {
-        console.log('simpleFilters');
-        console.log(simpleFilters);
         try {
             const where = alias + '.' + simpleFilters.columnName + ' = :value';
             const select = alias + simpleFilters.orderDirection;

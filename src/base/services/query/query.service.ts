@@ -25,20 +25,16 @@ export class QueryService {
         if (toEntity != null) {
             switch (dtoClass.name) {
                 case 'Option':
-                    console.log('Option');
                     break;
                 case 'CreateRulesDto':
-                    console.log('Rule');
                     return await this.createQueryService.prepareQuery(
                         entity,
                         toEntity,
                     );
                     break;
                 case 'Attribute':
-                    console.log('Attribute');
                     break;
                 default:
-                    console.log('default');
                     break;
             }
 
@@ -75,7 +71,6 @@ export class QueryService {
         if (toEntity != null) {
             switch (dtoClass.name) {
                 case 'Option':
-                    console.log('Option');
                     break;
                 case 'CreateRulesDto':
                     return await this.createQueryService.saveQuery({
@@ -84,10 +79,8 @@ export class QueryService {
                         getDto: getDto,
                     });
                 case 'Attribute':
-                    console.log('Attribute');
                     break;
                 default:
-                    console.log('default');
                     break;
             }
 
@@ -121,7 +114,6 @@ export class QueryService {
         if (dtoClass.name != null) {
             switch (dtoClass.name) {
                 case 'Option':
-                    console.log('Option');
                     break;
                 case 'GetRulesDto':
                     return await this.getQueryService.findSingleQuery({
@@ -131,10 +123,8 @@ export class QueryService {
                         simpleFilters: filters,
                     });
                 case 'Attribute':
-                    console.log('Attribute');
                     break;
                 default:
-                    console.log('default');
                     break;
             }
 
@@ -168,7 +158,6 @@ export class QueryService {
         if (dtoClass.name != null) {
             switch (dtoClass.name) {
                 case 'Option':
-                    console.log('Option');
                     break;
                 case 'GetRulesDto':
                     return await this.getQueryService.findSingleAndSelectQuery({
@@ -178,10 +167,8 @@ export class QueryService {
                         simpleFilters: filters,
                     });
                 case 'Attribute':
-                    console.log('Attribute');
                     break;
                 default:
-                    console.log('default');
                     break;
             }
 
@@ -215,10 +202,8 @@ export class QueryService {
         if (dtoClass.name != null) {
             switch (dtoClass.name) {
                 case 'Option':
-                    console.log('Option');
                     break;
                 case 'GetRulesDto':
-                    console.log(filters);
                     return await this.getQueryService.findAllSimpleQuery({
                         entity: entity,
                         getDto: getDto,
@@ -226,10 +211,8 @@ export class QueryService {
                         simpleFilters: filters,
                     });
                 case 'Attribute':
-                    console.log('Attribute');
                     break;
                 default:
-                    console.log('default');
                     break;
             }
         }

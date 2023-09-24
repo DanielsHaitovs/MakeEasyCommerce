@@ -287,8 +287,6 @@ export class AttributeService {
         }
 
         for (const rules of result) {
-            console.log(updateRules);
-            console.log(rules.id);
             const res = await this.entityManager.update(
                 Rule,
                 rules.id,
