@@ -1,10 +1,26 @@
-import { MecBaseEntity } from '@src/base/entity/base.entity';
-import { Column, Entity, Index } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    Index,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 import { RuleBaseEntity } from './rule-base.entity';
 
 @Entity('eav_attribute_rule')
 @Index('eav_attribute_rule_index', ['id'])
-export class Rule extends MecBaseEntity {
+export class Rule {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
+
     @Column(() => RuleBaseEntity)
     front: RuleBaseEntity;
 

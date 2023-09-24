@@ -54,7 +54,7 @@ export class AttributeService {
         });
         if (check) {
             return {
-                status: 999,
+                status: '999',
                 error: {
                     message: 'Attribute already exists',
                     in: 'Attribute Entity',
@@ -112,7 +112,7 @@ export class AttributeService {
 
             if (check) {
                 return {
-                    status: 999,
+                    status: '999',
                     error: {
                         message: 'Attribute already exists',
                         in: 'Attribute Entity',
@@ -287,14 +287,16 @@ export class AttributeService {
         }
 
         for (const rules of result) {
-            const affected = await this.entityManager.update(
+            console.log(updateRules);
+            console.log(rules.id);
+            const res = await this.entityManager.update(
                 Rule,
                 rules.id,
                 updateRules,
             );
-            if (affected.affected > 0) {
+            if (res.affected > 0) {
                 return {
-                    status: 200,
+                    status: '200',
                     message: 'Attribute Rules Successfully updated',
                     result: {
                         id: attributeId,
@@ -353,7 +355,7 @@ export class AttributeService {
                     ...newOptions.result.map((option) => option.id),
                 );
                 return {
-                    status: 200,
+                    status: '200',
                     message: 'Attribute Options Successfully updated',
                     result: [
                         {
@@ -366,7 +368,7 @@ export class AttributeService {
             }
 
             return {
-                status: 999,
+                status: '999',
                 error: {
                     message: 'Failed to update Attribute Options',
                     in: 'Attribute Entity',
@@ -398,7 +400,7 @@ export class AttributeService {
                 );
                 if (deleteOld.affected < 1) {
                     return {
-                        status: 999,
+                        status: '999',
                         error: {
                             message: 'Failed to delete old Attribute Options',
                             in: 'Attribute Entity',
@@ -420,7 +422,7 @@ export class AttributeService {
                     ),
                 );
                 return {
-                    status: 200,
+                    status: '200',
                     message: 'Attribute Options Successfully updated',
                     result: [
                         {
@@ -432,7 +434,7 @@ export class AttributeService {
                 };
             }
             return {
-                status: 999,
+                status: '999',
                 error: {
                     message: 'Failed to update Attribute Options',
                     in: 'Attribute Entity',
@@ -447,7 +449,7 @@ export class AttributeService {
 
         if (deleteOld.affected < 1) {
             return {
-                status: 999,
+                status: '999',
                 error: {
                     message: 'Failed to delete old Attribute Options',
                     in: 'Attribute Entity',
@@ -463,7 +465,7 @@ export class AttributeService {
         });
         if (newOptions.error === null || newOptions.error === undefined) {
             return {
-                status: 200,
+                status: '200',
                 message: 'Attribute Options Successfully updated',
                 result: [
                     {
@@ -478,7 +480,7 @@ export class AttributeService {
         }
 
         return {
-            status: 999,
+            status: '999',
             error: {
                 message: 'Failed to update Attribute Options',
                 in: 'Attribute Entity',
@@ -486,8 +488,61 @@ export class AttributeService {
         };
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} attribute`;
+    async remove({ id }: { id: number }): Promise<AttributeResponseInterface> {
+        try {
+            const attribute: AttributeResponseInterface =
+                await this.attributeHelper.singleConditionAttributeQuery({
+                    filters: {
+                        page: 1,
+                        limit: 1,
+                        orderBy: null,
+                        orderDirection: OrderType.NO,
+                        columnName: 'id',
+                        value: id,
+                        select: ['id', 'rules'],
+                        joinOptions: false,
+                        joinRules: true,
+                    },
+                });
+
+            if (!Array.isArray(attribute.result)) {
+                return {
+                    error: attribute.error,
+                };
+            }
+
+            const affectedAttribute: number = (
+                await this.entityManager.delete(Attributes, id)
+            ).affected;
+
+            const affectedRule: number = (
+                await this.entityManager
+                    .getRepository(Rule)
+                    .createQueryBuilder('rules')
+                    .delete()
+                    .from(Rule)
+                    .where('id = :id', {
+                        id: attribute.result.shift().rules.id,
+                    })
+                    .execute()
+            ).affected;
+
+            if (affectedAttribute > 0 && affectedRule > 0) {
+                return {
+                    status: '200',
+                    message:
+                        'Attribute and all related data was successfully removed',
+                };
+            }
+        } catch (e) {
+            return {
+                message: 'Could not delete attribute',
+                error: {
+                    message: e.message,
+                    in: 'Attribute Entity',
+                },
+            };
+        }
     }
 
     protected async ifExists({

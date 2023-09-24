@@ -53,18 +53,11 @@ export class OptionService {
         }
         const preparedOptions: CreateOptionDto[] = [];
         for (const option of createOptions.options) {
-            console.log(
-                this.entityManager.create(Option, {
-                    relatedAttribute: createOptions.relatedAttribute,
-                    value: option.value,
-                }),
-            );
             preparedOptions.push({
                 relatedAttribute: createOptions.relatedAttribute,
                 value: option.value,
             });
         }
-        console.log(preparedOptions);
         try {
             return {
                 result: await this.entityManager.save(Option, preparedOptions),

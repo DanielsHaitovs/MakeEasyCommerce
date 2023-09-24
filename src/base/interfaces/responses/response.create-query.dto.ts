@@ -6,6 +6,7 @@ export interface QueryBaseResponseInterface {
 }
 
 export interface QueryResponseInterface {
+    status?: string;
     message?: string;
     result?: any | any[];
     error?: {

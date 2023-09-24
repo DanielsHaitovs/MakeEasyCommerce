@@ -238,7 +238,7 @@ export class AttributeController {
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.attributeService.remove(+id);
+    remove(@Param('id', ParseIntPipe) id: number) {
+        return this.attributeService.remove({ id });
     }
 }

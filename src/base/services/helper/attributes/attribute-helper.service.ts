@@ -36,7 +36,6 @@ export class AttributeHelperService {
         } else {
             selectList = null;
         }
-        console.log(selectList);
         if (filters.columnName != null && filters.columnName != '') {
             columnName = alias + '.' + filters.columnName + ' = :value';
             rawValue = {
@@ -157,6 +156,8 @@ export class AttributeHelperService {
         orderBy: string;
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
+        console.log('here');
+        console.log(selectList);
         return {
             result: await this.entityManager
                 .getRepository(Attributes)

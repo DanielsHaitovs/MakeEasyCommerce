@@ -33,19 +33,19 @@ export class Attributes {
     parent: Attributes; // Optional parent attribute for handling arrays
 
     @OneToMany(() => Option, (options) => options.relatedAttribute, {
-        onDelete: 'CASCADE',
+        cascade: false,
+        eager: false,
     })
     options: Option[];
     @RelationId((attribute: Attributes) => attribute.options)
     optionsIds: number[];
 
-    @OneToOne(() => Rule, (rule) => rule, {
-        cascade: true,
-        onDelete: 'CASCADE',
+    @OneToOne(() => Rule, (rule) => rule.id, {
+        cascade: ['update', 'remove', 'insert'],
+        nullable: true,
     })
     @JoinColumn({
-        name: 'rule_id',
-        foreignKeyConstraintName: 'fk_product_attribute_index_rule',
+        foreignKeyConstraintName: 'fk_attribute_index_rule',
     })
     rules: Rule;
 }

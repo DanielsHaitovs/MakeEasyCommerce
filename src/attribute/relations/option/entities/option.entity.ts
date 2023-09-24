@@ -12,6 +12,7 @@ export class Option extends MecBaseEntity {
     // and request is not related to attribute it self
     @ManyToOne(() => Attributes, (attribute) => attribute.id, {
         onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
         nullable: true,
     })
     relatedAttribute: number;

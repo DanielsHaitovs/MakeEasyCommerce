@@ -50,7 +50,7 @@ export class AttributeRuleInterface {
     optionsIds: number[];
 }
 export interface AttributeResponseInterface extends QueryResponseInterface {
-    status?: any;
+    status?: string;
     message?: string;
     result?: GetAttributeInterface | GetAttributeInterface[];
 }
