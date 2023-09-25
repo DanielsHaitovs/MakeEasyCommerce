@@ -6,6 +6,8 @@ import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
+export const alias = 'rule';
+export const indexKey = 'fk_rule_simple_condition_query';
 export const RuleList: string[] = [
     'useInCatalog',
     'useInListing',
@@ -25,10 +27,8 @@ export class RuleHelperService {
         private readonly entityManager: EntityManager,
     ) {}
     async singleConditionRuleQuery({
-        alias,
         filters,
     }: {
-        alias: string;
         filters: SingleConditionDto;
     }): Promise<RuleResponseInterface> {
         const skip = (filters.page - 1) * filters.limit;
@@ -60,7 +60,6 @@ export class RuleHelperService {
                 skip: skip,
                 limit: filters.limit,
                 selectList: ruleList,
-                alias: alias,
                 columnName: columnName,
                 rawValue: rawValue,
                 orderBy: orderBy,
@@ -76,11 +75,10 @@ export class RuleHelperService {
         }
     }
 
-    async nonRelationQuery({
+    private async nonRelationQuery({
         skip,
         limit,
         selectList,
-        alias,
         columnName,
         rawValue,
         orderBy,
@@ -89,7 +87,6 @@ export class RuleHelperService {
         skip: number;
         limit: number;
         selectList: string[];
-        alias: string;
         columnName: string;
         rawValue: {
             value: string | number | boolean | Date | JSON;
@@ -107,7 +104,7 @@ export class RuleHelperService {
                 .skip(skip)
                 .take(limit)
                 .cache(true)
-                .useIndex('fk_rule_simple_condition_query')
+                .useIndex(indexKey)
                 .getMany(),
         };
     }

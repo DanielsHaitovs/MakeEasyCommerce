@@ -5,8 +5,8 @@ import { OptionResponseInterface } from '@src/attribute/relations/option/interfa
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
-
 export const alias = 'options';
+export const indexKey = 'fk_option_simple_condition_query';
 @Injectable()
 export class OptionHelperService {
     constructor(
@@ -14,7 +14,6 @@ export class OptionHelperService {
         private readonly entityManager: EntityManager,
     ) {}
     async singleConditionOptionQuery({
-        alias,
         filters,
     }: {
         alias: string;
@@ -49,7 +48,6 @@ export class OptionHelperService {
                 skip: skip,
                 limit: filters.limit,
                 selectList: ruleList,
-                alias: alias,
                 columnName: columnName,
                 rawValue: rawValue,
                 orderBy: orderBy,
@@ -65,11 +63,10 @@ export class OptionHelperService {
         }
     }
 
-    async nonRelationQuery({
+    private async nonRelationQuery({
         skip,
         limit,
         selectList,
-        alias,
         columnName,
         rawValue,
         orderBy,
@@ -78,7 +75,6 @@ export class OptionHelperService {
         skip: number;
         limit: number;
         selectList: string[];
-        alias: string;
         columnName: string;
         rawValue: {
             value: string | number | boolean | Date | JSON;
@@ -96,7 +92,7 @@ export class OptionHelperService {
                 .skip(skip)
                 .take(limit)
                 .cache(true)
-                .useIndex('fk_option_simple_condition_query')
+                .useIndex(indexKey)
                 .getMany(),
         };
     }

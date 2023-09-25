@@ -6,26 +6,23 @@ import {
     ManyToOne,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn,
     RelationId,
     Unique,
 } from 'typeorm';
 import { AttributeDescription } from './attribute-description.entity';
 import { Option } from '../relations/option/entities/option.entity';
 import { Rule } from '../relations/rule/entities/rule.entity';
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 
 @Entity('eav_attribute_index')
-@Index('eav_index_attribute', [
+@Index('ik_attribute_index', [
     'id',
     'description.code',
     'description.isActive',
     'description.isRequired',
 ])
-@Unique('eav_unique_attribute', ['description.name', 'description.code'])
-export class Attributes {
-    @PrimaryGeneratedColumn()
-    id: number;
-
+@Unique('uk_attribute_index', ['description.name', 'description.code'])
+export class Attributes extends MecBaseEntity {
     @Column(() => AttributeDescription)
     description: AttributeDescription;
 

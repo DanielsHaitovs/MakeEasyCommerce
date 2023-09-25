@@ -85,7 +85,9 @@ export class RuleController {
         description: 'Specific Attribute Rule and its details',
         type: GetRulesDto,
     })
-    async findOneById(@Param('id') id: number): Promise<RuleResponseInterface> {
+    async findOneById(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<RuleResponseInterface> {
         return await this.ruleService.findOneById({ id });
     }
 

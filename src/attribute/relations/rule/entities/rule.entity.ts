@@ -9,7 +9,7 @@ import {
 import { RuleBaseEntity } from './rule-base.entity';
 
 @Entity('eav_attribute_rule')
-@Index('eav_attribute_rule_index', ['id'])
+@Index('ik_attribute_rule_index', ['id'])
 export class Rule {
     @PrimaryGeneratedColumn()
     id: number;

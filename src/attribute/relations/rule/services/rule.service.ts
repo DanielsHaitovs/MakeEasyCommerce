@@ -49,7 +49,6 @@ export class RuleService {
 
     async findOneById({ id }: { id: number }): Promise<RuleResponseInterface> {
         return await this.ruleHelper.singleConditionRuleQuery({
-            alias: 'rule',
             filters: {
                 page: 1,
                 limit: 0,
@@ -70,7 +69,6 @@ export class RuleService {
         type: RuleFindByType;
     }): Promise<RuleResponseInterface> {
         return await this.ruleHelper.singleConditionRuleQuery({
-            alias: 'rule',
             filters: {
                 page: 1,
                 limit: 1,
@@ -89,7 +87,6 @@ export class RuleService {
         condition: OrderedPaginationDto;
     }): Promise<RuleResponseInterface> {
         return await this.ruleHelper.singleConditionRuleQuery({
-            alias: 'rule',
             filters: {
                 page: condition.page,
                 limit: condition.limit,

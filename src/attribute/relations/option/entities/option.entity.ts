@@ -3,7 +3,7 @@ import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 @Entity('eav_attribute_option')
-@Index('eav_attribute_option_index', ['id', 'value'])
+@Index('ik_attribute_option_index', ['id', 'value'])
 export class Option extends MecBaseEntity {
     @Column('jsonb', { nullable: false })
     value: string | number | boolean | Date | JSON;

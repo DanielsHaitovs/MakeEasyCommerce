@@ -9,6 +9,7 @@ import { EntityManager } from 'typeorm';
 
 export const aliases = ['attributes', 'options', 'rules'];
 export const alias = 'attributes';
+export const indexKey = 'fk_attribute_simple_condition_query';
 @Injectable()
 export class AttributeHelperService {
     constructor(
@@ -97,7 +98,7 @@ export class AttributeHelperService {
         }
     }
 
-    async nonRelationQuery({
+    private async nonRelationQuery({
         skip,
         limit,
         selectList,
@@ -128,12 +129,12 @@ export class AttributeHelperService {
                 .skip(skip)
                 .take(limit)
                 .cache(true)
-                .useIndex('fk_attribute_simple_condition_query')
+                .useIndex(indexKey)
                 .getMany(),
         };
     }
 
-    async joinSingleRelationQuery({
+    private async joinSingleRelationQuery({
         relation,
         skip,
         limit,
@@ -167,12 +168,12 @@ export class AttributeHelperService {
                 .skip(skip)
                 .take(limit)
                 .cache(true)
-                .useIndex('fk_attribute_single_relation_query')
+                .useIndex(indexKey)
                 .getMany(),
         };
     }
 
-    async joinMultipleRelationQuery({
+    private async joinMultipleRelationQuery({
         skip,
         limit,
         selectList,
@@ -205,7 +206,7 @@ export class AttributeHelperService {
                 .skip(skip)
                 .take(limit)
                 .cache(true)
-                .useIndex('fk_attribute_single_relation_query')
+                .useIndex(indexKey)
                 .getMany(),
         };
     }
