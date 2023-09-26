@@ -16,8 +16,8 @@ import { StoreView } from './store-view.entity';
 @Unique('uk_store_index', ['name', 'code'])
 export class Store extends StoreDescription {
     @OneToMany(() => StoreView, (storeView) => storeView.store, {
-        cascade: ['update', 'remove', 'insert'],
-        nullable: false,
+        cascade: false,
+        eager: false,
     })
     @JoinColumn({
         foreignKeyConstraintName: 'fk_store_index',

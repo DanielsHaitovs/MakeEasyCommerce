@@ -6,6 +6,10 @@ import { Store } from './store.entity';
 @Index('ik_store_view_index', ['id', 'name', 'code', 'isActive', 'updatedAt'])
 @Unique('uk_store_view_index', ['name', 'code'])
 export class StoreView extends StoreViewDescription {
-    @ManyToOne(() => Store, (store) => store.storeViews)
+    @ManyToOne(() => Store, (store) => store.storeViews, {
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        nullable: true,
+    })
     store: number;
 }

@@ -78,7 +78,8 @@ export class StoreViewDto {
     description: string;
 }
 
-export class CreateStoreDto extends StoreDto {
+export class CreateStoreShortDto extends StoreDto {}
+export class CreateStoreDto extends CreateStoreShortDto {
     @ApiProperty({
         title: 'Store Views',
         type: [StoreViewDto],
@@ -88,7 +89,8 @@ export class CreateStoreDto extends StoreDto {
     storeViews: StoreViewDto[];
 }
 
-export class CreateStoreViewDto extends StoreViewDto {
+export class CreateStoreViewShortDto extends StoreViewDto {}
+export class CreateStoreViewDto extends CreateStoreViewShortDto {
     @ApiProperty({
         title: 'Parent Store ID',
         type: Number,

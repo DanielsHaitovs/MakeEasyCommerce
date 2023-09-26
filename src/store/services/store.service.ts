@@ -2,18 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { StoreHelperService } from '@src/base/services/helper/store/store-helper.service';
 import { EntityManager } from 'typeorm';
-import { CreateStoreDto, CreateStoreViewDto } from '../dto/create-store.dto';
-import {
-    StoreI,
-    StoreResponseI,
-    StoreViewI,
-} from '../interfaces/store.interfaces';
+import { CreateStoreDto } from '../dto/create-store.dto';
+import { StoreI, StoreResponseI } from '../interfaces/store.interfaces';
 import { Store } from '../entities/store.entity';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { UpdateStoreDto } from '../dto/update-store.dto';
-import { StoreView } from '../entities/store-view.entity';
-import { QueryResponseInterface } from '@src/base/interfaces/responses/response.create-query.dto';
 
 @Injectable()
 export class StoreService {
