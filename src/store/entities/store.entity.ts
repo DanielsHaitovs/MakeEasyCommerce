@@ -1,6 +1,4 @@
-import { MecBaseEntity } from '@src/base/entity/base.entity';
 import {
-    Column,
     Entity,
     Index,
     JoinColumn,
