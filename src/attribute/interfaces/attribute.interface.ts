@@ -42,6 +42,7 @@ export interface GetAttributeInterface {
     rules?: GetRuleInterface;
     options?: GetOptionInterface[];
     optionsIds?: number[];
+    stores?: number[];
 }
 
 export class AttributeRuleInterface {

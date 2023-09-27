@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { StoreHelperService } from '@src/base/services/helper/store/store-helper.service';
-import { EntityManager } from 'typeorm';
 import { CreateStoreDto } from '../dto/create-store.dto';
 import { StoreI, StoreResponseI } from '../interfaces/store.interfaces';
 import { Store } from '../entities/store.entity';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { UpdateStoreDto } from '../dto/update-store.dto';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class StoreService {
@@ -36,11 +36,13 @@ export class StoreService {
             };
         }
         try {
+            const newStore = await this.entityManager.save(
+                Store,
+                await this.prepareStore({ createStoreDto }),
+            );
+
             return {
-                result: await this.entityManager.save(
-                    Store,
-                    await this.prepareStore({ createStoreDto }),
-                ),
+                result: newStore,
             };
         } catch (e) {
             return {

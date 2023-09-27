@@ -9,6 +9,7 @@ import { GetQueryService } from '@src/base/services/query/get/get-query.service'
 import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
 
 @Module({
+    imports: [TypeOrmModule.forFeature([Option])],
     controllers: [OptionController],
     providers: [
         OptionService,
@@ -17,6 +18,5 @@ import { OptionHelperService } from '@src/base/services/helper/attributes/option
         CreateQueryService,
         GetQueryService,
     ],
-    imports: [TypeOrmModule.forFeature([Option])],
 })
 export class OptionModule {}

@@ -10,6 +10,7 @@ import { Rule } from './attribute/relations/rule/entities/rule.entity';
 import { StoreModule } from './store/store.module';
 import { StoreView } from './store/entities/store-view.entity';
 import { Store } from './store/entities/store.entity';
+import { StoreOption } from './store/relations/store-attributes/entities/store-option.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -26,8 +27,9 @@ import { Store } from './store/entities/store.entity';
                 Option,
                 // <- Attribute
                 // Store ->
-                StoreView,
                 Store,
+                StoreView,
+                StoreOption,
                 // <- Store
             ],
             migrations: ['dist/migrations/*.{ts,js}'],

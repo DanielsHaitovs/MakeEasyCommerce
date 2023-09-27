@@ -7,9 +7,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoreViewService } from './services/store-view.service';
 import { Store } from './entities/store.entity';
 import { StoreView } from './entities/store-view.entity';
+import { StoreOption } from './relations/store-attributes/entities/store-option.entity';
+import { StoreAttributesModule } from './relations/store-attributes/store-attributes.module';
+import { StoreProductModule } from './relations/store-product/store-product.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([StoreView, Store])],
+    imports: [
+        TypeOrmModule.forFeature([StoreView, Store, StoreOption]),
+        StoreAttributesModule,
+        StoreProductModule,
+    ],
     controllers: [StoreController, StoreViewController],
     providers: [StoreService, StoreViewService, StoreHelperService],
 })

@@ -9,6 +9,7 @@ import { GetQueryService } from '@src/base/services/query/get/get-query.service'
 import { RuleHelperService } from '@src/base/services/helper/attributes/rule-helper.service';
 
 @Module({
+    imports: [TypeOrmModule.forFeature([Rule])],
     controllers: [RuleController],
     providers: [
         RuleService,
@@ -17,6 +18,5 @@ import { RuleHelperService } from '@src/base/services/helper/attributes/rule-hel
         CreateQueryService,
         GetQueryService,
     ],
-    imports: [TypeOrmModule.forFeature([Rule])],
 })
 export class RuleModule {}
