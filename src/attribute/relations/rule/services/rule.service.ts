@@ -32,6 +32,8 @@ export class RuleService {
     }): Promise<RuleResponseInterface> {
         try {
             return {
+                status: '200',
+                message: 'Success',
                 result: await this.entityManager.save(
                     Rule,
                     await this.prepareRule({ createRuleDto: createRulesDto }),
@@ -39,6 +41,8 @@ export class RuleService {
             };
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Rule Entity',
@@ -113,11 +117,13 @@ export class RuleService {
         try {
             if ((await this.entityManager.delete(Rule, id)).affected > 0) {
                 return {
+                    status: '200',
                     message: `Record with id ${id} was removed`,
                 };
             }
         } catch (e) {
             return {
+                status: '666',
                 message: 'Something went wrong during remove of this entity',
                 error: {
                     message: e.message,
@@ -142,6 +148,8 @@ export class RuleService {
     }): Promise<RuleResponseInterface> {
         try {
             return {
+                status: '200',
+                message: 'Success',
                 result: plainToClass(
                     GetRulesDto,
                     await this.queryService.createEntityQuery({
@@ -154,6 +162,8 @@ export class RuleService {
             };
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Rule Entity',
@@ -168,6 +178,8 @@ export class RuleService {
         condition: FilterDto;
     }): Promise<RuleResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: plainToClass(
                 GetRulesDto,
                 await this.queryService.findEntityByQuery({
@@ -193,6 +205,8 @@ export class RuleService {
         type: RuleFindByType;
     }): Promise<RuleResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: plainToClass(
                 GetRulesDto,
                 await this.queryService.findEntityByAndSelectQuery({

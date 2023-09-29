@@ -19,14 +19,14 @@ export interface GetOptionInterface extends OptionInterface {
 }
 
 export interface OptionResponseInterface extends QueryResponseInterface {
-    status?: string;
-    message?: string;
+    status: string;
+    message: string;
     result?: GetOptionInterface[];
 }
 
 export interface OptionsAttributeResponseInterface
     extends QueryResponseInterface {
-    status?: string;
-    message?: string;
+    status: string;
+    message: string;
     result?: GetAttributeOptionsInterface | GetAttributeOptionsInterface[];
 }

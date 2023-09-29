@@ -42,7 +42,6 @@ export interface GetAttributeInterface {
     rules?: GetRuleInterface;
     options?: GetOptionInterface[];
     optionsIds?: number[];
-    stores?: number[];
 }
 
 export class AttributeRuleInterface {
@@ -51,7 +50,7 @@ export class AttributeRuleInterface {
     optionsIds: number[];
 }
 export interface AttributeResponseInterface extends QueryResponseInterface {
-    status?: string;
-    message?: string;
+    status: string;
+    message: string;
     result?: GetAttributeInterface | GetAttributeInterface[];
 }

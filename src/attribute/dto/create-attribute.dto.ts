@@ -27,11 +27,4 @@ export class CreateAttributeDto extends CreateAttributeShortDto {
     })
     @ValidateNested({ each: true })
     options: CreateOptionDto[];
-
-    @ApiProperty({
-        title: 'Assign attribute per store(s)',
-        type: [Number],
-    })
-    @ValidateNested({ each: true })
-    stores: number[];
 }

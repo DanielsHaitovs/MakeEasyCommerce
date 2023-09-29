@@ -26,6 +26,8 @@ export class OptionService {
         }
         try {
             return {
+                status: '200',
+                message: 'Success',
                 result: [
                     await this.entityManager.save(Option, {
                         relatedAttribute: createOption.relatedAttribute,
@@ -35,6 +37,8 @@ export class OptionService {
             };
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Option Entity',
@@ -60,10 +64,14 @@ export class OptionService {
         }
         try {
             return {
+                status: '200',
+                message: 'Success',
                 result: await this.entityManager.save(Option, preparedOptions),
             };
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Option Service Create Many',
@@ -142,6 +150,7 @@ export class OptionService {
                 ).raw;
             } catch (e) {
                 return {
+                    status: '666',
                     message:
                         'Something went wrong during update of this entity',
                     error: {
@@ -152,6 +161,7 @@ export class OptionService {
             }
         }
         return {
+            status: '666',
             message: 'Something went wrong during update of this entity',
             error: {
                 message: 'Parent attribute is not defined',
@@ -164,11 +174,13 @@ export class OptionService {
         try {
             if ((await this.entityManager.delete(Option, id)).affected > 0) {
                 return {
+                    status: '200',
                     message: `Record with id ${id} was removed`,
                 };
             }
         } catch (e) {
             return {
+                status: '666',
                 message: 'Something went wrong during remove of this entity',
                 error: {
                     message: e.message,

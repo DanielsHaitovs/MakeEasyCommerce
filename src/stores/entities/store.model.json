@@ -1,0 +1,26 @@
+{
+    "isActive": true,
+    "name": "Amazon",
+    "code": "store_amazon",
+    "description": "Connection between our commerce and Amazon",
+    "storeViews": [
+        {
+            "isActive": true,
+            "name": "German Store View",
+            "code": "amazon_storeView_germany",
+            "description": "One of amazon stores that is targeted to German market"
+        },
+        {
+            "isActive": true,
+            "name": "France Store View",
+            "code": "amazon_storeView_france",
+            "description": "One of amazon stores that is targeted to France market"
+        },
+        {
+            "isActive": false,
+            "name": "Latvian Store View",
+            "code": "amazon_storeView_latvian",
+            "description": "One of amazon stores that is targeted to Latvian market"
+        }
+    ]
+}

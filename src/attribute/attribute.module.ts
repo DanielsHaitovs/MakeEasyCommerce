@@ -13,12 +13,10 @@ import { OptionHelperService } from '@src/base/services/helper/attributes/option
 import { OptionService } from './relations/option/services/option.service';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
 import { Attributes } from './entities/attributes.entity';
-import { StoreModule } from '@src/store/store.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Attributes, ProductAttribute]),
-        StoreModule,
         OptionModule,
         RuleModule,
         ProductAttributeModule,

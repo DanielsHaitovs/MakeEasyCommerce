@@ -54,7 +54,8 @@ export class AttributeService {
         });
         if (check) {
             return {
-                status: '999',
+                status: '770',
+                message: 'Duplicate',
                 error: {
                     message: 'Attribute already exists',
                     in: 'Attribute Entity',
@@ -78,6 +79,8 @@ export class AttributeService {
 
             if (!Array.isArray(result)) {
                 return {
+                    status: '666',
+                    message: '!Array.isArray(result)',
                     error: response.error,
                 };
             }
@@ -87,10 +90,14 @@ export class AttributeService {
                 (option: { id: number }) => option.id,
             );
             return {
+                status: '200',
+                message: 'Success',
                 result: newAttribute,
             };
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Attribute Entity',
@@ -112,7 +119,8 @@ export class AttributeService {
 
             if (check) {
                 return {
-                    status: '999',
+                    status: '770',
+                    message: 'Duplicate',
                     error: {
                         message: 'Attribute already exists',
                         in: 'Attribute Entity',
@@ -121,6 +129,8 @@ export class AttributeService {
             }
 
             return {
+                status: '200',
+                message: 'Success',
                 result: await this.entityManager.save(
                     Attributes,
                     this.entityManager.create(Attributes, createAttribute),
@@ -128,6 +138,8 @@ export class AttributeService {
             };
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Attribute Entity',
@@ -282,6 +294,8 @@ export class AttributeService {
 
         if (!Array.isArray(result)) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: response.error,
             };
         }
@@ -304,6 +318,8 @@ export class AttributeService {
                 };
             }
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: 'Failed to update Attribute Rules',
                     in: 'Attribute Entity',
@@ -366,7 +382,8 @@ export class AttributeService {
             }
 
             return {
-                status: '999',
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: 'Failed to update Attribute Options',
                     in: 'Attribute Entity',
@@ -399,6 +416,7 @@ export class AttributeService {
                 if (deleteOld.affected < 1) {
                     return {
                         status: '999',
+                        message: 'Ups, Error',
                         error: {
                             message: 'Failed to delete old Attribute Options',
                             in: 'Attribute Entity',
@@ -433,6 +451,7 @@ export class AttributeService {
             }
             return {
                 status: '999',
+                message: 'Ups, Error',
                 error: {
                     message: 'Failed to update Attribute Options',
                     in: 'Attribute Entity',
@@ -448,6 +467,7 @@ export class AttributeService {
         if (deleteOld.affected < 1) {
             return {
                 status: '999',
+                message: 'Ups, Error',
                 error: {
                     message: 'Failed to delete old Attribute Options',
                     in: 'Attribute Entity',
@@ -479,6 +499,7 @@ export class AttributeService {
 
         return {
             status: '999',
+            message: 'Ups, Error',
             error: {
                 message: 'Failed to update Attribute Options',
                 in: 'Attribute Entity',
@@ -505,6 +526,8 @@ export class AttributeService {
 
             if (!Array.isArray(attribute.result)) {
                 return {
+                    status: '666',
+                    message: 'Ups, Error',
                     error: attribute.error,
                 };
             }
@@ -534,6 +557,7 @@ export class AttributeService {
             }
         } catch (e) {
             return {
+                status: '999',
                 message: 'Could not delete attribute',
                 error: {
                     message: e.message,

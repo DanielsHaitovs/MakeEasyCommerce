@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { StoreView } from '@src/store/entities/store-view.entity';
-import { Store } from '@src/store/entities/store.entity';
+import { Store } from '@src/stores/entities/store.entity';
 import {
     GetStoreI,
     StoreResponseI,
-    StoreViewResponseI,
-} from '@src/store/interfaces/store.interfaces';
+} from '@src/stores/interfaces/store.interface';
+import { StoreView } from '@src/stores/relations/store-views/entities/store-view.entity';
+import { StoreViewResponseI } from '@src/stores/relations/store-views/interfaces/store-view.interface';
 import { EntityManager } from 'typeorm';
 // Bastard, Typeorm support reading tables schema data
 export const StoreColumnsList: string[] = [
@@ -34,6 +34,37 @@ export class StoreHelperService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
     ) {}
+
+    async ifExists({
+        name,
+        code,
+    }: {
+        name: string;
+        code: string;
+    }): Promise<boolean> {
+        return await this.entityManager
+            .getRepository(Store)
+            .createQueryBuilder(StoreAlias)
+            .where('store.name = :name', { name })
+            .orWhere('store.code = :code', { code })
+            .getExists();
+    }
+
+    async ifStoreViewExists({
+        name,
+        code,
+    }: {
+        name: string;
+        code: string;
+    }): Promise<boolean> {
+        return await this.entityManager
+            .getRepository(Store)
+            .createQueryBuilder(StoreViewAlias)
+            .where('store_view.name = :name', { name })
+            .orWhere('store_view.code = :code', { code })
+            .getExists();
+    }
+
     async singleConditionStoreQuery({
         filters,
     }: {
@@ -65,6 +96,8 @@ export class StoreHelperService {
         }
         try {
             return {
+                status: '200',
+                message: 'Success',
                 result: await this.nonRelationQuery({
                     skip: skip,
                     limit: filters.limit,
@@ -77,6 +110,8 @@ export class StoreHelperService {
             };
         } catch (e) {
             return {
+                status: '600',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Store Helper Query',
@@ -131,6 +166,8 @@ export class StoreHelperService {
             });
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Store View Helper Query',
@@ -194,6 +231,8 @@ export class StoreHelperService {
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<StoreViewResponseI> {
         return {
+            status: '200',
+            message: 'Success',
             result: await this.entityManager
                 .getRepository(StoreView)
                 .createQueryBuilder(StoreViewAlias)

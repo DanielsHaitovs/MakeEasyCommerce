@@ -55,6 +55,8 @@ export class OptionHelperService {
             });
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Option Helper Query',
@@ -83,6 +85,8 @@ export class OptionHelperService {
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<OptionResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: await this.entityManager
                 .getRepository(Option)
                 .createQueryBuilder(alias)

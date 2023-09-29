@@ -67,6 +67,8 @@ export class RuleHelperService {
             });
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Rule Helper Query',
@@ -95,6 +97,8 @@ export class RuleHelperService {
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<RuleResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: await this.entityManager
                 .getRepository(Rule)
                 .createQueryBuilder(alias)

@@ -3,14 +3,12 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BaseModule } from './base/base.module';
 import { AttributeModule } from './attribute/attribute.module';
-// import { ProductModule } from './product/product.module';
 import { Option } from './attribute/relations/option/entities/option.entity';
 import { Attributes } from './attribute/entities/attributes.entity';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
-import { StoreModule } from './store/store.module';
-import { StoreView } from './store/entities/store-view.entity';
-import { Store } from './store/entities/store.entity';
-import { StoreOption } from './store/relations/store-attributes/entities/store-option.entity';
+import { StoresModule } from './stores/stores.module';
+import { Store } from './stores/entities/store.entity';
+import { StoreView } from './stores/relations/store-views/entities/store-view.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -29,7 +27,6 @@ import { StoreOption } from './store/relations/store-attributes/entities/store-o
                 // Store ->
                 Store,
                 StoreView,
-                StoreOption,
                 // <- Store
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
@@ -37,7 +34,7 @@ import { StoreOption } from './store/relations/store-attributes/entities/store-o
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        StoreModule,
+        StoresModule,
         AttributeModule,
         // ProductModule,
         BaseModule,

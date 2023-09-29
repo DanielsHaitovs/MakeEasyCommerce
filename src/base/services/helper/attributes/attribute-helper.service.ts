@@ -90,6 +90,8 @@ export class AttributeHelperService {
             });
         } catch (e) {
             return {
+                status: '666',
+                message: 'Ups, Error',
                 error: {
                     message: e.message,
                     in: 'Attributes Helper Query',
@@ -120,6 +122,8 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: await this.entityManager
                 .getRepository(Attributes)
                 .createQueryBuilder(alias)
@@ -158,6 +162,8 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: await this.entityManager
                 .getRepository(Attributes)
                 .createQueryBuilder(alias)
@@ -195,6 +201,8 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseInterface> {
         return {
+            status: '200',
+            message: 'Success',
             result: await this.entityManager
                 .getRepository(Attributes)
                 .createQueryBuilder(alias)

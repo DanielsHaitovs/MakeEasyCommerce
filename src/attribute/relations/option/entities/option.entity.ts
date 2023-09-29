@@ -1,6 +1,5 @@
 import { Attributes } from '@src/attribute/entities/attributes.entity';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
-import { StoreOption } from '@src/store/relations/store-attributes/entities/store-option.entity';
 import {
     Column,
     Entity,
@@ -25,13 +24,13 @@ export class Option extends MecBaseEntity {
     })
     relatedAttribute: number;
 
-    @OneToMany(() => StoreOption, (store) => store.relatedOption, {
-        cascade: false,
-        eager: false,
-    })
-    store: StoreOption;
-    @RelationId((option: Option) => option.store)
-    storeIds: number[];
+    // @OneToMany(() => StoreOption, (store) => store.relatedOption, {
+    //     cascade: false,
+    //     eager: false,
+    // })
+    // store: StoreOption;
+    // @RelationId((option: Option) => option.store)
+    // storeIds: number[];
 }
 
 // For multi store I need to find way how to create new table every time new store is created!

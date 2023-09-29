@@ -36,7 +36,7 @@ export interface GetRuleBackInterface extends RuleBaseInterface {
 }
 
 export interface RuleResponseInterface extends QueryResponseInterface {
-    status?: string;
-    message?: string;
+    status: string;
+    message: string;
     result?: GetRuleInterface | GetRuleInterface[];
 }
