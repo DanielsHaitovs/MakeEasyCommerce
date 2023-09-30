@@ -8,7 +8,11 @@ import { Attributes } from './attribute/entities/attributes.entity';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
 import { StoresModule } from './stores/stores.module';
 import { Store } from './stores/entities/store.entity';
-import { StoreView } from './stores/relations/store-views/entities/store-view.entity';
+import { StoreView } from './store-view/entities/store-view.entity';
+import { StoreViewAttributes } from './store-view/entities/store-attributes.entity';
+import { StoreViewRule } from './store-view/entities/Attributes/attributes-rule.entity';
+import { StoreViewAttributesDescription } from './store-view/entities/Attributes/attributes-description.entity';
+import { StoreViewOption } from './store-view/entities/Attributes/attributes-option.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -27,6 +31,10 @@ import { StoreView } from './stores/relations/store-views/entities/store-view.en
                 // Store ->
                 Store,
                 StoreView,
+                StoreViewAttributes,
+                StoreViewAttributesDescription,
+                StoreViewRule,
+                StoreViewOption,
                 // <- Store
             ],
             migrations: ['dist/migrations/*.{ts,js}'],

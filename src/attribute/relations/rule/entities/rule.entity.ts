@@ -1,28 +1,7 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    Index,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Index } from 'typeorm';
 import { RuleBaseEntity } from './rule-base.entity';
 
+export const RulesIndexPrefix = 'ik_attribute_rule_index';
 @Entity('eav_attribute_rule')
-@Index('ik_attribute_rule_index', ['id'])
-export class Rule {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @CreateDateColumn()
-    createdAt: Date;
-
-    @UpdateDateColumn()
-    updatedAt: Date;
-
-    @Column(() => RuleBaseEntity)
-    front: RuleBaseEntity;
-
-    @Column(() => RuleBaseEntity)
-    back: RuleBaseEntity;
-}
+@Index(RulesIndexPrefix, ['id']) // ??
+export class Rule extends RuleBaseEntity {}

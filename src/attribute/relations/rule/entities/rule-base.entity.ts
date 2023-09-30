@@ -1,7 +1,12 @@
 import { IsBoolean } from 'class-validator';
-import { Column } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
-export abstract class RuleBaseEntity {
+export abstract class RuleConfigEntity {
     @Column()
     @IsBoolean()
     useInCatalog: boolean;
@@ -37,11 +42,21 @@ export abstract class RuleBaseEntity {
     @Column()
     @IsBoolean()
     useInReport: boolean;
+}
 
-    // Other properties specific to your app's requirements (e.g., description, units, etc.)
-    // Specifically Attribute options values
-    // Keep in mind that Options might be different
-    // Swatch option should have different types of options
-    // like image, color, svg, (url?)
-    // single attribute value option (only 1 color or only 1 size)
+export abstract class RuleBaseEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+    @Column(() => RuleConfigEntity)
+    front: RuleConfigEntity;
+
+    @Column(() => RuleConfigEntity)
+    back: RuleConfigEntity;
 }

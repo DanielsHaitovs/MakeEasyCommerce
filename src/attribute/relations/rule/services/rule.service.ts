@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateRulesDto } from '../dto/update-rule.dto';
 import { CreateRulesDto } from '../dto/create-rule.dto';
-import { QueryService } from '@src/base/services/query/query.service';
+// import { QueryService } from '@src/base/services/query/query.service';
 import { Rule } from '../entities/rule.entity';
 import {
     FilterDto,
@@ -21,8 +21,7 @@ export class RuleService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
-        private readonly ruleHelper: RuleHelperService,
-        private readonly queryService: QueryService,
+        private readonly ruleHelper: RuleHelperService, // private readonly queryService: QueryService,
     ) {}
 
     async create({
@@ -139,112 +138,5 @@ export class RuleService {
         createRuleDto: CreateRulesDto;
     }): Promise<CreateRulesDto> {
         return this.entityManager.create(Rule, createRuleDto);
-    }
-
-    protected async createQuery({
-        createRulesDto,
-    }: {
-        createRulesDto: CreateRulesDto;
-    }): Promise<RuleResponseInterface> {
-        try {
-            return {
-                status: '200',
-                message: 'Success',
-                result: plainToClass(
-                    GetRulesDto,
-                    await this.queryService.createEntityQuery({
-                        target: Rule,
-                        dto: createRulesDto,
-                        dtoClass: CreateRulesDto,
-                        getDto: GetRulesDto,
-                    }),
-                ),
-            };
-        } catch (e) {
-            return {
-                status: '666',
-                message: 'Ups, Error',
-                error: {
-                    message: e.message,
-                    in: 'Rule Entity',
-                },
-            };
-        }
-    }
-
-    protected async findOneByIdQuery({
-        condition,
-    }: {
-        condition: FilterDto;
-    }): Promise<RuleResponseInterface> {
-        return {
-            status: '200',
-            message: 'Success',
-            result: plainToClass(
-                GetRulesDto,
-                await this.queryService.findEntityByQuery({
-                    entity: Rule,
-                    getDto: GetRulesDto,
-                    dtoClass: GetRulesDto,
-                    filters: {
-                        orderBy: '',
-                        orderDirection: OrderType.ASC,
-                        select: null,
-                        ...condition,
-                    },
-                }),
-            ),
-        };
-    }
-
-    protected async findThisRuleTypeQuery({
-        id,
-        type,
-    }: {
-        id: number;
-        type: RuleFindByType;
-    }): Promise<RuleResponseInterface> {
-        return {
-            status: '200',
-            message: 'Success',
-            result: plainToClass(
-                GetRulesDto,
-                await this.queryService.findEntityByAndSelectQuery({
-                    entity: Rule,
-                    getDto: GetRulesDto,
-                    dtoClass: GetRulesDto,
-                    filters: {
-                        page: 1,
-                        limit: 0,
-                        orderBy: 'id',
-                        orderDirection: OrderType.ASC,
-                        columnName: 'id',
-                        value: id,
-                        select: [type.ruleType.toLowerCase()],
-                    },
-                }),
-            ),
-        };
-    }
-
-    protected async findAllQuery({
-        condition,
-    }: {
-        condition: OrderedPaginationDto;
-    }): Promise<any[] | RuleResponseDto> {
-        return await this.queryService.findAllEntityQuery({
-            entity: Rule,
-            getDto: GetRulesDto,
-            dtoClass: GetRulesDto,
-            filters: {
-                page: condition.page,
-                limit: condition.limit,
-                orderBy: condition.orderBy,
-                orderDirection: condition.orderDirection,
-                columnName: '',
-                value: '',
-                select: null,
-            },
-        });
     }
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
-import { GetStoreViewDto } from '../relations/store-views/dto/get-store-view.dto';
+import { GetStoreViewDto } from '../../store-view/dto/get-store-view.dto';
 import { CreateStoreShortDto } from './create-store.dto';
 
 export class GetStoreShortDto extends CreateStoreShortDto {

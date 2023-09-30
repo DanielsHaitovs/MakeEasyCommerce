@@ -7,8 +7,8 @@ import {
     GetStoreI,
     StoreResponseI,
 } from '@src/stores/interfaces/store.interface';
-import { StoreView } from '@src/stores/relations/store-views/entities/store-view.entity';
-import { StoreViewResponseI } from '@src/stores/relations/store-views/interfaces/store-view.interface';
+import { StoreView } from '@src/store-view/entities/store-view.entity';
+import { StoreViewResponseI } from '@src/store-view/interfaces/store-view.interface';
 import { EntityManager } from 'typeorm';
 // Bastard, Typeorm support reading tables schema data
 export const StoreColumnsList: string[] = [

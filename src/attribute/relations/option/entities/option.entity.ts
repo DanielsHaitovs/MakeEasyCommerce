@@ -1,5 +1,6 @@
 import { Attributes } from '@src/attribute/entities/attributes.entity';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
+import { StoreViewOption } from '@src/store-view/entities/Attributes/attributes-option.entity';
 import {
     Column,
     Entity,
@@ -10,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity('eav_attribute_option')
-@Index('ik_attribute_option_index', ['id', 'value'])
+@Index('ik_attribute_option_index', ['id', 'value', 'relatedAttribute'])
 export class Option extends MecBaseEntity {
     @Column('jsonb', { nullable: false })
     value: string | number | boolean | Date | JSON;
@@ -24,13 +25,17 @@ export class Option extends MecBaseEntity {
     })
     relatedAttribute: number;
 
-    // @OneToMany(() => StoreOption, (store) => store.relatedOption, {
-    //     cascade: false,
-    //     eager: false,
-    // })
-    // store: StoreOption;
-    // @RelationId((option: Option) => option.store)
-    // storeIds: number[];
+    @OneToMany(
+        () => StoreViewOption,
+        (storeView) => storeView.storeAttributeOption,
+        {
+            cascade: false,
+            eager: false,
+        },
+    )
+    storeViewOptions: StoreViewOption[];
+    @RelationId((option: Option) => option.storeViewOptions)
+    storeViewOptionsIds: number[];
 }
 
 // For multi store I need to find way how to create new table every time new store is created!

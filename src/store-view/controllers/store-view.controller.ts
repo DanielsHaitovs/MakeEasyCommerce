@@ -20,13 +20,13 @@ import {
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { CreateStoreViewDto } from '../dto/create-store-view.dto';
 import { StoreViewResponseI } from '../interfaces/store-view.interface';
-import { StoreViewService } from '../services/store-views.service';
+import { StoreViewService } from '../services/store-view.service';
 import { GetStoreViewDto } from '../dto/get-store-view.dto';
 import { UpdateStoreViewDto } from '../dto/update-store-view.dto';
 
 @ApiTags('Store View')
 @Controller('store_view')
-export class StoreViewsController {
+export class StoreViewController {
     constructor(private readonly storeViewService: StoreViewService) {}
 
     @Post('new')
@@ -47,7 +47,7 @@ export class StoreViewsController {
 
     @Get('get/all')
     @ApiOperation({
-        summary: 'Find All Store Views',
+        summary: 'Find All Store View',
         description: 'Get data of all store views, good luck!',
     })
     @ApiQuery({
@@ -64,7 +64,7 @@ export class StoreViewsController {
         required: false,
     })
     @ApiOkResponse({
-        description: 'All Store Views and theirs details',
+        description: 'All Store View and theirs details',
         type: [GetStoreViewDto],
     })
     async findAll(@Query() orderedPagination): Promise<StoreViewResponseI> {

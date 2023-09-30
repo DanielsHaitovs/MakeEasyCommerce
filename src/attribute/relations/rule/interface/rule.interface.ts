@@ -1,6 +1,6 @@
 import { QueryResponseInterface } from '@src/base/interfaces/responses/response.create-query.dto';
 
-export interface RuleBaseInterface {
+export interface RuleConfigInterface {
     useInCatalog: boolean;
     useInListing: boolean;
     useInLayeredNavigation: boolean;
@@ -13,8 +13,8 @@ export interface RuleBaseInterface {
 }
 
 export interface RuleInterface {
-    front: RuleBaseInterface;
-    back: RuleBaseInterface;
+    front: RuleConfigInterface;
+    back: RuleConfigInterface;
 }
 
 export type CreateRulesInterface = RuleInterface;
@@ -23,15 +23,15 @@ export type UpdateRulesInterface = RuleInterface;
 
 export interface GetRuleInterface {
     id: number;
-    front: RuleBaseInterface;
-    back: RuleBaseInterface;
+    front: RuleConfigInterface;
+    back: RuleConfigInterface;
 }
 
-export interface GetRuleFrontInterface extends RuleBaseInterface {
+export interface GetRuleFrontInterface extends RuleConfigInterface {
     id: number;
 }
 
-export interface GetRuleBackInterface extends RuleBaseInterface {
+export interface GetRuleBackInterface extends RuleConfigInterface {
     id: number;
 }
 

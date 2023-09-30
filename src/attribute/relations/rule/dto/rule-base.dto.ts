@@ -106,15 +106,15 @@ export class RuleDto {
     @ApiProperty({
         title: 'Front end Attribute Rule',
         type: RuleBaseDto,
+        nullable: false,
     })
-    @ValidateNested({ each: true })
     front: RuleBaseDto;
 
     @ApiProperty({
         title: 'Front end Attribute Rule',
         type: RuleBaseDto,
+        nullable: false,
     })
-    @ValidateNested({ each: true })
     back: RuleBaseDto;
 }
 

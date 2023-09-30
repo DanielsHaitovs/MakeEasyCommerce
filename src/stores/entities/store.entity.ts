@@ -6,8 +6,8 @@ import {
     RelationId,
     Unique,
 } from 'typeorm';
-import { StoreDescription } from '../relations/store-views/entities/store-base.entity';
-import { StoreView } from '../relations/store-views/entities/store-view.entity';
+import { StoreDescription } from './store-base.entity';
+import { StoreView } from '../../store-view/entities/store-view.entity';
 export const StoreIndexPrefix = 'ik_store_index';
 export const StoreUniquePrefix = 'uk_store_index';
 export const StoreUniqueKeys: string[] = ['name', 'code'];
@@ -19,7 +19,7 @@ export const StoreIndexKeys: string[] = [
     'updatedAt',
 ];
 
-@Entity('store_index')
+@Entity('store')
 @Unique(StoreUniquePrefix, StoreUniqueKeys)
 @Index(StoreIndexPrefix, StoreIndexKeys)
 export class Store extends StoreDescription {
