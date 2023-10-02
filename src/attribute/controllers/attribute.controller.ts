@@ -24,7 +24,7 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { AttributeResponseInterface } from '../interfaces/attribute.interface';
+import { AttributeResponseI } from '../interfaces/attribute.interface';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import {
     GetAttributeDto,
@@ -38,22 +38,6 @@ import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto'
 export class AttributeController {
     constructor(private readonly attributeService: AttributeService) {}
 
-    @Post('short/new')
-    @ApiOperation({
-        summary: 'Create 1 Attribute Description',
-        description: 'Create 1 attribute only with description',
-    })
-    @ApiBody({
-        type: CreateAttributeShortDto,
-        description: 'Create Attribute Description',
-        required: true,
-    })
-    async createShort(
-        @Body() createAttribute: CreateAttributeShortDto,
-    ): Promise<AttributeResponseInterface> {
-        return await this.attributeService.createShort({ createAttribute });
-    }
-
     @Post('new')
     @ApiOperation({
         summary: 'Create 1 Attribute',
@@ -66,8 +50,24 @@ export class AttributeController {
     })
     async create(
         @Body() createAttribute: CreateAttributeDto,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return await this.attributeService.create({ createAttribute });
+    }
+
+    @Post('short/new')
+    @ApiOperation({
+        summary: 'Create 1 Attribute Description',
+        description: 'Create 1 attribute only with description',
+    })
+    @ApiBody({
+        type: CreateAttributeShortDto,
+        description: 'Create Attribute Description',
+        required: true,
+    })
+    async createShort(
+        @Body() createAttribute: CreateAttributeShortDto,
+    ): Promise<AttributeResponseI> {
+        return await this.attributeService.createShort({ createAttribute });
     }
 
     @Get('get/all')
@@ -92,9 +92,7 @@ export class AttributeController {
         description: 'All Attributes Descriptions',
         type: [GetAttributeShortDto],
     })
-    async findAll(
-        @Query() orderedPagination,
-    ): Promise<AttributeResponseInterface> {
+    async findAll(@Query() orderedPagination): Promise<AttributeResponseI> {
         return await this.attributeService.findAll({
             condition: orderedPagination,
         });
@@ -111,9 +109,7 @@ export class AttributeController {
         description: 'Specific Attribute Rule and its details',
         type: GetAttributeDto,
     })
-    async findOneById(
-        @Param('id') id: number,
-    ): Promise<AttributeResponseInterface> {
+    async findOneById(@Param('id') id: number): Promise<AttributeResponseI> {
         return await this.attributeService.findOneById({ id });
     }
 
@@ -132,7 +128,7 @@ export class AttributeController {
         @Param('id') id: number,
         @Query('includeRules', ParseBoolPipe) includeRules: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return await this.attributeService.findOneWithRelationById({
             id: id,
             relations: {
@@ -154,7 +150,7 @@ export class AttributeController {
     })
     async findAttributeRule(
         @Param('id') id: number,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return await this.attributeService.findAttributeRule({ id });
     }
 
@@ -170,7 +166,7 @@ export class AttributeController {
     })
     async findAttributeOptions(
         @Param('id') id: number,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return await this.attributeService.findAttributeOptions({ id });
     }
 
@@ -187,7 +183,7 @@ export class AttributeController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateAttribute: UpdateAttributeShortDto,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return this.attributeService.update({
             id,
             attribute: updateAttribute,
@@ -207,7 +203,7 @@ export class AttributeController {
     async updateRules(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateRules: UpdateRulesDto,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return this.attributeService.updateRules({
             attributeId: id,
             updateRules,
@@ -229,7 +225,7 @@ export class AttributeController {
         @Param('id', ParseIntPipe) id: number,
         @Body() updateOptions: UpdateManyOptionsDto,
         @Query('keepOld', ParseBoolPipe) keepOld: boolean,
-    ): Promise<AttributeResponseInterface> {
+    ): Promise<AttributeResponseI> {
         return this.attributeService.updateOptions({
             attributeId: id,
             updateOptions: updateOptions,

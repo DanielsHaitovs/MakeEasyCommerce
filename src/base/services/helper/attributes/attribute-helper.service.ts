@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { Attributes } from '@src/attribute/entities/attributes.entity';
-import { AttributeResponseInterface } from '@src/attribute/interfaces/attribute.interface';
+import { AttributeResponseI } from '@src/attribute/interfaces/attribute.interface';
 import { AttributeSingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type.enum';
 import { OrderType } from '@src/base/enum/query/query.enum';
@@ -20,7 +20,7 @@ export class AttributeHelperService {
         filters,
     }: {
         filters: AttributeSingleConditionDto;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         const skip = (filters.page - 1) * filters.limit;
         let selectList: string[] = [];
         let rawValue = null;
@@ -120,7 +120,7 @@ export class AttributeHelperService {
         };
         orderBy: string;
         orderDirection: OrderType | OrderType.NO;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return {
             status: '200',
             message: 'Success',
@@ -160,7 +160,7 @@ export class AttributeHelperService {
         };
         orderBy: string;
         orderDirection: OrderType | OrderType.NO;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return {
             status: '200',
             message: 'Success',
@@ -199,7 +199,7 @@ export class AttributeHelperService {
         };
         orderBy: string;
         orderDirection: OrderType | OrderType.NO;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return {
             status: '200',
             message: 'Success',

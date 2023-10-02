@@ -1,4 +1,6 @@
-import { QueryResponseInterface } from '@src/base/interfaces/responses/response.create-query.dto';
+import { AttributeShortI } from '@src/attribute/interfaces/attribute.interface';
+import { CreateRulesI } from '@src/attribute/relations/rule/interface/rule.interface';
+import { QueryResponseI } from '@src/base/interfaces/responses/response.create-query.dto';
 
 export interface StoreViewI {
     isActive: boolean;
@@ -11,7 +13,7 @@ export interface CreateStoreViewI extends StoreViewI {
     store: number;
 }
 
-export interface CreateStoreViewResponseI extends QueryResponseInterface {
+export interface CreateStoreViewResponseI extends QueryResponseI {
     status: string;
     message: string;
     result?: CreateStoreViewI | CreateStoreViewI[];
@@ -24,8 +26,17 @@ export interface GetStoreViewI extends StoreViewI {
     store: number;
 }
 
-export interface StoreViewResponseI extends QueryResponseInterface {
+export interface StoreViewResponseI extends QueryResponseI {
     status: string;
     message: string;
     result?: GetStoreViewI | GetStoreViewI[];
+}
+
+export interface StoreAttributeI {
+    useDefault: boolean;
+    storeView: number;
+    attributes: AttributeShortI;
+    attributesIds?: number[];
+    relatedAttribute: number;
+    rules?: CreateRulesI;
 }

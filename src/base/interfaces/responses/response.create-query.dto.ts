@@ -1,11 +1,11 @@
-export interface QueryBaseResponseInterface {
+export interface QueryBaseResponseI {
     error?: {
         message: string;
         in: string;
     };
 }
 
-export interface QueryResponseInterface {
+export interface QueryResponseI {
     status: string;
     message: string;
     result?: any | any[];

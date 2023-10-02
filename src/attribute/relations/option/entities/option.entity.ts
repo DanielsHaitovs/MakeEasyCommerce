@@ -1,6 +1,6 @@
 import { Attributes } from '@src/attribute/entities/attributes.entity';
 import { MecBaseEntity } from '@src/base/entity/base.entity';
-import { StoreViewOption } from '@src/store-view/entities/Attributes/attributes-option.entity';
+import { StoreViewOption } from '@src/store-view/entities/attributes/attributes-option.entity';
 import {
     Column,
     Entity,
@@ -21,16 +21,17 @@ export class Option extends MecBaseEntity {
     @ManyToOne(() => Attributes, (attribute) => attribute.id, {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-        nullable: true,
+        nullable: false,
     })
     relatedAttribute: number;
 
     @OneToMany(
         () => StoreViewOption,
-        (storeView) => storeView.storeAttributeOption,
+        (storeView) => storeView.relatedAttribute,
         {
             cascade: false,
             eager: false,
+            nullable: true,
         },
     )
     storeViewOptions: StoreViewOption[];

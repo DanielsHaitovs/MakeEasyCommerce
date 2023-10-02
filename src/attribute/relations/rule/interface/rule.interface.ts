@@ -1,6 +1,6 @@
-import { QueryResponseInterface } from '@src/base/interfaces/responses/response.create-query.dto';
+import { QueryResponseI } from '@src/base/interfaces/responses/response.create-query.dto';
 
-export interface RuleConfigInterface {
+export interface RuleConfigI {
     useInCatalog: boolean;
     useInListing: boolean;
     useInLayeredNavigation: boolean;
@@ -12,31 +12,36 @@ export interface RuleConfigInterface {
     useInReport: boolean;
 }
 
-export interface RuleInterface {
-    front: RuleConfigInterface;
-    back: RuleConfigInterface;
+export interface RuleI {
+    front: RuleConfigI;
+    back: RuleConfigI;
 }
 
-export type CreateRulesInterface = RuleInterface;
+export type CreateRulesI = RuleI;
 
-export type UpdateRulesInterface = RuleInterface;
+export type UpdateRulesI = RuleI;
 
-export interface GetRuleInterface {
+export interface GetRuleI {
     id: number;
-    front: RuleConfigInterface;
-    back: RuleConfigInterface;
+    front: RuleConfigI;
+    back: RuleConfigI;
 }
 
-export interface GetRuleFrontInterface extends RuleConfigInterface {
-    id: number;
-}
-
-export interface GetRuleBackInterface extends RuleConfigInterface {
+export interface GetRuleFrontI extends RuleConfigI {
     id: number;
 }
 
-export interface RuleResponseInterface extends QueryResponseInterface {
+export interface GetRuleBackI extends RuleConfigI {
+    id: number;
+}
+
+export interface UpdateRuleI {
+    front?: RuleConfigI;
+    back?: RuleConfigI;
+}
+
+export interface RuleResponseI extends QueryResponseI {
     status: string;
     message: string;
-    result?: GetRuleInterface | GetRuleInterface[];
+    result?: GetRuleI | GetRuleI[];
 }

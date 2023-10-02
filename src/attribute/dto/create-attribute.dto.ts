@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AttributeDescriptionDto } from './attribute.dto';
-import { ValidateNested } from 'class-validator';
-import { CreateRulesDto } from '../relations/rule/dto/create-rule.dto';
+import { IsNotEmpty, ValidateNested } from 'class-validator';
 import { CreateOptionDto } from '../relations/option/dto/create-option.dto';
+import { RuleDto } from '../relations/rule/dto/rule-base.dto';
 
 export class CreateAttributeShortDto {
     @ApiProperty({
@@ -16,10 +16,11 @@ export class CreateAttributeShortDto {
 export class CreateAttributeDto extends CreateAttributeShortDto {
     @ApiProperty({
         title: 'Create Attribute Rules',
-        type: CreateRulesDto,
+        type: RuleDto,
+        nullable: false,
     })
-    @ValidateNested({ each: true })
-    rules: CreateRulesDto;
+    @IsNotEmpty()
+    rules: RuleDto;
 
     @ApiProperty({
         title: 'Create Option(s) for this attribute',

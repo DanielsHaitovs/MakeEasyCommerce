@@ -1,27 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { OptionDto } from './option.dto';
+import {
+    CreateOptionDto,
+    CreateOptionsDto,
+} from '@src/attribute/relations/option/dto/create-option.dto';
 
-export class GetOptionDto extends OptionDto {
+export class CreateStoresOption extends CreateOptionDto {
     @ApiProperty({
-        title: 'Attribute Option Id',
-        type: Number,
-    })
-    @IsNotEmpty()
-    @IsNumber()
-    id: number;
-
-    @ApiProperty({
-        title: 'Attribute Id',
+        title: 'Parent Attribute Option ID',
         type: Number,
         nullable: false,
     })
     @IsNotEmpty()
     @IsNumber()
-    relatedAttribute: number;
+    relatedOption: number;
 }
 
-export class GetStoreOptionDto extends GetOptionDto {
+export class CreateStoresOptionsDto extends CreateOptionsDto {
     @ApiProperty({
         title: 'Parent Attribute Option ID',
         type: Number,

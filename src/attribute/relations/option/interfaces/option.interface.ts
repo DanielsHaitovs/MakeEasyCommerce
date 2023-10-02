@@ -1,32 +1,49 @@
-import { GetAttributeOptionsInterface } from '@src/attribute/interfaces/attribute.interface';
-import { QueryResponseInterface } from '@src/base/interfaces/responses/response.create-query.dto';
+import { GetAttributeOptionsI } from '@src/attribute/interfaces/attribute.interface';
+import { QueryResponseI } from '@src/base/interfaces/responses/response.create-query.dto';
 
-export interface OptionInterface {
+export interface OptionI {
     value: string | number | boolean | Date | JSON;
 }
 
-export interface CreateOptionInterface extends OptionInterface {
+export interface CreateOptionI extends OptionI {
+    relatedAttributeId?: number;
+}
+
+export interface CreateStoreOptionI extends CreateOptionI {
+    relatedOptionId?: number;
+}
+
+export interface UpdateOptionI extends OptionI {
     relatedAttributeId: number;
 }
 
-export interface UpdateOptionInterface extends OptionInterface {
-    relatedAttributeId: number;
+export interface UpdateStoreOptionI extends UpdateOptionI {
+    relatedOptionId: number;
 }
 
-export interface GetOptionInterface extends OptionInterface {
+export interface GetOptionI extends OptionI {
     id: number;
     relatedAttribute: number;
 }
 
-export interface OptionResponseInterface extends QueryResponseInterface {
-    status: string;
-    message: string;
-    result?: GetOptionInterface[];
+export interface GetStoreOptionI extends GetOptionI {
+    relatedOptionId: number;
 }
 
-export interface OptionsAttributeResponseInterface
-    extends QueryResponseInterface {
+export interface OptionResponseI extends QueryResponseI {
     status: string;
     message: string;
-    result?: GetAttributeOptionsInterface | GetAttributeOptionsInterface[];
+    result?: GetOptionI[];
+}
+
+export interface StoreOptionResponseI extends QueryResponseI {
+    status: string;
+    message: string;
+    result?: GetStoreOptionI[];
+}
+
+export interface OptionsAttributeResponseI extends QueryResponseI {
+    status: string;
+    message: string;
+    result?: GetAttributeOptionsI | GetAttributeOptionsI[];
 }

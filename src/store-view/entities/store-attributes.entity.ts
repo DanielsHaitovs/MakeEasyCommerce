@@ -12,13 +12,13 @@ import {
 } from 'typeorm';
 import { StoreView } from './store-view.entity';
 import { Attributes } from '@src/attribute/entities/attributes.entity';
-import { StoreViewRule } from './Attributes/attributes-rule.entity';
-import { StoreViewAttributesDescription } from './Attributes/attributes-description.entity';
+import { StoreViewRule } from './attributes/attributes-rule.entity';
+import { StoreViewAttributesDescription } from './attributes/attributes-description.entity';
 
 export const StoreViewIndexPrefix = 'ik_store_view_attribute';
 export const StoreViewIndexKeys: string[] = [
     'id',
-    'isDefault',
+    'useDefault',
     'storeView',
     'relatedAttribute',
     'rules',
@@ -27,9 +27,11 @@ export const StoreViewIndexKeys: string[] = [
 @Entity('store_view_attribute')
 @Index(StoreViewIndexPrefix, StoreViewIndexKeys)
 export class StoreViewAttributes extends MecBaseEntity {
-    @Column()
+    @Column({
+        default: true,
+    })
     @IsBoolean()
-    isDefault: boolean;
+    useDefault: boolean;
 
     @ManyToOne(() => StoreView, (storeView) => storeView.id, {
         cascade: false,

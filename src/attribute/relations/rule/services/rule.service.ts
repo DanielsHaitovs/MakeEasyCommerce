@@ -1,20 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateRulesDto } from '../dto/update-rule.dto';
 import { CreateRulesDto } from '../dto/create-rule.dto';
-// import { QueryService } from '@src/base/services/query/query.service';
 import { Rule } from '../entities/rule.entity';
-import {
-    FilterDto,
-    OrderedPaginationDto,
-} from '@src/base/dto/filter/filters.dto';
-import { GetRulesDto } from '../dto/get-rule.dto';
-import { RuleFindByType, RuleResponseDto } from '../dto/rule-base.dto';
-import { plainToClass } from 'class-transformer';
+import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
+import { RuleFindByType } from '../dto/rule-base.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { RuleHelperService } from '@src/base/services/helper/attributes/rule-helper.service';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { RuleResponseInterface } from '../interface/rule.interface';
+import { RuleResponseI } from '../interface/rule.interface';
 
 @Injectable()
 export class RuleService {
@@ -28,7 +22,7 @@ export class RuleService {
         createRulesDto,
     }: {
         createRulesDto: CreateRulesDto;
-    }): Promise<RuleResponseInterface> {
+    }): Promise<RuleResponseI> {
         try {
             return {
                 status: '200',
@@ -50,7 +44,7 @@ export class RuleService {
         }
     }
 
-    async findOneById({ id }: { id: number }): Promise<RuleResponseInterface> {
+    async findOneById({ id }: { id: number }): Promise<RuleResponseI> {
         return await this.ruleHelper.singleConditionRuleQuery({
             filters: {
                 page: 1,
@@ -70,7 +64,7 @@ export class RuleService {
     }: {
         id: number;
         type: RuleFindByType;
-    }): Promise<RuleResponseInterface> {
+    }): Promise<RuleResponseI> {
         return await this.ruleHelper.singleConditionRuleQuery({
             filters: {
                 page: 1,
@@ -88,7 +82,7 @@ export class RuleService {
         condition,
     }: {
         condition: OrderedPaginationDto;
-    }): Promise<RuleResponseInterface> {
+    }): Promise<RuleResponseI> {
         return await this.ruleHelper.singleConditionRuleQuery({
             filters: {
                 page: condition.page,
@@ -108,11 +102,11 @@ export class RuleService {
     }: {
         id: number;
         rules: UpdateRulesDto;
-    }): Promise<RuleResponseInterface> {
+    }): Promise<RuleResponseI> {
         return (await this.entityManager.update(Rule, id, rules)).raw;
     }
 
-    async remove({ id }: { id: number }): Promise<RuleResponseInterface> {
+    async remove({ id }: { id: number }): Promise<RuleResponseI> {
         try {
             if ((await this.entityManager.delete(Rule, id)).affected > 0) {
                 return {

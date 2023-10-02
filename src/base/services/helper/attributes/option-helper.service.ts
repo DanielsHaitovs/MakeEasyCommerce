@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { Option } from '@src/attribute/relations/option/entities/option.entity';
-import { OptionResponseInterface } from '@src/attribute/relations/option/interfaces/option.interface';
+import { OptionResponseI } from '@src/attribute/relations/option/interfaces/option.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
@@ -18,7 +18,7 @@ export class OptionHelperService {
     }: {
         alias: string;
         filters: SingleConditionDto;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         const skip = (filters.page - 1) * filters.limit;
         let ruleList: string[] = [];
         let rawValue = null;
@@ -83,7 +83,7 @@ export class OptionHelperService {
         };
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         return {
             status: '200',
             message: 'Success',

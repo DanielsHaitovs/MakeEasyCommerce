@@ -1,4 +1,4 @@
-import { QueryResponseInterface } from '@src/base/interfaces/responses/response.create-query.dto';
+import { QueryResponseI } from '@src/base/interfaces/responses/response.create-query.dto';
 import { StoreViewI } from '../../store-view/interfaces/store-view.interface';
 
 export interface StoreI {
@@ -12,7 +12,7 @@ export interface CreateStoreI extends StoreI {
     storeViews?: StoreViewI[];
 }
 
-export interface CreateStoreResponseI extends QueryResponseInterface {
+export interface CreateStoreResponseI extends QueryResponseI {
     status: string;
     message: string;
     result?: CreateStoreI | CreateStoreI[];
@@ -22,7 +22,7 @@ export interface GetStoreI extends CreateStoreI {
     id: number;
 }
 
-export interface StoreResponseI extends QueryResponseInterface {
+export interface StoreResponseI extends QueryResponseI {
     status: string;
     message: string;
     result?: GetStoreI | GetStoreI[];

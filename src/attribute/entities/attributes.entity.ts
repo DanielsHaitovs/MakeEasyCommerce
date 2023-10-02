@@ -43,7 +43,7 @@ export class Attributes extends AttributesBase {
 
     @OneToOne(() => Rule, (rule) => rule.id, {
         cascade: ['update', 'remove', 'insert'],
-        nullable: true,
+        nullable: false,
     })
     @JoinColumn({
         foreignKeyConstraintName: 'fk_attribute_index_rule',

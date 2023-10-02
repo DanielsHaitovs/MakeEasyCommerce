@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { QueryResponse } from '@src/base/dto/responses/response.create-query.dto';
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { GetRulesDto } from './get-rule.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
 

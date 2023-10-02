@@ -14,26 +14,16 @@ export const StoreViewIndexKeys: string[] = [
     'description.isActive',
     'description.isRequired',
     'relatedAttribute',
-    'relatedAttributeId',
 ];
 
 @Entity('store_view_attribute_index')
 @Unique(StoreViewUniquePrefix, StoreViewUniqueKeys)
 @Index(StoreViewIndexPrefix, StoreViewIndexKeys)
 export class StoreViewAttributesDescription extends AttributesBase {
-    // Optional in case if there will be need add only 1 option
-    // and request is not related to attribute it self
-    @ManyToOne(() => StoreViewAttributes, (attribute) => attribute, {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        nullable: true,
-    })
-    relatedAttribute: StoreViewAttributes;
-
     @ManyToOne(() => StoreViewAttributes, (attribute) => attribute.id, {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         nullable: true,
     })
-    relatedAttributeId: number;
+    relatedAttribute: number;
 }

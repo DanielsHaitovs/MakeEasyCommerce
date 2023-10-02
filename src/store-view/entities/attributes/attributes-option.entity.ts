@@ -1,13 +1,13 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
-import { Column, Entity, Index, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { StoreViewAttributes } from '../store-attributes.entity';
 import { Option } from '@src/attribute/relations/option/entities/option.entity';
 export const StoreViewIndexPrefix = 'ik_store_view_attribute_options';
 export const StoreViewIndexKeys: string[] = [
     'id',
     'value',
-    'storeAttribute',
-    'storeAttributeOption',
+    'relatedAttribute',
+    'relatedOption',
 ];
 
 @Entity('store_view_attribute_option')
@@ -23,12 +23,12 @@ export class StoreViewOption extends MecBaseEntity {
         onDelete: 'CASCADE',
         nullable: true,
     })
-    storeAttribute: number;
+    relatedAttribute: number;
 
     @ManyToOne(() => Option, (option) => option.id, {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         nullable: true,
     })
-    storeAttributeOption: number;
+    relatedOption: number;
 }

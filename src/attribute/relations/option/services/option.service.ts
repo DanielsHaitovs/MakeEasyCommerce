@@ -4,7 +4,7 @@ import { CreateOptionDto, CreateOptionsDto } from '../dto/create-option.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { Option } from '../entities/option.entity';
-import { OptionResponseInterface } from '../interfaces/option.interface';
+import { OptionResponseI } from '../interfaces/option.interface';
 import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
@@ -20,7 +20,7 @@ export class OptionService {
         createOption,
     }: {
         createOption: CreateOptionDto;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         if (createOption.relatedAttribute === 0) {
             createOption.relatedAttribute = null;
         }
@@ -51,7 +51,7 @@ export class OptionService {
         createOptions,
     }: {
         createOptions: CreateOptionsDto;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         if (createOptions.relatedAttribute === 0) {
             createOptions.relatedAttribute = null;
         }
@@ -84,7 +84,7 @@ export class OptionService {
         condition,
     }: {
         condition: OrderedPaginationDto;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         return await this.optionHelper.singleConditionOptionQuery({
             alias: 'option',
             filters: {
@@ -99,7 +99,7 @@ export class OptionService {
         });
     }
 
-    async findOne({ id }: { id: number }): Promise<OptionResponseInterface> {
+    async findOne({ id }: { id: number }): Promise<OptionResponseI> {
         return await this.optionHelper.singleConditionOptionQuery({
             alias: 'option',
             filters: {
@@ -118,7 +118,7 @@ export class OptionService {
         parentId,
     }: {
         parentId: number;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         return await this.optionHelper.singleConditionOptionQuery({
             alias: 'option',
             filters: {
@@ -139,7 +139,7 @@ export class OptionService {
     }: {
         id: number;
         updateOptionDto: UpdateOptionDto;
-    }): Promise<OptionResponseInterface> {
+    }): Promise<OptionResponseI> {
         if (
             updateOptionDto.relatedAttribute != 0 &&
             updateOptionDto.relatedAttribute != null
@@ -170,7 +170,7 @@ export class OptionService {
         };
     }
 
-    async remove({ id }: { id: number }): Promise<OptionResponseInterface> {
+    async remove({ id }: { id: number }): Promise<OptionResponseI> {
         try {
             if ((await this.entityManager.delete(Option, id)).affected > 0) {
                 return {

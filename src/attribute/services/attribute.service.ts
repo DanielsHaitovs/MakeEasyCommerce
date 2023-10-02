@@ -3,10 +3,6 @@ import { EntityManager } from 'typeorm';
 import { Attributes } from '../entities/attributes.entity';
 import { Rule } from '../relations/rule/entities/rule.entity';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import {
-    CreateAttributeDto,
-    CreateAttributeShortDto,
-} from '../dto/create-attribute.dto';
 import { UpdateAttributeShortDto } from '../dto/update-attribute.dto';
 import {
     AttributerRelations,
@@ -16,8 +12,10 @@ import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
 import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import {
-    AttributeResponseInterface,
-    GetAttributeInterface,
+    AttributeResponseI,
+    CreateAttributeI,
+    CreateAttributeShortI,
+    GetAttributeI,
 } from '../interfaces/attribute.interface';
 import { OptionService } from '../relations/option/services/option.service';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
@@ -46,8 +44,8 @@ export class AttributeService {
     async create({
         createAttribute,
     }: {
-        createAttribute: CreateAttributeDto;
-    }): Promise<AttributeResponseInterface> {
+        createAttribute: CreateAttributeI;
+    }): Promise<AttributeResponseI> {
         const check = await this.ifExists({
             name: createAttribute.description.name,
             code: createAttribute.description.code,
@@ -63,11 +61,10 @@ export class AttributeService {
             };
         }
         try {
-            const newAttribute: GetAttributeInterface =
-                await this.entityManager.save(
-                    Attributes,
-                    this.entityManager.create(Attributes, createAttribute),
-                );
+            const newAttribute: GetAttributeI = await this.entityManager.save(
+                Attributes,
+                this.entityManager.create(Attributes, createAttribute),
+            );
             const { result, ...response } = await this.optionService.createMany(
                 {
                     createOptions: {
@@ -109,8 +106,8 @@ export class AttributeService {
     async createShort({
         createAttribute,
     }: {
-        createAttribute: CreateAttributeShortDto;
-    }): Promise<AttributeResponseInterface> {
+        createAttribute: CreateAttributeShortI;
+    }): Promise<AttributeResponseI> {
         try {
             const check = await this.ifExists({
                 name: createAttribute.description.name,
@@ -152,7 +149,7 @@ export class AttributeService {
         condition,
     }: {
         condition: OrderedPaginationDto;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return await this.attributeHelper.singleConditionAttributeQuery({
             filters: {
                 page: condition.page,
@@ -168,11 +165,7 @@ export class AttributeService {
         });
     }
 
-    async findOneById({
-        id,
-    }: {
-        id: number;
-    }): Promise<AttributeResponseInterface> {
+    async findOneById({ id }: { id: number }): Promise<AttributeResponseI> {
         return await this.attributeHelper.singleConditionAttributeQuery({
             filters: {
                 page: 1,
@@ -194,7 +187,7 @@ export class AttributeService {
     }: {
         id: number;
         relations: AttributerRelations;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return await this.attributeHelper.singleConditionAttributeQuery({
             filters: {
                 page: 1,
@@ -214,7 +207,7 @@ export class AttributeService {
         id,
     }: {
         id: number;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return await this.attributeHelper.singleConditionAttributeQuery({
             filters: {
                 page: 1,
@@ -234,7 +227,7 @@ export class AttributeService {
         id,
     }: {
         id: number;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return await this.attributeHelper.singleConditionAttributeQuery({
             filters: {
                 page: 1,
@@ -256,7 +249,7 @@ export class AttributeService {
     }: {
         id: number;
         attribute: UpdateAttributeShortDto;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         return (
             await this.entityManager.update(
                 Attributes,
@@ -275,8 +268,9 @@ export class AttributeService {
         updateRules,
     }: {
         attributeId: number;
+        // updateRules: UpdateRulesI;  ?
         updateRules: UpdateRulesDto;
-    }): Promise<AttributeResponseInterface> {
+    }): Promise<AttributeResponseI> {
         const { result, ...response } =
             await this.attributeHelper.singleConditionAttributeQuery({
                 filters: {
@@ -340,8 +334,8 @@ export class AttributeService {
         attributeId: number;
         updateOptions: UpdateManyOptionsDto;
         keepOld: boolean;
-    }): Promise<AttributeResponseInterface> {
-        const attribute: AttributeResponseInterface =
+    }): Promise<AttributeResponseI> {
+        const attribute: AttributeResponseI =
             await this.attributeHelper.singleConditionAttributeQuery({
                 filters: {
                     page: 1,
@@ -507,9 +501,9 @@ export class AttributeService {
         };
     }
 
-    async remove({ id }: { id: number }): Promise<AttributeResponseInterface> {
+    async remove({ id }: { id: number }): Promise<AttributeResponseI> {
         try {
-            const attribute: AttributeResponseInterface =
+            const attribute: AttributeResponseI =
                 await this.attributeHelper.singleConditionAttributeQuery({
                     filters: {
                         page: 1,

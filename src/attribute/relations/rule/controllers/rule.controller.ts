@@ -24,7 +24,7 @@ import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { GetRulesDto } from '../dto/get-rule.dto';
 import { RuleFindByType } from '../dto/rule-base.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
-import { RuleResponseInterface } from '../interface/rule.interface';
+import { RuleResponseI } from '../interface/rule.interface';
 
 @Controller('rule')
 @ApiTags('Rule')
@@ -43,7 +43,7 @@ export class RuleController {
     })
     async create(
         @Body() createRulesDto: CreateRulesDto,
-    ): Promise<RuleResponseInterface> {
+    ): Promise<RuleResponseI> {
         return this.ruleService.create({ createRulesDto });
     }
 
@@ -69,7 +69,7 @@ export class RuleController {
         description: 'All Attributes and theirs details',
         type: [GetRulesDto],
     })
-    async findAll(@Query() orderedPagination): Promise<RuleResponseInterface> {
+    async findAll(@Query() orderedPagination): Promise<RuleResponseI> {
         return await this.ruleService.findAll({
             condition: orderedPagination,
         });
@@ -87,7 +87,7 @@ export class RuleController {
     })
     async findOneById(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<RuleResponseInterface> {
+    ): Promise<RuleResponseI> {
         return await this.ruleService.findOneById({ id });
     }
 
@@ -114,7 +114,7 @@ export class RuleController {
     async findOneBy(
         @Param('id', ParseIntPipe) id: number,
         @Query() type, // this needs to be with specific type, for some reason it did not worked out, investigate
-    ): Promise<RuleResponseInterface> {
+    ): Promise<RuleResponseI> {
         return this.ruleService.findThisRuleType({
             id: id,
             type: type,
@@ -134,7 +134,7 @@ export class RuleController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateRulesDto: UpdateRulesDto,
-    ): Promise<RuleResponseInterface> {
+    ): Promise<RuleResponseI> {
         return this.ruleService.update({
             id: id,
             rules: updateRulesDto,
@@ -148,7 +148,7 @@ export class RuleController {
     })
     async removeBasket(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<RuleResponseInterface> {
+    ): Promise<RuleResponseI> {
         return await this.ruleService.remove({ id });
     }
 }

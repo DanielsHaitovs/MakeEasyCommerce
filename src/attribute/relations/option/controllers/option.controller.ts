@@ -21,7 +21,7 @@ import { OptionService } from '../services/option.service';
 import { CreateOptionDto, CreateOptionsDto } from '../dto/create-option.dto';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { GetOptionDto } from '../dto/get-option.dto';
-import { OptionResponseInterface } from '../interfaces/option.interface';
+import { OptionResponseI } from '../interfaces/option.interface';
 import { GetAttributeOptions } from '@src/attribute/dto/get-attribute.dto';
 import { UpdateOptionDto } from '../dto/update-option.dto';
 
@@ -42,7 +42,7 @@ export class OptionController {
     })
     async create(
         @Body() createOption: CreateOptionDto,
-    ): Promise<OptionResponseInterface> {
+    ): Promise<OptionResponseI> {
         return await this.optionsService.create({ createOption });
     }
 
@@ -58,7 +58,7 @@ export class OptionController {
     })
     async createMany(
         @Body() createOptions: CreateOptionsDto,
-    ): Promise<OptionResponseInterface> {
+    ): Promise<OptionResponseI> {
         return await this.optionsService.createMany({ createOptions });
     }
 
@@ -82,7 +82,7 @@ export class OptionController {
         description: 'All Options and theirs values',
         type: [GetOptionDto],
     })
-    async findAll(@Query() filter): Promise<OptionResponseInterface> {
+    async findAll(@Query() filter): Promise<OptionResponseI> {
         return await this.optionsService.findAll({
             condition: filter,
         });
@@ -100,7 +100,7 @@ export class OptionController {
     })
     async findOne(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<OptionResponseInterface> {
+    ): Promise<OptionResponseI> {
         return await this.optionsService.findOne({ id });
     }
 
@@ -134,7 +134,7 @@ export class OptionController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateOption: UpdateOptionDto,
-    ): Promise<OptionResponseInterface> {
+    ): Promise<OptionResponseI> {
         return this.optionsService.update({
             id: id,
             updateOptionDto: updateOption,
@@ -148,7 +148,7 @@ export class OptionController {
     })
     async removeBasket(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<OptionResponseInterface> {
+    ): Promise<OptionResponseI> {
         return await this.optionsService.remove({ id });
     }
 }

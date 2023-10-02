@@ -10,9 +10,10 @@ import { StoresModule } from './stores/stores.module';
 import { Store } from './stores/entities/store.entity';
 import { StoreView } from './store-view/entities/store-view.entity';
 import { StoreViewAttributes } from './store-view/entities/store-attributes.entity';
-import { StoreViewRule } from './store-view/entities/Attributes/attributes-rule.entity';
-import { StoreViewAttributesDescription } from './store-view/entities/Attributes/attributes-description.entity';
-import { StoreViewOption } from './store-view/entities/Attributes/attributes-option.entity';
+import { StoreViewRule } from './store-view/entities/attributes/attributes-rule.entity';
+import { StoreViewAttributesDescription } from './store-view/entities/attributes/attributes-description.entity';
+import { StoreViewOption } from './store-view/entities/attributes/attributes-option.entity';
+import { StoreViewModule } from './store-view/store-view.module';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -42,8 +43,9 @@ import { StoreViewOption } from './store-view/entities/Attributes/attributes-opt
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        StoresModule,
         AttributeModule,
+        StoresModule,
+        StoreViewModule,
         // ProductModule,
         BaseModule,
     ],

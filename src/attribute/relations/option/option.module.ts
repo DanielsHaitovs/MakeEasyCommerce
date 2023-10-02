@@ -7,7 +7,7 @@ import { QueryService } from '@src/base/services/query/query.service';
 import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
 import { GetQueryService } from '@src/base/services/query/get/get-query.service';
 import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
-import { StoreViewOption } from '@src/store-view/entities/Attributes/attributes-option.entity';
+import { StoreViewOption } from '@src/store-view/entities/attributes/attributes-option.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Option, StoreViewOption])],
