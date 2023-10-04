@@ -104,6 +104,14 @@ export class SingleConditionDto {
     @IsOptional()
     @IsString()
     select: string[];
+
+    @ApiProperty({
+        title: 'Infer to amount of returned value, single or array',
+        type: Boolean,
+    })
+    @IsNumber()
+    @IsOptional()
+    many: boolean;
 }
 
 export class AttributerRelations {
@@ -121,7 +129,7 @@ export class AttributerRelations {
     })
     @IsOptional()
     @IsBoolean()
-    joinRules: boolean;
+    joinRule: boolean;
 }
 
 export class AttributeSingleConditionDto extends SingleConditionDto {
@@ -139,5 +147,5 @@ export class AttributeSingleConditionDto extends SingleConditionDto {
     })
     @IsOptional()
     @IsBoolean()
-    joinRules: boolean;
+    joinRule: boolean;
 }

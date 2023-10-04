@@ -1,3 +1,3 @@
 import { RuleDto } from './rule-base.dto';
 
-export class CreateRulesDto extends RuleDto {}
+export class CreateRuleDto extends RuleDto {}

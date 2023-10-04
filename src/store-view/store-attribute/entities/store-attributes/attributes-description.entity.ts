@@ -1,6 +1,5 @@
 import { AttributesBase } from '@src/attribute/entities/attribute.base.entity';
-import { Entity, Index, ManyToOne, Unique } from 'typeorm';
-import { StoreViewAttributes } from '../store-attributes.entity';
+import { Entity, Index, Unique } from 'typeorm';
 
 export const StoreViewIndexPrefix = 'ik_store_view_attribute_index';
 export const StoreViewUniquePrefix = 'uk_store_view_attribute_index';
@@ -13,17 +12,9 @@ export const StoreViewIndexKeys: string[] = [
     'description.code',
     'description.isActive',
     'description.isRequired',
-    'relatedAttribute',
 ];
 
 @Entity('store_view_attribute_index')
 @Unique(StoreViewUniquePrefix, StoreViewUniqueKeys)
 @Index(StoreViewIndexPrefix, StoreViewIndexKeys)
-export class StoreViewAttributesDescription extends AttributesBase {
-    @ManyToOne(() => StoreViewAttributes, (attribute) => attribute.id, {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        nullable: true,
-    })
-    relatedAttribute: number;
-}
+export class StoreAttributeDescription extends AttributesBase {}

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { RuleService } from './services/rule.service';
+import { ruleService } from './services/rule.service';
 import { RuleController } from './controllers/rule.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Rule } from './entities/rule.entity';
@@ -12,7 +12,7 @@ import { RuleHelperService } from '@src/base/services/helper/attributes/rule-hel
     imports: [TypeOrmModule.forFeature([Rule])],
     controllers: [RuleController],
     providers: [
-        RuleService,
+        ruleService,
         RuleHelperService,
         QueryService,
         CreateQueryService,

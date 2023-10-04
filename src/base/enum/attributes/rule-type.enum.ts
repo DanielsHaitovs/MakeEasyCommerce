@@ -1,6 +1,6 @@
-import { CreateRulesI } from '@src/attribute/relations/rule/interface/rule.interface';
+import { CreateRuleI } from '@src/attribute/relations/rule/interface/rule.interface';
 
-export const defaultRules: CreateRulesI = {
+export const defaultrule: CreateRuleI = {
     front: {
         useInCatalog: false,
         useInListing: false,

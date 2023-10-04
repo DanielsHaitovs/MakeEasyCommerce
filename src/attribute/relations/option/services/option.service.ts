@@ -95,6 +95,7 @@ export class OptionService {
                 columnName: null,
                 value: null,
                 select: null,
+                many: true,
             },
         });
     }
@@ -110,6 +111,7 @@ export class OptionService {
                 columnName: 'id',
                 value: id,
                 select: null,
+                many: false,
             },
         });
     }
@@ -129,6 +131,7 @@ export class OptionService {
                 columnName: 'relatedAttributeId',
                 value: parentId,
                 select: null,
+                many: false,
             },
         });
     }

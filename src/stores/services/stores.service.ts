@@ -53,7 +53,7 @@ export class StoresService {
             };
         } catch (e) {
             return {
-                status: '6666',
+                status: '666',
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
@@ -132,6 +132,7 @@ export class StoresService {
                 columnName: null,
                 value: null,
                 select: null,
+                many: true,
             },
         });
 
@@ -155,6 +156,7 @@ export class StoresService {
                 columnName: 'id',
                 value: id,
                 select: null,
+                many: false,
             },
         });
 

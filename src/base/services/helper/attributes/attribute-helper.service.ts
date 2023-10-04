@@ -7,7 +7,7 @@ import { JoinAttributeRelations } from '@src/base/enum/attributes/attribute-type
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
-export const aliases = ['attributes', 'options', 'rules'];
+export const aliases = ['attributes', 'options', 'rule'];
 export const alias = 'attributes';
 export const indexKey = 'fk_attribute_simple_condition_query';
 @Injectable()
@@ -48,7 +48,7 @@ export class AttributeHelperService {
             filters.orderBy = alias + '.' + filters.orderBy;
         }
         try {
-            if (filters.joinOptions === true && filters.joinRules === true) {
+            if (filters.joinOptions === true && filters.joinRule === true) {
                 return await this.joinMultipleRelationQuery({
                     skip: skip,
                     limit: filters.limit,
@@ -61,11 +61,11 @@ export class AttributeHelperService {
                 });
             }
 
-            if (filters.joinRules === true || filters.joinOptions === true) {
+            if (filters.joinRule === true || filters.joinOptions === true) {
                 return await this.joinSingleRelationQuery({
                     relation:
                         JoinAttributeRelations[
-                            filters.joinOptions ? 'Options' : 'Rules'
+                            filters.joinOptions ? 'Options' : 'rule'
                         ],
                     skip: skip,
                     limit: filters.limit,
@@ -209,7 +209,7 @@ export class AttributeHelperService {
                 .where(columnName, rawValue)
                 .select(selectList)
                 .leftJoinAndSelect('attributes.options', 'options')
-                .leftJoinAndSelect('attributes.rules', 'rules')
+                .leftJoinAndSelect('attributes.rule', 'rule')
                 .orderBy(orderBy, orderDirection)
                 .skip(skip)
                 .take(limit)

@@ -22,7 +22,7 @@ export const AttributesIndexKeys: string[] = [
     'description.code',
     'description.isActive',
     'description.isRequired',
-    'rules',
+    'rule',
     'parent',
 ];
 
@@ -48,5 +48,5 @@ export class Attributes extends AttributesBase {
     @JoinColumn({
         foreignKeyConstraintName: 'fk_attribute_index_rule',
     })
-    rules: Rule;
+    rule: Rule;
 }

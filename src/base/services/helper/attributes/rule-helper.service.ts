@@ -32,18 +32,18 @@ export class RuleHelperService {
         filters: SingleConditionDto;
     }): Promise<RuleResponseI> {
         const skip = (filters.page - 1) * filters.limit;
-        let ruleList: string[] = [];
+        let modifiedRuleList: string[] = [];
         let rawValue = null;
         let columnName = '';
         let orderBy = '';
         if (filters.select != null && filters.select[0] != undefined) {
             for (const addToSelect of RuleList) {
-                ruleList.push(
+                modifiedRuleList.push(
                     alias + '.' + filters.select[0] + '.' + addToSelect,
                 );
             }
         } else {
-            ruleList = null;
+            modifiedRuleList = null;
         }
         if (filters.columnName != null && filters.columnName != '') {
             columnName = alias + '.' + filters.columnName + ' = :value';
@@ -59,7 +59,7 @@ export class RuleHelperService {
             return await this.nonRelationQuery({
                 skip: skip,
                 limit: filters.limit,
-                selectList: ruleList,
+                selectList: modifiedRuleList,
                 columnName: columnName,
                 rawValue: rawValue,
                 orderBy: orderBy,

@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {
+    RuleBaseDto,
+    RuleDto,
+} from '@src/attribute/relations/rule/dto/rule-base.dto';
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { RuleBaseDto, RuleDto } from './rule-base.dto';
 
-export class GetRuleDto extends RuleDto {
+export class GetStoreRuleDto extends RuleDto {
     @ApiProperty({
         title: 'Attribute Rule ID',
         type: Number,
@@ -12,7 +15,7 @@ export class GetRuleDto extends RuleDto {
     id: number;
 }
 
-export class GetFrontRuleDto extends RuleBaseDto {
+export class GetStoreFrontRuleDto extends RuleBaseDto {
     @ApiProperty({
         title: 'Front end Attribute Rule ID',
         type: Number,
@@ -22,7 +25,7 @@ export class GetFrontRuleDto extends RuleBaseDto {
     id: number;
 }
 
-export class GetBackRuleDto extends RuleBaseDto {
+export class GetStoreBackRuleDto extends RuleBaseDto {
     @ApiProperty({
         title: 'Back end Attribute Rule ID',
         type: Number,

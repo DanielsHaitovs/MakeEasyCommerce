@@ -8,7 +8,7 @@ import {
     AttributerRelations,
     OrderedPaginationDto,
 } from '@src/base/dto/filter/filters.dto';
-import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
+import { UpdateRuleDto } from '../relations/rule/dto/update-rule.dto';
 import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import {
@@ -160,7 +160,8 @@ export class AttributeService {
                 value: null,
                 select: null,
                 joinOptions: false,
-                joinRules: false,
+                joinRule: false,
+                many: true,
             },
         });
     }
@@ -176,7 +177,8 @@ export class AttributeService {
                 value: id,
                 select: null,
                 joinOptions: false,
-                joinRules: false,
+                joinRule: false,
+                many: false,
             },
         });
     }
@@ -198,7 +200,8 @@ export class AttributeService {
                 value: id,
                 select: null,
                 joinOptions: relations.joinOptions,
-                joinRules: relations.joinRules,
+                joinRule: relations.joinRule,
+                many: false,
             },
         });
     }
@@ -216,9 +219,10 @@ export class AttributeService {
                 orderDirection: OrderType.NO,
                 columnName: 'id',
                 value: id,
-                select: ['id', 'rules'],
+                select: ['id', 'rule'],
                 joinOptions: false,
-                joinRules: true,
+                joinRule: true,
+                many: false,
             },
         });
     }
@@ -238,7 +242,8 @@ export class AttributeService {
                 value: id,
                 select: ['id', 'options'],
                 joinOptions: true,
-                joinRules: false,
+                joinRule: false,
+                many: false,
             },
         });
     }
@@ -263,13 +268,13 @@ export class AttributeService {
         ).raw;
     }
 
-    async updateRules({
+    async updateRule({
         attributeId,
-        updateRules,
+        updateRule,
     }: {
         attributeId: number;
-        // updateRules: UpdateRulesI;  ?
-        updateRules: UpdateRulesDto;
+        // updateRule: UpdateRuleI;  ?
+        updateRule: UpdateRuleDto;
     }): Promise<AttributeResponseI> {
         const { result, ...response } =
             await this.attributeHelper.singleConditionAttributeQuery({
@@ -280,9 +285,10 @@ export class AttributeService {
                     orderDirection: OrderType.NO,
                     columnName: 'id',
                     value: attributeId,
-                    select: ['id', 'rules'],
+                    select: ['id', 'rule'],
                     joinOptions: false,
-                    joinRules: true,
+                    joinRule: true,
+                    many: false,
                 },
             });
 
@@ -294,20 +300,20 @@ export class AttributeService {
             };
         }
 
-        for (const rules of result) {
+        for (const rule of result) {
             const res = await this.entityManager.update(
                 Rule,
-                rules.id,
-                updateRules,
+                rule.id,
+                updateRule,
             );
             if (res.affected > 0) {
                 return {
                     status: '200',
-                    message: 'Attribute Rules Successfully updated',
+                    message: 'Attribute rule Successfully updated',
                     result: {
                         id: attributeId,
                         description: null,
-                        ...updateRules,
+                        ...updateRule,
                     },
                 };
             }
@@ -315,17 +321,19 @@ export class AttributeService {
                 status: '666',
                 message: 'Ups, Error',
                 error: {
-                    message: 'Failed to update Attribute Rules',
+                    message: 'Failed to update Attribute rule',
                     in: 'Attribute Entity',
                 },
             };
         }
     }
 
-    // Here left to extend functionality so there would be
-    // opportunity to do following actions
-    // Rest validation should happen in other services ->
-    // Maybe would be good after all *** to make them unique
+    // Here left to extend functionality
+    // so there would be option to delete old options
+    // update some of options byt theirs id
+    // just add new options
+    // I don't remember what actually is happening
+    // Keep old options is working 100%
     async updateOptions({
         attributeId,
         updateOptions,
@@ -346,7 +354,8 @@ export class AttributeService {
                     value: attributeId,
                     select: ['id'],
                     joinOptions: false,
-                    joinRules: false,
+                    joinRule: false,
+                    many: false,
                 },
             });
         const currentOptionsIds: number[] = attribute.result[0].optionsIds;
@@ -512,9 +521,10 @@ export class AttributeService {
                         orderDirection: OrderType.NO,
                         columnName: 'id',
                         value: id,
-                        select: ['id', 'rules'],
+                        select: ['id', 'rule'],
                         joinOptions: false,
-                        joinRules: true,
+                        joinRule: true,
+                        many: false,
                     },
                 });
 
@@ -533,11 +543,11 @@ export class AttributeService {
             const affectedRule: number = (
                 await this.entityManager
                     .getRepository(Rule)
-                    .createQueryBuilder('rules')
+                    .createQueryBuilder('rule')
                     .delete()
                     .from(Rule)
                     .where('id = :id', {
-                        id: attribute.result.shift().rules.id,
+                        id: attribute.result.shift().rule.id,
                     })
                     .execute()
             ).affected;

@@ -2,26 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
+import { StoreView } from '@src/store-view/entities/store-view.entity';
+import { StoreViewResponseI } from '@src/store-view/interfaces/store-view.interface';
 import { Store } from '@src/stores/entities/store.entity';
 import {
     GetStoreI,
     StoreResponseI,
 } from '@src/stores/interfaces/store.interface';
-import { StoreView } from '@src/store-view/entities/store-view.entity';
-import { StoreViewResponseI } from '@src/store-view/interfaces/store-view.interface';
 import { EntityManager } from 'typeorm';
-// Bastard, Typeorm support reading tables schema data
-export const StoreColumnsList: string[] = [
-    // 'useInCatalog',
-    // 'useInListing',
-    // 'useInLayeredNavigation',
-    // 'useInFilter',
-    // 'useInOptionFilter',
-    // 'useInSort',
-    // 'useInSearch',
-    // 'useInPromo',
-    // 'useInReport',
-];
+// Bastard, Typeorm supports reading tables schema data
+export const StoreColumnsList: string[] = [];
 export const StoreAlias = 'store';
 export const StoreViewAlias = 'store_view';
 
@@ -120,6 +110,38 @@ export class StoreHelperService {
         }
     }
 
+    private async nonRelationQuery({
+        skip,
+        limit,
+        selectList,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        skip: number;
+        limit: number;
+        selectList: string[];
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<GetStoreI[]> {
+        return await this.entityManager
+            .getRepository(Store)
+            .createQueryBuilder(StoreAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .orderBy(orderBy, orderDirection)
+            .skip(skip)
+            .take(limit)
+            .cache(true)
+            .useIndex('fk_store_simple_condition_query')
+            .getMany();
+    }
+
     async singleConditionStoreViewQuery({
         filters,
     }: {
@@ -174,38 +196,6 @@ export class StoreHelperService {
                 },
             };
         }
-    }
-
-    private async nonRelationQuery({
-        skip,
-        limit,
-        selectList,
-        columnName,
-        rawValue,
-        orderBy,
-        orderDirection,
-    }: {
-        skip: number;
-        limit: number;
-        selectList: string[];
-        columnName: string;
-        rawValue: {
-            value: string | number | boolean | Date | JSON;
-        };
-        orderBy: string;
-        orderDirection: OrderType | OrderType.ASC;
-    }): Promise<GetStoreI[]> {
-        return await this.entityManager
-            .getRepository(Store)
-            .createQueryBuilder(StoreAlias)
-            .where(columnName, rawValue)
-            .select(selectList)
-            .orderBy(orderBy, orderDirection)
-            .skip(skip)
-            .take(limit)
-            .cache(true)
-            .useIndex('fk_store_simple_condition_query')
-            .getMany();
     }
 
     // I'm lazy, this this and "nonRelationQuery" function are duplicates...

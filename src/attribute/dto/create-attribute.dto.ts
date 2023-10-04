@@ -15,12 +15,12 @@ export class CreateAttributeShortDto {
 
 export class CreateAttributeDto extends CreateAttributeShortDto {
     @ApiProperty({
-        title: 'Create Attribute Rules',
+        title: 'Create Attribute rule',
         type: RuleDto,
         nullable: false,
     })
     @IsNotEmpty()
-    rules: RuleDto;
+    rule: RuleDto;
 
     @ApiProperty({
         title: 'Create Option(s) for this attribute',

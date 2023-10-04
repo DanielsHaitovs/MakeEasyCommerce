@@ -17,9 +17,7 @@ export interface RuleI {
     back: RuleConfigI;
 }
 
-export type CreateRulesI = RuleI;
-
-export type UpdateRulesI = RuleI;
+export type CreateRuleI = RuleI;
 
 export interface GetRuleI {
     id: number;

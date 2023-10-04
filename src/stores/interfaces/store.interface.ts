@@ -1,5 +1,5 @@
 import { QueryResponseI } from '@src/base/interfaces/responses/response.create-query.dto';
-import { StoreViewI } from '../../store-view/interfaces/store-view.interface';
+import { StoreViewI } from '@src/store-view/interfaces/store-view.interface';
 
 export interface StoreI {
     isActive: boolean;

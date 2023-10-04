@@ -1,47 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { QueryResponse } from '@src/base/dto/responses/response.create-query.dto';
 import { IsNotEmpty } from 'class-validator';
-import { GetRulesDto } from './get-rule.dto';
+import { GetRuleDto } from './get-rule.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
-
-// export class BooleanTransformer {
-//     to(value: string): boolean {
-//         console.log(value);
-//         if (value.toString() == 'false') {
-//             return false;
-//         }
-//         if (value.toString() == 'true') {
-//             return true;
-//         } else {
-//             throw 'error';
-//         }
-//     }
-// }
-
-// export class dataConversion {
-//     valueToBoolean(value: string): boolean {
-//         if (value === null && value === undefined) {
-//             return undefined;
-//         }
-
-//         if (['true', 'on', 'yes', '1'].includes(value.toString())) {
-//             console.log(value);
-//             return true;
-//         }
-//         if (['false', 'off', 'no', '0'].includes(value.toString())) {
-//             return false;
-//         }
-
-//         throw 'Value Should be type of boolean';
-//     }
-// }
 
 export class RuleBaseDto {
     @ApiProperty({
         type: Boolean,
         nullable: false,
     })
-    // @Transform(({ value }) => new dataConversion().valueToBoolean(value))
     @IsNotEmpty()
     useInCatalog: boolean;
 
@@ -111,7 +78,7 @@ export class RuleDto {
     front: RuleBaseDto;
 
     @ApiProperty({
-        title: 'Front end Attribute Rule',
+        title: 'Back end Attribute Rule',
         type: RuleBaseDto,
         nullable: false,
     })
@@ -119,7 +86,7 @@ export class RuleDto {
 }
 
 export class RuleResponseDto extends QueryResponse {
-    result?: GetRulesDto | GetRulesDto[];
+    result?: GetRuleDto | GetRuleDto[];
 }
 
 export class RuleFindByType {
@@ -127,6 +94,5 @@ export class RuleFindByType {
         title: 'Attribute Rule Type',
         enum: AttributeRuleType,
     })
-    // @IsEnum(AttributeRuleType)
     ruleType: AttributeRuleType;
 }

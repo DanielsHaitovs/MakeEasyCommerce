@@ -1,3 +1,3 @@
-import { CreateRulesDto } from './create-rule.dto';
+import { CreateRuleDto } from './create-rule.dto';
 
-export class UpdateRulesDto extends CreateRulesDto {}
+export class UpdateRuleDto extends CreateRuleDto {}

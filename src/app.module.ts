@@ -8,12 +8,11 @@ import { Attributes } from './attribute/entities/attributes.entity';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
 import { StoresModule } from './stores/stores.module';
 import { Store } from './stores/entities/store.entity';
-import { StoreView } from './store-view/entities/store-view.entity';
-import { StoreViewAttributes } from './store-view/entities/store-attributes.entity';
-import { StoreViewRule } from './store-view/entities/attributes/attributes-rule.entity';
-import { StoreViewAttributesDescription } from './store-view/entities/attributes/attributes-description.entity';
-import { StoreViewOption } from './store-view/entities/attributes/attributes-option.entity';
 import { StoreViewModule } from './store-view/store-view.module';
+import { StoreAttribute } from './store-view/store-attribute/entities/store-attribute.entity';
+import { StoreAttributeDescription } from './store-view/store-attribute/entities/store-attributes/attributes-description.entity';
+import { StoreRule } from './store-view/store-attribute/entities/store-attributes/attribute-rule.entity';
+import { StoreView } from './store-view/entities/store-view.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -24,30 +23,28 @@ import { StoreViewModule } from './store-view/store-view.module';
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
             entities: [
+                // Store ->
+                Store,
+                StoreView,
+                StoreAttribute,
+                StoreAttributeDescription,
+                StoreRule,
+                // <- Store
                 // Attribute ->
                 Attributes,
                 Rule,
                 Option,
                 // <- Attribute
-                // Store ->
-                Store,
-                StoreView,
-                StoreViewAttributes,
-                StoreViewAttributesDescription,
-                StoreViewRule,
-                StoreViewOption,
-                // <- Store
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        AttributeModule,
         StoresModule,
-        StoreViewModule,
-        // ProductModule,
+        AttributeModule,
         BaseModule,
+        StoreViewModule,
     ],
     controllers: [],
     providers: [AppService],

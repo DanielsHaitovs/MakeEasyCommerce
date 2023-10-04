@@ -13,17 +13,6 @@ export class CreateOptionDto extends OptionDto {
     relatedAttribute: number;
 }
 
-export class CreateStoresOption extends CreateOptionDto {
-    @ApiProperty({
-        title: 'Parent Attribute Option ID',
-        type: Number,
-        nullable: false,
-    })
-    @IsNotEmpty()
-    @IsNumber()
-    relatedOption: number;
-}
-
 export class CreateOptionsDto {
     @ApiProperty({
         title: 'Parent Attribute ID',
@@ -40,15 +29,4 @@ export class CreateOptionsDto {
     })
     @ValidateNested({ each: true })
     options: OptionDto[];
-}
-
-export class CreateStoresOptionsDto extends CreateOptionsDto {
-    @ApiProperty({
-        title: 'Parent Attribute Option ID',
-        type: Number,
-        nullable: false,
-    })
-    @IsNotEmpty()
-    @IsNumber()
-    relatedOption: number;
 }

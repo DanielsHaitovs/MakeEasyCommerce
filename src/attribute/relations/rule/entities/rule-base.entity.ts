@@ -1,3 +1,4 @@
+import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { IsBoolean } from 'class-validator';
 import {
     Column,
@@ -6,7 +7,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-export abstract class RuleConfigEntity {
+export abstract class FrontRuleConfigEntity {
     @Column()
     @IsBoolean()
     useInCatalog: boolean;
@@ -44,19 +45,48 @@ export abstract class RuleConfigEntity {
     useInReport: boolean;
 }
 
-export abstract class RuleBaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+export abstract class BackRuleConfigEntity {
+    @Column()
+    @IsBoolean()
+    useInCatalog: boolean;
 
-    @CreateDateColumn()
-    createdAt: Date;
+    @Column()
+    @IsBoolean()
+    useInListing: boolean;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+    @Column()
+    @IsBoolean()
+    useInLayeredNavigation: boolean;
 
-    @Column(() => RuleConfigEntity)
-    front: RuleConfigEntity;
+    @Column()
+    @IsBoolean()
+    useInFilter: boolean;
 
-    @Column(() => RuleConfigEntity)
-    back: RuleConfigEntity;
+    @Column()
+    @IsBoolean()
+    useInOptionFilter: boolean;
+
+    @Column()
+    @IsBoolean()
+    useInSort: boolean;
+
+    @Column()
+    @IsBoolean()
+    useInSearch: boolean;
+
+    @Column()
+    @IsBoolean()
+    useInPromo: boolean;
+
+    @Column()
+    @IsBoolean()
+    useInReport: boolean;
+}
+
+export abstract class RuleBaseEntity extends MecBaseEntity {
+    @Column(() => FrontRuleConfigEntity)
+    front: FrontRuleConfigEntity;
+
+    @Column(() => BackRuleConfigEntity)
+    back: BackRuleConfigEntity;
 }

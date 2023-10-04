@@ -30,7 +30,7 @@ import {
     GetAttributeDto,
     GetAttributeShortDto,
 } from '../dto/get-attribute.dto';
-import { UpdateRulesDto } from '../relations/rule/dto/update-rule.dto';
+import { UpdateRuleDto } from '../relations/rule/dto/update-rule.dto';
 import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto';
 
 @Controller('attribute')
@@ -126,13 +126,13 @@ export class AttributeController {
     })
     async findOneWithRelationsById(
         @Param('id') id: number,
-        @Query('includeRules', ParseBoolPipe) includeRules: boolean,
+        @Query('includeRule', ParseBoolPipe) includeRule: boolean,
         @Query('includeOptions', ParseBoolPipe) includeOptions: boolean,
     ): Promise<AttributeResponseI> {
         return await this.attributeService.findOneWithRelationById({
             id: id,
             relations: {
-                joinRules: includeRules,
+                joinRule: includeRule,
                 joinOptions: includeOptions,
             },
         });
@@ -190,23 +190,23 @@ export class AttributeController {
         });
     }
 
-    @Patch('update/rules/:id')
+    @Patch('update/rule/:id')
     @ApiOperation({
-        summary: 'Update Attribute rules by ID',
-        description: 'Update specifically attribute rules data by id',
+        summary: 'Update Attribute rule by ID',
+        description: 'Update specifically attribute rule data by id',
     })
     @ApiBody({
-        type: UpdateRulesDto,
-        description: 'Attribute Rules',
+        type: UpdateRuleDto,
+        description: 'Attribute rule',
         required: true,
     })
-    async updateRules(
+    async updateRule(
         @Param('id', ParseIntPipe) id: number,
-        @Body() updateRules: UpdateRulesDto,
+        @Body() updateRule: UpdateRuleDto,
     ): Promise<AttributeResponseI> {
-        return this.attributeService.updateRules({
+        return this.attributeService.updateRule({
             attributeId: id,
-            updateRules,
+            updateRule,
         });
     }
 

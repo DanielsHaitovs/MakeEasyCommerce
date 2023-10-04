@@ -9,16 +9,8 @@ export interface CreateOptionI extends OptionI {
     relatedAttributeId?: number;
 }
 
-export interface CreateStoreOptionI extends CreateOptionI {
-    relatedOptionId?: number;
-}
-
 export interface UpdateOptionI extends OptionI {
     relatedAttributeId: number;
-}
-
-export interface UpdateStoreOptionI extends UpdateOptionI {
-    relatedOptionId: number;
 }
 
 export interface GetOptionI extends OptionI {
@@ -26,20 +18,10 @@ export interface GetOptionI extends OptionI {
     relatedAttribute: number;
 }
 
-export interface GetStoreOptionI extends GetOptionI {
-    relatedOptionId: number;
-}
-
 export interface OptionResponseI extends QueryResponseI {
     status: string;
     message: string;
     result?: GetOptionI[];
-}
-
-export interface StoreOptionResponseI extends QueryResponseI {
-    status: string;
-    message: string;
-    result?: GetStoreOptionI[];
 }
 
 export interface OptionsAttributeResponseI extends QueryResponseI {

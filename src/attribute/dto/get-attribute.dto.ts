@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
 import { OptionDto } from '../relations/option/dto/option.dto';
 import { AttributeDescriptionDto } from './attribute.dto';
-import { GetRulesDto } from '../relations/rule/dto/get-rule.dto';
+import { GetRuleDto } from '../relations/rule/dto/get-rule.dto';
 import { GetOptionDto } from '../relations/option/dto/get-option.dto';
 
 export class GetAttributeOptions {
@@ -41,11 +41,11 @@ export class GetAttributeShortDto {
 
 export class GetAttributeDto extends GetAttributeShortDto {
     @ApiProperty({
-        title: 'Get Attribute Rules',
-        type: GetRulesDto,
+        title: 'Get Attribute rule',
+        type: GetRuleDto,
     })
     @ValidateNested({ each: true })
-    rules: GetRulesDto;
+    rule: GetRuleDto;
 
     @ApiProperty({
         title: 'Get Option(s) for this attribute',

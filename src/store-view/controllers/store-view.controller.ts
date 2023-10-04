@@ -6,117 +6,40 @@ import {
     Patch,
     Param,
     Delete,
-    Query,
-    ParseIntPipe,
 } from '@nestjs/common';
-import {
-    ApiBody,
-    ApiOkResponse,
-    ApiOperation,
-    ApiParam,
-    ApiQuery,
-    ApiTags,
-} from '@nestjs/swagger';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
-import { CreateStoreViewDto } from '../dto/create-store-view.dto';
-import { StoreViewResponseI } from '../interfaces/store-view.interface';
 import { StoreViewService } from '../services/store-view.service';
-import { GetStoreViewDto } from '../dto/get-store-view.dto';
+import { CreateStoreViewDto } from '../dto/create-store-view.dto';
 import { UpdateStoreViewDto } from '../dto/update-store-view.dto';
 
-@ApiTags('Store View')
-@Controller('store_view')
+@Controller('store-view')
 export class StoreViewController {
     constructor(private readonly storeViewService: StoreViewService) {}
 
-    @Post('new')
-    @ApiOperation({
-        summary: 'Create Store View',
-        description: 'Creates record (specifically) for store view entity',
-    })
-    @ApiBody({
-        type: CreateStoreViewDto,
-        description: 'Create Store View',
-        required: true,
-    })
-    async create(
-        @Body() createStoreViewDto: CreateStoreViewDto,
-    ): Promise<StoreViewResponseI> {
-        return this.storeViewService.create({ createStoreViewDto });
+    @Post()
+    create(@Body() createStoreViewDto: CreateStoreViewDto) {
+        return this.storeViewService.create(createStoreViewDto);
     }
 
-    @Get('get/all')
-    @ApiOperation({
-        summary: 'Find All Store View',
-        description: 'Get data of all store views, good luck!',
-    })
-    @ApiQuery({
-        name: 'paginate and order',
-        description:
-            'Its basically will try to find all your store views. You can set page and limit for this query.',
-        type: OrderedPaginationDto,
-        example: {
-            by: 'id',
-            type: 'ASC',
-            page: 1,
-            limit: 10,
-        },
-        required: false,
-    })
-    @ApiOkResponse({
-        description: 'All Store View and theirs details',
-        type: [GetStoreViewDto],
-    })
-    async findAll(@Query() orderedPagination): Promise<StoreViewResponseI> {
-        return await this.storeViewService.findAll({
-            condition: orderedPagination,
-        });
+    @Get()
+    findAll() {
+        return this.storeViewService.findAll();
     }
 
-    @Get('get/one/by/:id')
-    @ApiOperation({
-        summary: 'Find 1 Store View by id',
-        description: 'Get data of specific Store View, good luck!',
-    })
-    @ApiParam({ name: 'id', description: 'Store View ID' })
-    @ApiOkResponse({
-        description: 'Specific Store View and its details',
-        type: GetStoreViewDto,
-    })
-    async findOneById(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<StoreViewResponseI> {
-        return await this.storeViewService.findOneById({ id });
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.storeViewService.findOne(+id);
     }
 
-    @Patch('update/:id')
-    @ApiOperation({
-        summary: 'Update Store View by ID',
-        description: 'Update specifically store view data by id',
-    })
-    @ApiBody({
-        type: UpdateStoreViewDto,
-        description: 'Store View',
-        required: true,
-    })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateStoreView: UpdateStoreViewDto,
-    ): Promise<StoreViewResponseI> {
-        return this.storeViewService.update({
-            id: id,
-            storeView: updateStoreView,
-        });
+    @Patch(':id')
+    update(
+        @Param('id') id: string,
+        @Body() updateStoreViewDto: UpdateStoreViewDto,
+    ) {
+        return this.storeViewService.update(+id, updateStoreViewDto);
     }
 
     @Delete(':id')
-    @ApiOperation({
-        summary: 'Delete Store View by ID',
-        description: 'Delete specifically store view data by id',
-    })
-    async remove(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<StoreViewResponseI> {
-        return await this.storeViewService.remove({ id });
+    remove(@Param('id') id: string) {
+        return this.storeViewService.remove(+id);
     }
 }

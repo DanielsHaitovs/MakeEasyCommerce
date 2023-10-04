@@ -5,11 +5,10 @@ import {
     OptionI,
 } from '../relations/option/interfaces/option.interface';
 import {
-    CreateRulesI,
+    CreateRuleI,
     GetRuleI,
     RuleI,
 } from '../relations/rule/interface/rule.interface';
-import { AttributeType } from '@src/base/enum/attributes/attribute-type.enum';
 
 export interface GetAttributeOptionsI {
     id: number;
@@ -35,7 +34,7 @@ export interface CreateAttributeShortI {
 }
 
 export interface CreateAttributeI extends CreateAttributeShortI {
-    rules: RuleI;
+    rule: RuleI;
     options: CreateOptionI[];
 }
 
@@ -44,21 +43,21 @@ export interface UpdateAttributeShortI {
 }
 
 export interface UpdateAttributeI extends UpdateAttributeShortI {
-    rules: CreateRulesI;
+    rule: CreateRuleI;
     options: CreateOptionI[];
 }
 
 export interface GetAttributeI {
     id?: number;
     description?: AttributeDescriptionI;
-    rules?: GetRuleI;
+    rule?: GetRuleI;
     options?: GetOptionI[];
     optionsIds?: number[];
 }
 
 export class GetAttributeRuleI {
     id: number;
-    rules: GetRuleI;
+    rule: GetRuleI;
     optionsIds?: number[];
 }
 

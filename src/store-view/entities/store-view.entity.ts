@@ -1,3 +1,5 @@
+import { StoreViewDescription } from '@src/stores/entities/store-base.entity';
+import { Store } from '@src/stores/entities/store.entity';
 import {
     Entity,
     Index,
@@ -7,9 +9,7 @@ import {
     RelationId,
     Unique,
 } from 'typeorm';
-import { StoreViewDescription } from '../../stores/entities/store-base.entity';
-import { Store } from '@src/stores/entities/store.entity';
-import { StoreViewAttributes } from './store-attributes.entity';
+import { StoreAttribute } from '../store-attribute/entities/store-attribute.entity';
 export const StoreViewIndexPrefix = 'ik_store_view_index';
 export const StoreViewUniquePrefix = 'uk_store_view_index';
 export const StoreViewUniqueKeys: string[] = ['name', 'code'];
@@ -34,7 +34,7 @@ export class StoreView extends StoreViewDescription {
     store: number;
 
     @OneToMany(
-        () => StoreViewAttributes,
+        () => StoreAttribute,
         (storeAttributes) => storeAttributes.storeView,
         {
             cascade: ['update', 'remove', 'insert'],
@@ -44,7 +44,7 @@ export class StoreView extends StoreViewDescription {
     @JoinColumn({
         foreignKeyConstraintName: 'fk_store_attribute_index',
     })
-    storeAttributes: StoreViewAttributes;
+    storeAttributes: StoreAttribute;
     @RelationId((storeView: StoreView) => storeView.storeAttributes)
     attributesIds: number[];
 }

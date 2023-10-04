@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateRulesDto } from '../dto/update-rule.dto';
-import { CreateRulesDto } from '../dto/create-rule.dto';
+import { UpdateRuleDto } from '../dto/update-rule.dto';
+import { CreateRuleDto } from '../dto/create-rule.dto';
 import { Rule } from '../entities/rule.entity';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { RuleFindByType } from '../dto/rule-base.dto';
@@ -11,7 +11,7 @@ import { OrderType } from '@src/base/enum/query/query.enum';
 import { RuleResponseI } from '../interface/rule.interface';
 
 @Injectable()
-export class RuleService {
+export class ruleService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -19,9 +19,9 @@ export class RuleService {
     ) {}
 
     async create({
-        createRulesDto,
+        CreateRuleDto,
     }: {
-        createRulesDto: CreateRulesDto;
+        CreateRuleDto: CreateRuleDto;
     }): Promise<RuleResponseI> {
         try {
             return {
@@ -29,7 +29,7 @@ export class RuleService {
                 message: 'Success',
                 result: await this.entityManager.save(
                     Rule,
-                    await this.prepareRule({ createRuleDto: createRulesDto }),
+                    await this.prepareRule({ CreateRuleDto: CreateRuleDto }),
                 ),
             };
         } catch (e) {
@@ -54,6 +54,7 @@ export class RuleService {
                 columnName: 'id',
                 value: id,
                 select: null,
+                many: false,
             },
         });
     }
@@ -74,6 +75,7 @@ export class RuleService {
                 columnName: 'id',
                 value: id,
                 select: [type.ruleType],
+                many: false,
             },
         });
     }
@@ -92,18 +94,19 @@ export class RuleService {
                 columnName: null,
                 value: null,
                 select: null,
+                many: true,
             },
         });
     }
 
     async update({
         id,
-        rules,
+        rule,
     }: {
         id: number;
-        rules: UpdateRulesDto;
+        rule: UpdateRuleDto;
     }): Promise<RuleResponseI> {
-        return (await this.entityManager.update(Rule, id, rules)).raw;
+        return (await this.entityManager.update(Rule, id, rule)).raw;
     }
 
     async remove({ id }: { id: number }): Promise<RuleResponseI> {
@@ -127,10 +130,10 @@ export class RuleService {
     }
 
     protected async prepareRule({
-        createRuleDto,
+        CreateRuleDto,
     }: {
-        createRuleDto: CreateRulesDto;
-    }): Promise<CreateRulesDto> {
-        return this.entityManager.create(Rule, createRuleDto);
+        CreateRuleDto: CreateRuleDto;
+    }): Promise<CreateRuleDto> {
+        return this.entityManager.create(Rule, CreateRuleDto);
     }
 }

@@ -1,4 +1,5 @@
-{
+[
+  {
     "description": {
       "name": "color",
       "code": "color_code",
@@ -8,7 +9,7 @@
       "isActive": false,
       "isArray": true
     },
-    "rules": {
+    "rule": {
       "front": {
         "useInCatalog": true,
         "useInListing": true,
@@ -54,4 +55,62 @@
         "relatedAttribute": 0
       }
     ]
+  },
+  {
+    "description": {
+      "name": "size",
+      "code": "size_code",
+      "description": "string",
+      "isRequired": false,
+      "dataType": "String",
+      "isActive": false,
+      "isArray": true
+    },
+    "rule": {
+      "front": {
+        "useInCatalog": true,
+        "useInListing": true,
+        "useInLayeredNavigation": true,
+        "useInFilter": true,
+        "useInOptionFilter": true,
+        "useInSort": true,
+        "useInSearch": true,
+        "useInPromo": true,
+        "useInReport": true
+      },
+      "back": {
+        "useInCatalog": true,
+        "useInListing": true,
+        "useInLayeredNavigation": true,
+        "useInFilter": true,
+        "useInOptionFilter": true,
+        "useInSort": true,
+        "useInSearch": true,
+        "useInPromo": true,
+        "useInReport": true
+      }
+    },
+    "options": [
+      {
+        "value": 36,
+        "relatedAttribute": 0
+      },
+      {
+        "value": 37,
+        "relatedAttribute": 0
+      },
+      {
+        "value": 38,
+        "relatedAttribute": 0
+      },
+      {
+        "value": {
+          "size_1": "38.5",
+          "size_2": "39.0",
+          "size_3": "39.5"
+        },
+        "relatedAttribute": 0
+      }
+    ]
   }
+]

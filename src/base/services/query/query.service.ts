@@ -26,7 +26,7 @@ export class QueryService {
             switch (dtoClass.name) {
                 case 'Option':
                     break;
-                case 'CreateRulesDto':
+                case 'CreateRuleDto':
                     return await this.createQueryService.prepareQuery(
                         entity,
                         toEntity,
@@ -72,7 +72,7 @@ export class QueryService {
             switch (dtoClass.name) {
                 case 'Option':
                     break;
-                case 'CreateRulesDto':
+                case 'CreateRuleDto':
                     return await this.createQueryService.saveQuery({
                         entity: target,
                         newObj: dto,
@@ -115,7 +115,7 @@ export class QueryService {
             switch (dtoClass.name) {
                 case 'Option':
                     break;
-                case 'GetRulesDto':
+                case 'GetRuleDto':
                     return await this.getQueryService.findSingleQuery({
                         entity: entity,
                         getDto: getDto,
@@ -159,7 +159,7 @@ export class QueryService {
             switch (dtoClass.name) {
                 case 'Option':
                     break;
-                case 'GetRulesDto':
+                case 'GetRuleDto':
                     return await this.getQueryService.findSingleAndSelectQuery({
                         entity: entity,
                         getDto: getDto,
@@ -203,7 +203,7 @@ export class QueryService {
             switch (dtoClass.name) {
                 case 'Option':
                     break;
-                case 'GetRulesDto':
+                case 'GetRuleDto':
                     return await this.getQueryService.findAllSimpleQuery({
                         entity: entity,
                         getDto: getDto,

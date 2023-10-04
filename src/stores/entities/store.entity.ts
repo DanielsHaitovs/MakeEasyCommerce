@@ -7,7 +7,7 @@ import {
     Unique,
 } from 'typeorm';
 import { StoreDescription } from './store-base.entity';
-import { StoreView } from '../../store-view/entities/store-view.entity';
+import { StoreView } from '@src/store-view/entities/store-view.entity';
 export const StoreIndexPrefix = 'ik_store_index';
 export const StoreUniquePrefix = 'uk_store_index';
 export const StoreUniqueKeys: string[] = ['name', 'code'];

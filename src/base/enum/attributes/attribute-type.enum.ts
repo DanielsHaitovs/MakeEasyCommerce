@@ -14,5 +14,5 @@ export enum AttributeRuleType {
 export enum JoinAttributeRelations {
     All = 'all',
     Options = 'options',
-    Rules = 'rules',
+    rule = 'rule',
 }
