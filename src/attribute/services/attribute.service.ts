@@ -21,6 +21,10 @@ import { OptionService } from '../relations/option/services/option.service';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
 import { Option } from '../relations/option/entities/option.entity';
 
+// It might be also good to keep in mind that
+// result amount that is based on page and limit #(.getMany())
+// can be represent 1 that we can predict...
+
 // There is option to load data about table columns from database
 export const AttributeDescriptionList = {
     all: [

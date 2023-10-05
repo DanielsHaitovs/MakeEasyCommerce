@@ -41,9 +41,7 @@ export class RuleController {
         description: 'Create Attribute rule',
         required: true,
     })
-    async create(
-        @Body() CreateRuleDto: CreateRuleDto,
-    ): Promise<RuleResponseI> {
+    async create(@Body() CreateRuleDto: CreateRuleDto): Promise<RuleResponseI> {
         return this.ruleService.create({ CreateRuleDto });
     }
 

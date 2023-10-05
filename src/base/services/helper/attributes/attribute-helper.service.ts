@@ -47,6 +47,59 @@ export class AttributeHelperService {
         if (filters.orderBy != null) {
             filters.orderBy = alias + '.' + filters.orderBy;
         }
+
+        const joinCondition: string =
+            JoinAttributeRelations[filters.joinOptions ? 'Options' : 'rule'];
+
+        if (!filters.many || filters.many === null) {
+            try {
+                if (filters.joinOptions === true && filters.joinRule === true) {
+                    return await this.joinOneMultipleRelationQuery({
+                        joinAlias: {
+                            rule: 'attributes.rule',
+                            options: 'attributes.options',
+                        },
+                        selectList: selectList,
+                        alias: alias,
+                        columnName: columnName,
+                        rawValue: rawValue,
+                        orderBy: filters.orderBy,
+                        orderDirection: filters.orderDirection,
+                    });
+                }
+
+                if (filters.joinRule === true || filters.joinOptions === true) {
+                    return await this.joinOneSingleRelationQuery({
+                        relation: joinCondition,
+                        selectList: selectList,
+                        alias: alias,
+                        columnName: columnName,
+                        rawValue: rawValue,
+                        orderBy: filters.orderBy,
+                        orderDirection: filters.orderDirection,
+                    });
+                }
+
+                return await this.singleNonRelationQuery({
+                    selectList: selectList,
+                    alias: alias,
+                    columnName: columnName,
+                    rawValue: rawValue,
+                    orderBy: filters.orderBy,
+                    orderDirection: OrderType[filters.orderDirection],
+                });
+            } catch (e) {
+                return {
+                    status: '666',
+                    message: 'Ups, Error',
+                    error: {
+                        message: e.message,
+                        in: 'Attributes Helper Query',
+                    },
+                };
+            }
+        }
+
         try {
             if (filters.joinOptions === true && filters.joinRule === true) {
                 return await this.joinMultipleRelationQuery({
@@ -63,10 +116,7 @@ export class AttributeHelperService {
 
             if (filters.joinRule === true || filters.joinOptions === true) {
                 return await this.joinSingleRelationQuery({
-                    relation:
-                        JoinAttributeRelations[
-                            filters.joinOptions ? 'Options' : 'rule'
-                        ],
+                    relation: joinCondition,
                     skip: skip,
                     limit: filters.limit,
                     selectList: selectList,
@@ -98,6 +148,38 @@ export class AttributeHelperService {
                 },
             };
         }
+    }
+
+    private async singleNonRelationQuery({
+        selectList,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.NO;
+    }): Promise<AttributeResponseI> {
+        return {
+            status: '200',
+            message: 'Success',
+            result: await this.entityManager
+                .getRepository(Attributes)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
+                .cache(true)
+                .useIndex(indexKey)
+                .getOne(),
+        };
     }
 
     private async nonRelationQuery({
@@ -138,6 +220,41 @@ export class AttributeHelperService {
         };
     }
 
+    private async joinOneSingleRelationQuery({
+        relation,
+        selectList,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        relation: string;
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.NO;
+    }): Promise<AttributeResponseI> {
+        return {
+            status: '200',
+            message: 'Success',
+            result: await this.entityManager
+                .getRepository(Attributes)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .leftJoinAndSelect(alias + '.' + relation, relation)
+                .orderBy(orderBy, orderDirection)
+                .cache(true)
+                .useIndex(indexKey)
+                .getOne(),
+        };
+    }
+
     private async joinSingleRelationQuery({
         relation,
         skip,
@@ -149,7 +266,7 @@ export class AttributeHelperService {
         orderBy,
         orderDirection,
     }: {
-        relation: JoinAttributeRelations;
+        relation: string;
         skip: number;
         limit: number;
         selectList: string[];
@@ -176,6 +293,45 @@ export class AttributeHelperService {
                 .cache(true)
                 .useIndex(indexKey)
                 .getMany(),
+        };
+    }
+
+    private async joinOneMultipleRelationQuery({
+        selectList,
+        joinAlias,
+        alias,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        joinAlias: {
+            rule: string;
+            options: string;
+        };
+        selectList: string[];
+        alias: string;
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.NO;
+    }): Promise<AttributeResponseI> {
+        return {
+            status: '200',
+            message: 'Success',
+            result: await this.entityManager
+                .getRepository(Attributes)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .leftJoinAndSelect(joinAlias.options, 'options')
+                .leftJoinAndSelect(joinAlias.rule, 'rule')
+                .orderBy(orderBy, orderDirection)
+                .cache(true)
+                .useIndex(indexKey)
+                .getOne(),
         };
     }
 

@@ -12,8 +12,7 @@ import { StoreRule } from '../entities/store-attributes/attribute-rule.entity';
 import { StoreAttributeDescription } from '../entities/store-attributes/attributes-description.entity';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { AttributeResponseI, GetAttributeI } from '@src/attribute/interfaces/attribute.interface';
-import { response } from 'express';
+import { GetAttributeI } from '@src/attribute/interfaces/attribute.interface';
 
 @Injectable()
 export class StoreAttributeService {

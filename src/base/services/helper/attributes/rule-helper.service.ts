@@ -55,6 +55,28 @@ export class RuleHelperService {
         if (filters.orderBy != null) {
             orderBy = alias + '.' + filters.orderBy;
         }
+
+        if (!filters.many || filters.many === null) {
+            try {
+                return await this.singleNonRelationQuery({
+                    selectList: modifiedRuleList,
+                    columnName: columnName,
+                    rawValue: rawValue,
+                    orderBy: orderBy,
+                    orderDirection: filters.orderDirection,
+                });
+            } catch (e) {
+                return {
+                    status: '666',
+                    message: 'Ups, Error',
+                    error: {
+                        message: e.message,
+                        in: 'Rule Helper Query',
+                    },
+                };
+            }
+        }
+
         try {
             return await this.nonRelationQuery({
                 skip: skip,
@@ -75,6 +97,36 @@ export class RuleHelperService {
                 },
             };
         }
+    }
+
+    private async singleNonRelationQuery({
+        selectList,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        selectList: string[];
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<RuleResponseI> {
+        return {
+            status: '200',
+            message: 'Success',
+            result: await this.entityManager
+                .getRepository(Rule)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
+                .cache(true)
+                .useIndex(indexKey)
+                .getOne(),
+        };
     }
 
     private async nonRelationQuery({
