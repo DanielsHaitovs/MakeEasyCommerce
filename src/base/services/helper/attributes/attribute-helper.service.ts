@@ -16,6 +16,7 @@ export class AttributeHelperService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
     ) {}
+
     async singleConditionAttributeQuery({
         filters,
     }: {
@@ -138,6 +139,63 @@ export class AttributeHelperService {
                 orderBy: filters.orderBy,
                 orderDirection: OrderType[filters.orderDirection],
             });
+        } catch (e) {
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: e.message,
+                    in: 'Attributes Helper Query',
+                },
+            };
+        }
+    }
+
+    // async find attribute with id and its code
+    async findAttributeCodeById({
+        attributeId,
+    }: {
+        attributeId: number;
+    }): Promise<AttributeResponseI> {
+        try {
+            return {
+                status: '200',
+                message: 'Success',
+                result: await this.entityManager
+                    .getRepository(Attributes)
+                    .createQueryBuilder(alias)
+                    .where(alias + '.id = :id', { id: attributeId })
+                    .select([alias + '.id', alias + '.description.code'])
+                    .getOne(),
+            };
+        } catch (e) {
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: e.message,
+                    in: 'Attributes Helper Query',
+                },
+            };
+        }
+    }
+
+    async findManyAttributeCodeById({
+        attributeIds,
+    }: {
+        attributeIds: number[];
+    }): Promise<AttributeResponseI> {
+        try {
+            return {
+                status: '200',
+                message: 'Success',
+                result: await this.entityManager
+                    .getRepository(Attributes)
+                    .createQueryBuilder(alias)
+                    .where(alias + '.id IN (:...ids)', { ids: attributeIds })
+                    .select([alias + '.id', alias + '.description.code'])
+                    .getMany(),
+            };
         } catch (e) {
             return {
                 status: '666',

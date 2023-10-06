@@ -55,7 +55,7 @@ export class StoreAttribute extends MecBaseEntity {
     })
     attributes: StoreAttributeDescription;
 
-    @OneToOne(() => Attributes, (attributes) => attributes.id, {
+    @ManyToOne(() => Attributes, (attributes) => attributes.id, {
         cascade: ['update', 'remove', 'insert'],
         eager: false,
         nullable: true,

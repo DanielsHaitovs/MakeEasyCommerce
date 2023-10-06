@@ -7,6 +7,7 @@ import { StoreAttributeService } from './store-attribute/services/store-attribut
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoreView } from './entities/store-view.entity';
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
+import { StoreHelperService } from '@src/base/services/helper/store/store-helper.service';
 
 @Module({
     imports: [StoreAttributeModule, TypeOrmModule.forFeature([StoreView])],
@@ -15,6 +16,7 @@ import { AttributeHelperService } from '@src/base/services/helper/attributes/att
         StoreViewService,
         StoreAttributeService,
         AttributeHelperService,
+        StoreHelperService,
     ],
 })
 export class StoreViewModule {}

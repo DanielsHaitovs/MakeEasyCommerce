@@ -13,6 +13,7 @@ import { StoreAttributeDescription } from '../entities/store-attributes/attribut
 import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { GetAttributeI } from '@src/attribute/interfaces/attribute.interface';
+import { StoreHelperService } from '@src/base/services/helper/store/store-helper.service';
 
 @Injectable()
 export class StoreAttributeService {
@@ -20,6 +21,7 @@ export class StoreAttributeService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         private readonly attributeHelper: AttributeHelperService,
+        private readonly storeHelper: StoreHelperService,
     ) {}
 
     async create({
@@ -27,28 +29,38 @@ export class StoreAttributeService {
     }: {
         createAttribute: CreateStoreAttributeI;
     }): Promise<StoreAttributeResponseI> {
-        const check = await this.ifExists({
-            storeViewId: 0,
+        const check = await this.storeHelper.ifAttributeExists({
+            storeViewId: createAttribute.storeView,
             relatedAttributeId: createAttribute.relatedAttribute,
         });
-        if (check) {
+        if (check === true) {
             return {
                 status: '770',
                 message: 'Duplicate',
                 error: {
-                    message: 'Attribute already exists',
-                    in: 'Attribute Entity',
+                    message: 'Store Attribute already exists',
+                    in: 'Store Attribute Entity',
                 },
             };
         }
+
+        const defaultAttributeCode = await this.getAttributeCode({
+            attributeId: createAttribute.relatedAttribute,
+        });
+
+        if (defaultAttributeCode === null || defaultAttributeCode.length < 1) {
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Default Attribute code not found',
+                    in: 'Store Attribute Entity',
+                },
+            };
+        }
+        createAttribute.description.code = defaultAttributeCode;
+
         try {
-            // console.log(createAttribute);
-            console.log(
-                this.entityManager.create(StoreAttributeDescription, {
-                    description: createAttribute.description,
-                }),
-            );
-            // return null;
             return {
                 status: '200',
                 message: 'Success',
@@ -93,71 +105,16 @@ export class StoreAttributeService {
         return `This action removes a #${id} storeAttribute`;
     }
 
-    async ifExists({
-        storeViewId,
-        relatedAttributeId,
-    }: {
-        storeViewId: number;
-        relatedAttributeId: number;
-    }): Promise<boolean> {
-        return await this.entityManager
-            .getRepository(StoreAttribute)
-            .createQueryBuilder('storeViewAttributes')
-            .where('storeViewAttributes.storeView = :storeView', {
-                storeView: storeViewId,
-            })
-            .andWhere(
-                'storeViewAttributes.relatedAttribute = :relatedAttribute',
-                { relatedAttribute: relatedAttributeId },
-            )
-            .getExists();
-    }
-
-    async isDefault({
-        storeViewId,
-        relatedAttributeId,
-    }: {
-        storeViewId: number;
-        relatedAttributeId: number;
-    }): Promise<boolean> {
-        return await this.entityManager
-            .getRepository(StoreAttribute)
-            .createQueryBuilder('storeViewAttributes')
-            .where('storeViewAttributes.storeView = :storeView', {
-                storeView: storeViewId,
-            })
-            .andWhere(
-                'storeViewAttributes.relatedAttribute = :relatedAttribute',
-                { relatedAttribute: relatedAttributeId },
-            )
-            .andWhere('storeViewAttributes.useDefault = :useDefault', {
-                useDefault: true,
-            })
-            .getExists();
-    }
-
     async getAttributeCode({
         attributeId,
     }: {
         attributeId: number;
-    }): Promise<StoreAttributeResponseI> {
-        const { result } =
-            await this.attributeHelper.singleConditionAttributeQuery({
-                filters: {
-                    page: 1,
-                    limit: 1,
-                    orderBy: null,
-                    orderDirection: OrderType.NO,
-                    columnName: 'id',
-                    value: attributeId,
-                    select: ['id', 'description.code'],
-                    joinOptions: false,
-                    joinRule: true,
-                    many: false,
-                },
-            });
-
-        return null;
+    }): Promise<string> {
+        return (
+            await this.storeHelper.findAttributeWithCode({
+                relatedAttributeId: attributeId,
+            })
+        ).description.code;
     }
 
     async createStoreViewRule({
@@ -168,6 +125,7 @@ export class StoreAttributeService {
         return await this.entityManager.save(StoreRule, rule);
     }
 
+    // ???? :D
     toSingleRecord({
         attribute,
     }: {

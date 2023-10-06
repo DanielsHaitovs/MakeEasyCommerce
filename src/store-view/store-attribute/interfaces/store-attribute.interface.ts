@@ -31,6 +31,7 @@ export interface StoreAttributeDescriptionI {
 export interface CreateAttributeShortI {
     description: StoreAttributeDescriptionI;
     relatedAttribute: number;
+    storeView: number;
 }
 
 export interface CreateStoreAttributeI extends CreateAttributeShortI {

@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { Attributes } from '@src/attribute/entities/attributes.entity';
+import { AttributeResponseI } from '@src/attribute/interfaces/attribute.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { StoreView } from '@src/store-view/entities/store-view.entity';
 import { StoreViewResponseI } from '@src/store-view/interfaces/store-view.interface';
+import { StoreAttribute } from '@src/store-view/store-attribute/entities/store-attribute.entity';
+import { StoreAttributeResponseI } from '@src/store-view/store-attribute/interfaces/store-attribute.interface';
 import { Store } from '@src/stores/entities/store.entity';
 import {
     GetStoreI,
@@ -52,6 +56,66 @@ export class StoreHelperService {
             .createQueryBuilder(StoreViewAlias)
             .where('store_view.name = :name', { name })
             .orWhere('store_view.code = :code', { code })
+            .getExists();
+    }
+
+    async ifAttributeExists({
+        storeViewId,
+        relatedAttributeId,
+    }: {
+        storeViewId: number;
+        relatedAttributeId: number;
+    }): Promise<boolean> {
+        return await this.entityManager
+            .getRepository(StoreAttribute)
+            .createQueryBuilder('storeViewAttributes')
+            .where('storeViewAttributes.storeView = :storeView', {
+                storeView: storeViewId,
+            })
+            .andWhere(
+                'storeViewAttributes.relatedAttribute = :relatedAttribute',
+                { relatedAttribute: relatedAttributeId },
+            )
+            .getExists();
+    }
+
+    async findAttributeWithCode({
+        relatedAttributeId,
+    }: {
+        relatedAttributeId: number;
+    }): Promise<any> {
+        try {
+            return await this.entityManager
+                .getRepository(Attributes)
+                .createQueryBuilder('attributes')
+                .where('attributes.id = :id', { id: relatedAttributeId })
+                .select(['attributes.description.code'])
+                .getOne();
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async isAttributeDefault({
+        storeViewId,
+        relatedAttributeId,
+    }: {
+        storeViewId: number;
+        relatedAttributeId: number;
+    }): Promise<boolean> {
+        return await this.entityManager
+            .getRepository(StoreAttribute)
+            .createQueryBuilder('storeViewAttributes')
+            .where('storeViewAttributes.storeView = :storeView', {
+                storeView: storeViewId,
+            })
+            .andWhere(
+                'storeViewAttributes.relatedAttribute = :relatedAttribute',
+                { relatedAttribute: relatedAttributeId },
+            )
+            .andWhere('storeViewAttributes.useDefault = :useDefault', {
+                useDefault: true,
+            })
             .getExists();
     }
 

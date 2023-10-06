@@ -81,7 +81,7 @@ export class AttributeService {
             if (!Array.isArray(result)) {
                 return {
                     status: '666',
-                    message: '!Array.isArray(result)',
+                    message: 'Options are empty',
                     error: response.error,
                 };
             }
