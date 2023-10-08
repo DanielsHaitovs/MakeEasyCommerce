@@ -4,13 +4,20 @@ import {
     Column,
     Entity,
     Index,
+    JoinColumn,
     ManyToOne,
     OneToMany,
-    RelationId,
 } from 'typeorm';
 
+export const AttributeOptionIndexPrefix = 'ik_attribute_option_index';
+export const AttributeOptionIndexKeys: string[] = [
+    'id',
+    'value',
+    'relatedAttribute',
+];
+
 @Entity('eav_attribute_option')
-@Index('ik_attribute_option_index', ['id', 'value', 'relatedAttribute'])
+@Index(AttributeOptionIndexPrefix, AttributeOptionIndexKeys)
 export class Option extends MecBaseEntity {
     @Column('jsonb', { nullable: false })
     value: string | number | boolean | Date | JSON;
@@ -24,16 +31,15 @@ export class Option extends MecBaseEntity {
     })
     relatedAttribute: number;
 
-    // @OneToMany(
-    //     () => StoreViewOption,
-    //     (storeView) => storeView.relatedAttribute,
-    //     {
-    //         cascade: false,
-    //         eager: false,
-    //         nullable: true,
-    //     },
-    // )
-    // storeViewOptions: StoreViewOption[];
+    // @OneToMany(() => StoreOption, (storeOption) => storeOption, {
+    //     cascade: false,
+    //     eager: false,
+    //     nullable: true,
+    // })
+    // @JoinColumn({
+    //     foreignKeyConstraintName: 'fk_attribute_store_view_options',
+    // })
+    // storeOptions: StoreOption[];
     // @RelationId((option: Option) => option.storeViewOptions)
     // storeViewOptionsIds: number[];
 }

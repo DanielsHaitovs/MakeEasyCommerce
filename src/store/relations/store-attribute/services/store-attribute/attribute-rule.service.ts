@@ -1,35 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateRuleDto } from '../dto/update-rule.dto';
-import { CreateRuleDto } from '../dto/create-rule.dto';
-import { Rule } from '../entities/rule.entity';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
-import { RuleFindByType } from '../dto/rule-base.dto';
+import { StoreViewOrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { RuleHelperService } from '@src/base/services/helper/attributes/rule-helper.service';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { RuleResponseI } from '../interface/rule.interface';
+import {
+    CreateStoreRuleI,
+    StoreRuleResponseI,
+} from '../../interface/store-attributes/attributes-rule.interface';
+import { StoreViewRule } from '../../entities/store-attribute/attribute-rule.entity';
+import { StoreRuleFindByType } from '@src/attribute/relations/rule/dto/rule-base.dto';
+import { UpdateStoreRuleDto } from '../../dto/store-attribute/rule/update-attribute-rule.dto';
+import { StoreRuleHelperService } from '@src/base/services/helper/store/store-attributes/attributes-rule-helper.service';
+import { CreateStoreRuleDto } from '../../dto/store-attribute/rule/create-attribute-rule.dto';
 
 @Injectable()
-export class RuleService {
+export class StoreViewRuleService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
-        private readonly ruleHelper: RuleHelperService, // private readonly queryService: QueryService,
+        private readonly ruleHelper: StoreRuleHelperService, // private readonly queryService: QueryService,
     ) {}
 
     async create({
-        CreateRuleDto,
+        createRuleDto,
     }: {
-        CreateRuleDto: CreateRuleDto;
-    }): Promise<RuleResponseI> {
+        createRuleDto: CreateStoreRuleDto;
+    }): Promise<StoreRuleResponseI> {
         try {
             return {
                 status: '200',
                 message: 'Success',
                 result: await this.entityManager.save(
-                    Rule,
-                    await this.prepareRule({ CreateRuleDto: CreateRuleDto }),
+                    StoreViewRule,
+                    await this.prepareRule({ rule: createRuleDto }),
                 ),
             };
         } catch (e) {
@@ -44,13 +47,14 @@ export class RuleService {
         }
     }
 
-    async findOneById({ id }: { id: number }): Promise<RuleResponseI> {
+    async findOneById({ id }: { id: number }): Promise<StoreRuleResponseI> {
         return await this.ruleHelper.singleConditionRuleQuery({
             filters: {
+                storeViewId: null,
                 page: 1,
                 limit: 0,
-                orderBy: 'id',
-                orderDirection: OrderType.ASC,
+                orderBy: null,
+                orderDirection: OrderType.NO,
                 columnName: 'id',
                 value: id,
                 select: null,
@@ -59,15 +63,29 @@ export class RuleService {
         });
     }
 
+    async findOneByStoreViewAndAttribute({
+        relatedAttribute,
+        storeView,
+    }: {
+        relatedAttribute: number;
+        storeView: number;
+    }): Promise<StoreRuleResponseI> {
+        return await this.ruleHelper.findByStoreViewAndAttribute({
+            storeAttribute: relatedAttribute,
+            storeViewId: storeView,
+        });
+    }
+
     async findThisRuleType({
         id,
         type,
     }: {
         id: number;
-        type: RuleFindByType;
-    }): Promise<RuleResponseI> {
+        type: StoreRuleFindByType;
+    }): Promise<StoreRuleResponseI> {
         return await this.ruleHelper.singleConditionRuleQuery({
             filters: {
+                storeViewId: type.storeView,
                 page: 1,
                 limit: 1,
                 orderBy: null,
@@ -83,10 +101,11 @@ export class RuleService {
     async findAll({
         condition,
     }: {
-        condition: OrderedPaginationDto;
-    }): Promise<RuleResponseI> {
+        condition: StoreViewOrderedPaginationDto;
+    }): Promise<StoreRuleResponseI> {
         return await this.ruleHelper.singleConditionRuleQuery({
             filters: {
+                storeViewId: condition.storeViewId,
                 page: condition.page,
                 limit: condition.limit,
                 orderBy: condition.orderBy,
@@ -104,14 +123,17 @@ export class RuleService {
         rule,
     }: {
         id: number;
-        rule: UpdateRuleDto;
-    }): Promise<RuleResponseI> {
-        return (await this.entityManager.update(Rule, id, rule)).raw;
+        rule: UpdateStoreRuleDto;
+    }): Promise<StoreRuleResponseI> {
+        return (await this.entityManager.update(StoreViewRule, id, rule)).raw;
     }
 
-    async remove({ id }: { id: number }): Promise<RuleResponseI> {
+    async remove({ id }: { id: number }): Promise<StoreRuleResponseI> {
         try {
-            if ((await this.entityManager.delete(Rule, id)).affected > 0) {
+            if (
+                (await this.entityManager.delete(StoreViewRule, id)).affected >
+                0
+            ) {
                 return {
                     status: '200',
                     message: `Record with id ${id} was removed`,
@@ -130,10 +152,10 @@ export class RuleService {
     }
 
     protected async prepareRule({
-        CreateRuleDto,
+        rule,
     }: {
-        CreateRuleDto: CreateRuleDto;
-    }): Promise<CreateRuleDto> {
-        return this.entityManager.create(Rule, CreateRuleDto);
+        rule: CreateStoreRuleI;
+    }): Promise<CreateStoreRuleI> {
+        return this.entityManager.create(StoreViewRule, rule);
     }
 }

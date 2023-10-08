@@ -6,15 +6,15 @@ import { AttributeModule } from './attribute/attribute.module';
 import { Option } from './attribute/relations/option/entities/option.entity';
 import { Attributes } from './attribute/entities/attributes.entity';
 import { Rule } from './attribute/relations/rule/entities/rule.entity';
-import { StoresModule } from './stores/stores.module';
-import { Store } from './stores/entities/store.entity';
-import { StoreViewModule } from './store-view/store-view.module';
-import { StoreAttribute } from './store-view/store-attribute/entities/store-attribute.entity';
-import { StoreAttributeDescription } from './store-view/store-attribute/entities/store-attributes/attributes-description.entity';
-import { StoreRule } from './store-view/store-attribute/entities/store-attributes/attribute-rule.entity';
-import { StoreView } from './store-view/entities/store-view.entity';
+import { StoreModule } from './store/store.module';
+import { Store } from './store/entities/store.entity';
+import { StoreViewRule } from './store/relations/store-attribute/entities/store-attribute/attribute-rule.entity';
+import { StoreViewOption } from './store/relations/store-attribute/entities/store-attribute/attribute-option.entity';
+import { StoreAttributeDescription } from './store/relations/store-attribute/entities/store-attribute/attributes-description.entity';
+import { StoreAttribute } from './store/relations/store-attribute/entities/store-attribute.entity';
 @Module({
     imports: [
+        StoreModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.TYPEORM_HOST,
@@ -25,10 +25,10 @@ import { StoreView } from './store-view/entities/store-view.entity';
             entities: [
                 // Store ->
                 Store,
-                StoreView,
                 StoreAttribute,
                 StoreAttributeDescription,
-                StoreRule,
+                StoreViewRule,
+                StoreViewOption,
                 // <- Store
                 // Attribute ->
                 Attributes,
@@ -41,10 +41,8 @@ import { StoreView } from './store-view/entities/store-view.entity';
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        StoresModule,
         AttributeModule,
         BaseModule,
-        StoreViewModule,
     ],
     controllers: [],
     providers: [AppService],

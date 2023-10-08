@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { Attributes } from '@src/attribute/entities/attributes.entity';
-import { AttributeResponseI } from '@src/attribute/interfaces/attribute.interface';
+import { GetAttributeI } from '@src/attribute/interfaces/attribute.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { StoreView } from '@src/store-view/entities/store-view.entity';
-import { StoreViewResponseI } from '@src/store-view/interfaces/store-view.interface';
-import { StoreAttribute } from '@src/store-view/store-attribute/entities/store-attribute.entity';
-import { StoreAttributeResponseI } from '@src/store-view/store-attribute/interfaces/store-attribute.interface';
-import { Store } from '@src/stores/entities/store.entity';
+import { Store } from '@src/store/entities/store.entity';
 import {
     GetStoreI,
     StoreResponseI,
-} from '@src/stores/interfaces/store.interface';
+} from '@src/store/interfaces/store.interface';
+import { StoreAttribute } from '@src/store/relations/store-attribute/entities/store-attribute.entity';
 import { EntityManager } from 'typeorm';
 // Bastard, Typeorm supports reading tables schema data
 export const StoreColumnsList: string[] = [];
@@ -73,17 +70,40 @@ export class StoreHelperService {
                 storeView: storeViewId,
             })
             .andWhere(
-                'storeViewAttributes.relatedAttribute = :relatedAttribute',
-                { relatedAttribute: relatedAttributeId },
+                'storeViewAttributes.defaultAttribute = :defaultAttribute',
+                { defaultAttribute: relatedAttributeId },
             )
             .getExists();
     }
 
-    async findAttributeWithCode({
+    // async isAttributeDefault({
+    //     storeViewId,
+    //     relatedAttributeId,
+    // }: {
+    //     storeViewId: number;
+    //     relatedAttributeId: number;
+    // }): Promise<boolean> {
+    //     return await this.entityManager
+    //         .getRepository(StoreAttribute)
+    //         .createQueryBuilder('storeViewAttributes')
+    //         .where('storeViewAttributes.storeView = :storeView', {
+    //             storeView: storeViewId,
+    //         })
+    //         .andWhere(
+    //             'storeViewAttributes.relatedAttribute = :relatedAttribute',
+    //             { relatedAttribute: relatedAttributeId },
+    //         )
+    //         .andWhere('storeViewAttributes.useDefault = :useDefault', {
+    //             useDefault: true,
+    //         })
+    //         .getExists();
+    // }
+
+    async findAttributeDefaultCode({
         relatedAttributeId,
     }: {
         relatedAttributeId: number;
-    }): Promise<any> {
+    }): Promise<GetAttributeI> {
         try {
             return await this.entityManager
                 .getRepository(Attributes)
@@ -92,31 +112,8 @@ export class StoreHelperService {
                 .select(['attributes.description.code'])
                 .getOne();
         } catch (e) {
-            return null;
+            return e.message;
         }
-    }
-
-    async isAttributeDefault({
-        storeViewId,
-        relatedAttributeId,
-    }: {
-        storeViewId: number;
-        relatedAttributeId: number;
-    }): Promise<boolean> {
-        return await this.entityManager
-            .getRepository(StoreAttribute)
-            .createQueryBuilder('storeViewAttributes')
-            .where('storeViewAttributes.storeView = :storeView', {
-                storeView: storeViewId,
-            })
-            .andWhere(
-                'storeViewAttributes.relatedAttribute = :relatedAttribute',
-                { relatedAttribute: relatedAttributeId },
-            )
-            .andWhere('storeViewAttributes.useDefault = :useDefault', {
-                useDefault: true,
-            })
-            .getExists();
     }
 
     async singleConditionStoreQuery({
@@ -206,98 +203,98 @@ export class StoreHelperService {
             .getMany();
     }
 
-    async singleConditionStoreViewQuery({
-        filters,
-    }: {
-        filters: SingleConditionDto;
-    }): Promise<StoreViewResponseI> {
-        const skip = (filters.page - 1) * filters.limit;
-        let storeList: string[] = [];
-        let rawValue = null;
-        let columnName = '';
-        let orderBy = '';
-        if (filters.select != null && filters.select[0] != undefined) {
-            for (const addToSelect of StoreColumnsList) {
-                storeList.push(
-                    StoreViewAlias +
-                        '.' +
-                        filters.select[0] +
-                        '.' +
-                        addToSelect,
-                );
-            }
-        } else {
-            storeList = null;
-        }
-        if (filters.columnName != null && filters.columnName != '') {
-            columnName =
-                StoreViewAlias + '.' + filters.columnName + ' = :value';
-            rawValue = {
-                value: filters.value,
-            };
-        }
+    // async singleConditionStoreViewQuery({
+    //     filters,
+    // }: {
+    //     filters: SingleConditionDto;
+    // }): Promise<StoreViewResponseI> {
+    //     const skip = (filters.page - 1) * filters.limit;
+    //     let storeList: string[] = [];
+    //     let rawValue = null;
+    //     let columnName = '';
+    //     let orderBy = '';
+    //     if (filters.select != null && filters.select[0] != undefined) {
+    //         for (const addToSelect of StoreColumnsList) {
+    //             storeList.push(
+    //                 StoreViewAlias +
+    //                     '.' +
+    //                     filters.select[0] +
+    //                     '.' +
+    //                     addToSelect,
+    //             );
+    //         }
+    //     } else {
+    //         storeList = null;
+    //     }
+    //     if (filters.columnName != null && filters.columnName != '') {
+    //         columnName =
+    //             StoreViewAlias + '.' + filters.columnName + ' = :value';
+    //         rawValue = {
+    //             value: filters.value,
+    //         };
+    //     }
 
-        if (filters.orderBy != null) {
-            orderBy = StoreViewAlias + '.' + filters.orderBy;
-        }
-        try {
-            return await this.nonRelationStoreViewQuery({
-                skip: skip,
-                limit: filters.limit,
-                selectList: storeList,
-                columnName: columnName,
-                rawValue: rawValue,
-                orderBy: orderBy,
-                orderDirection: filters.orderDirection,
-            });
-        } catch (e) {
-            return {
-                status: '666',
-                message: 'Ups, Error',
-                error: {
-                    message: e.message,
-                    in: 'Store View Helper Query',
-                },
-            };
-        }
-    }
+    //     if (filters.orderBy != null) {
+    //         orderBy = StoreViewAlias + '.' + filters.orderBy;
+    //     }
+    //     try {
+    //         return await this.nonRelationStoreViewQuery({
+    //             skip: skip,
+    //             limit: filters.limit,
+    //             selectList: storeList,
+    //             columnName: columnName,
+    //             rawValue: rawValue,
+    //             orderBy: orderBy,
+    //             orderDirection: filters.orderDirection,
+    //         });
+    //     } catch (e) {
+    //         return {
+    //             status: '666',
+    //             message: 'Ups, Error',
+    //             error: {
+    //                 message: e.message,
+    //                 in: 'Store View Helper Query',
+    //             },
+    //         };
+    //     }
+    // }
 
     // I'm lazy, this this and "nonRelationQuery" function are duplicates...
     // In common time will be "okay.." to do via switch?maybe
     // Later I'll pass entity as construct through function
-    private async nonRelationStoreViewQuery({
-        skip,
-        limit,
-        selectList,
-        columnName,
-        rawValue,
-        orderBy,
-        orderDirection,
-    }: {
-        skip: number;
-        limit: number;
-        selectList: string[];
-        columnName: string;
-        rawValue: {
-            value: string | number | boolean | Date | JSON;
-        };
-        orderBy: string;
-        orderDirection: OrderType | OrderType.ASC;
-    }): Promise<StoreViewResponseI> {
-        return {
-            status: '200',
-            message: 'Success',
-            result: await this.entityManager
-                .getRepository(StoreView)
-                .createQueryBuilder(StoreViewAlias)
-                .where(columnName, rawValue)
-                .select(selectList)
-                .orderBy(orderBy, orderDirection)
-                .skip(skip)
-                .take(limit)
-                .cache(true)
-                .useIndex('fk_store_view_simple_condition_query')
-                .getMany(),
-        };
-    }
+    // private async nonRelationStoreViewQuery({
+    //     skip,
+    //     limit,
+    //     selectList,
+    //     columnName,
+    //     rawValue,
+    //     orderBy,
+    //     orderDirection,
+    // }: {
+    //     skip: number;
+    //     limit: number;
+    //     selectList: string[];
+    //     columnName: string;
+    //     rawValue: {
+    //         value: string | number | boolean | Date | JSON;
+    //     };
+    //     orderBy: string;
+    //     orderDirection: OrderType | OrderType.ASC;
+    // }): Promise<StoreViewResponseI> {
+    //     return {
+    //         status: '200',
+    //         message: 'Success',
+    //         result: await this.entityManager
+    //             .getRepository(StoreView)
+    //             .createQueryBuilder(StoreViewAlias)
+    //             .where(columnName, rawValue)
+    //             .select(selectList)
+    //             .orderBy(orderBy, orderDirection)
+    //             .skip(skip)
+    //             .take(limit)
+    //             .cache(true)
+    //             .useIndex('fk_store_view_simple_condition_query')
+    //             .getMany(),
+    //     };
+    // }
 }

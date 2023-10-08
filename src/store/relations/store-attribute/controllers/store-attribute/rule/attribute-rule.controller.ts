@@ -17,19 +17,22 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { CreateRuleDto } from '../dto/create-rule.dto';
-import { UpdateRuleDto } from '../dto/update-rule.dto';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
-import { GetRuleDto } from '../dto/get-rule.dto';
-import { RuleFindByType } from '../dto/rule-base.dto';
+import { StoreViewOrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
-import { RuleResponseI } from '../interface/rule.interface';
-import { RuleService } from '../services/rule.service';
+import { StoreViewRuleService } from '../../../services/store-attribute/attribute-rule.service';
+import { CreateStoreRuleDto } from '../../../dto/store-attribute/rule/create-attribute-rule.dto';
+import { StoreRuleResponseI } from '../../../interface/store-attributes/attributes-rule.interface';
+import { GetStoreRuleDto } from '../../../dto/store-attribute/rule/get-attribute-rule.dto';
+import {
+    StoreRuleFindBy,
+    StoreRuleFindByType,
+} from '@src/attribute/relations/rule/dto/rule-base.dto';
+import { UpdateStoreRuleDto } from '../../../dto/store-attribute/rule/update-attribute-rule.dto';
 
-@Controller('rule')
-@ApiTags('Rule')
-export class RuleController {
-    constructor(private readonly ruleService: RuleService) {}
+@Controller('storeRule')
+@ApiTags('Store Attribute Rule')
+export class StoreViewRuleController {
+    constructor(private readonly ruleService: StoreViewRuleService) {}
 
     @Post('new')
     @ApiOperation({
@@ -37,12 +40,14 @@ export class RuleController {
         description: 'Creates record (specifically) for rule attribute entity',
     })
     @ApiBody({
-        type: CreateRuleDto,
+        type: CreateStoreRuleDto,
         description: 'Create Attribute rule',
         required: true,
     })
-    async create(@Body() CreateRuleDto: CreateRuleDto): Promise<RuleResponseI> {
-        return this.ruleService.create({ CreateRuleDto });
+    async create(
+        @Body() createRuleDto: CreateStoreRuleDto,
+    ): Promise<StoreRuleResponseI> {
+        return this.ruleService.create({ createRuleDto });
     }
 
     @Get('get/all')
@@ -54,20 +59,21 @@ export class RuleController {
         name: 'paginate and order',
         description:
             'Its basically will try to find all your attributes rule. You can set page and limit for this query.',
-        type: OrderedPaginationDto,
+        type: StoreViewOrderedPaginationDto,
         example: {
             by: 'id',
             type: 'ASC',
-            page: 1,
-            limit: 10,
+            page: Number,
+            limit: Number,
+            storeView: Number,
         },
         required: false,
     })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
-        type: [GetRuleDto],
+        type: [GetStoreRuleDto],
     })
-    async findAll(@Query() orderedPagination): Promise<RuleResponseI> {
+    async findAll(@Query() orderedPagination): Promise<StoreRuleResponseI> {
         return await this.ruleService.findAll({
             condition: orderedPagination,
         });
@@ -81,12 +87,35 @@ export class RuleController {
     @ApiParam({ name: 'id', description: 'Rule id (Attribute)' })
     @ApiOkResponse({
         description: 'Specific Attribute Rule and its details',
-        type: GetRuleDto,
+        type: GetStoreRuleDto,
     })
     async findOneById(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<RuleResponseI> {
+    ): Promise<StoreRuleResponseI> {
         return await this.ruleService.findOneById({ id });
+    }
+
+    @Get('get/one/by/')
+    @ApiOperation({
+        summary: 'Find 1 Attribute Rule by attribute and store view',
+        description: 'Get data of specific Rule condition, good luck!',
+    })
+    @ApiQuery({
+        name: 'filters',
+        type: StoreRuleFindBy,
+        required: true,
+    })
+    @ApiOkResponse({
+        description: 'Specific Attribute Rule and its details',
+        type: GetStoreRuleDto,
+    })
+    async findOneBy(
+        @Query() filter, // this needs to be with specific type, for some reason it did not worked out, investigate
+    ): Promise<StoreRuleResponseI> {
+        return await this.ruleService.findOneByStoreViewAndAttribute({
+            storeView: filter.storeView,
+            relatedAttribute: filter.relatedAttribute,
+        });
     }
 
     @Get('get/one/type/by/:id')
@@ -98,8 +127,9 @@ export class RuleController {
         name: 'filters',
         description:
             'Its basically will try to find your 1 attribute rule by mentioned code and value. You can set page and limit for this query.',
-        type: RuleFindByType,
+        type: StoreRuleFindByType,
         example: {
+            storeView: Number,
             type: AttributeRuleType,
         },
         required: true,
@@ -107,12 +137,12 @@ export class RuleController {
     @ApiParam({ name: 'id', description: 'product attribute id' })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
-        type: GetRuleDto,
+        type: GetStoreRuleDto,
     })
-    async findOneBy(
+    async findOneByType(
         @Param('id', ParseIntPipe) id: number,
         @Query() type, // this needs to be with specific type, for some reason it did not worked out, investigate
-    ): Promise<RuleResponseI> {
+    ): Promise<StoreRuleResponseI> {
         return this.ruleService.findThisRuleType({
             id: id,
             type: type,
@@ -125,17 +155,17 @@ export class RuleController {
         description: 'Update specifically attribute rule data by id',
     })
     @ApiBody({
-        type: UpdateRuleDto,
+        type: UpdateStoreRuleDto,
         description: 'Attribute Rule',
         required: true,
     })
     async update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() UpdateRuleDto: UpdateRuleDto,
-    ): Promise<RuleResponseI> {
+        @Body() updateRuleDto: UpdateStoreRuleDto,
+    ): Promise<StoreRuleResponseI> {
         return this.ruleService.update({
             id: id,
-            rule: UpdateRuleDto,
+            rule: updateRuleDto,
         });
     }
 
@@ -146,7 +176,7 @@ export class RuleController {
     })
     async removeBasket(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<RuleResponseI> {
+    ): Promise<StoreRuleResponseI> {
         return await this.ruleService.remove({ id });
     }
 }

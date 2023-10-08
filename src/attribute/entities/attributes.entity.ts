@@ -41,7 +41,7 @@ export class Attributes extends AttributesBase {
     @RelationId((attribute: Attributes) => attribute.options)
     optionsIds: number[];
 
-    @ManyToOne(() => Rule, (rule) => rule.id, {
+    @OneToOne(() => Rule, (rule) => rule.id, {
         cascade: ['update', 'remove', 'insert'],
         nullable: false,
     })

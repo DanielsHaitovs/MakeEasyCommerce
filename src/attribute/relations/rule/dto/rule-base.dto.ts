@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { QueryResponse } from '@src/base/dto/responses/response.create-query.dto';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { GetRuleDto } from './get-rule.dto';
 import { AttributeRuleType } from '@src/base/enum/attributes/attribute-type.enum';
 
@@ -85,11 +85,63 @@ export class RuleDto {
     back: RuleBaseDto;
 }
 
+export class StoreRuleDto {
+    @ApiProperty({
+        title: 'Front end Attribute Rule',
+        type: RuleBaseDto,
+        nullable: false,
+    })
+    @IsNotEmpty()
+    front: RuleBaseDto;
+
+    @ApiProperty({
+        title: 'Back end Attribute Rule',
+        type: RuleBaseDto,
+        nullable: false,
+    })
+    @IsNotEmpty()
+    back: RuleBaseDto;
+}
+
 export class RuleResponseDto extends QueryResponse {
     result?: GetRuleDto | GetRuleDto[];
 }
 
 export class RuleFindByType {
+    @ApiProperty({
+        title: 'Attribute Rule Type',
+        enum: AttributeRuleType,
+    })
+    ruleType: AttributeRuleType;
+}
+
+export class StoreRuleFindBy {
+    @ApiProperty({
+        title: 'Related Attribute ID',
+        type: Number,
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    relatedAttribute: number;
+
+    @ApiProperty({
+        title: 'Related Store View ID',
+        type: Number,
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    storeView: number;
+}
+
+export class StoreRuleFindByType {
+    @ApiProperty({
+        title: 'Related Store View ID',
+        type: Number,
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    storeView: number;
+
     @ApiProperty({
         title: 'Attribute Rule Type',
         enum: AttributeRuleType,

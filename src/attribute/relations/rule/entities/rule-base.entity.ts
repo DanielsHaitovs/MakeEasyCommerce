@@ -1,11 +1,6 @@
 import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { IsBoolean } from 'class-validator';
-import {
-    Column,
-    CreateDateColumn,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Column } from 'typeorm';
 
 export abstract class FrontRuleConfigEntity {
     @Column()
