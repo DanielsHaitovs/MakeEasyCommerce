@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OptionDto } from '@src/attribute/relations/option/dto/option.dto';
+import { Exclude } from 'class-transformer';
 import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
 
 export class StoreOptionBody extends OptionDto {
@@ -10,7 +11,7 @@ export class StoreOptionBody extends OptionDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    parentOptionId: number;
+    parentOption: number;
 }
 
 export class CreateStoreOptionDto extends OptionDto {
@@ -21,7 +22,7 @@ export class CreateStoreOptionDto extends OptionDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    relatedAttribute: number;
+    storeAttribute: number;
 
     @ApiProperty({
         title: 'Parent Store View ID',
@@ -39,7 +40,7 @@ export class CreateStoreOptionDto extends OptionDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    parentOptionId: number;
+    parentOption: number;
 }
 
 export class CreateManyStoreOptionsDto {
@@ -50,7 +51,7 @@ export class CreateManyStoreOptionsDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    relatedAttribute: number;
+    storeAttribute: number;
 
     @ApiProperty({
         title: 'Parent Store View ID',

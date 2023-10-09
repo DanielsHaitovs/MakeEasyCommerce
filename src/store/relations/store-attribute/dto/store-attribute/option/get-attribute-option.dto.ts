@@ -31,7 +31,7 @@ export class GetManyStoreOptionsDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    relatedAttribute: number;
+    storeAttribute: number;
 
     @ApiProperty({
         title: 'Parent Store View ID',

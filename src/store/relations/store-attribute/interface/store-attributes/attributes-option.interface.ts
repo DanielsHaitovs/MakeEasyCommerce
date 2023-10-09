@@ -6,8 +6,8 @@ export interface StoreOptionI {
 
 export interface CreateStoreOptionI extends StoreOptionI {
     storeView: number;
-    relatedAttribute: number;
-    parentOptionId: number;
+    storeAttribute: number;
+    parentOption: number;
 }
 
 export type UpdateStoreOptionI = CreateStoreOptionI;

@@ -8,10 +8,13 @@ import {
     Delete,
 } from '@nestjs/common';
 import { StoreAttributeService } from '../services/store-attribute.service';
-import { CreateStoreAttributeDto } from '../dto/create-store-attribute.dto';
+import {
+    CreateStoreAttributeDto,
+    CreateStoreAttributeShortDto,
+} from '../dto/create-store-attribute.dto';
 import { UpdateStoreAttributeDto } from '../dto/update-store-attribute.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { StoreAttributeResponseI } from '../interface/store-attribute.interface';
+import { StoreAttributeResponseI, StoreShortAttributeResponseI } from '../interface/store-attribute.interface';
 
 @ApiTags('Store Attribute')
 @Controller('store-attribute')
@@ -22,7 +25,7 @@ export class StoreAttributeController {
 
     @Post('new')
     @ApiOperation({
-        summary: 'Create 1 Attribute',
+        summary: 'Create Store View Attribute',
         description: 'Create 1 attribute with all data',
     })
     @ApiBody({
@@ -34,6 +37,24 @@ export class StoreAttributeController {
         @Body() createAttribute: CreateStoreAttributeDto,
     ): Promise<StoreAttributeResponseI> {
         return await this.storeAttributeService.create({ createAttribute });
+    }
+
+    @Post('short/new')
+    @ApiOperation({
+        summary: 'Create (Short) Store View Attribute',
+        description: 'Create 1 attribute with all data',
+    })
+    @ApiBody({
+        type: CreateStoreAttributeShortDto,
+        description: 'Create Attribute',
+        required: true,
+    })
+    async createShort(
+        @Body() createAttribute: CreateStoreAttributeShortDto,
+    ): Promise<StoreShortAttributeResponseI> {
+        return await this.storeAttributeService.createShort({
+            createAttribute,
+        });
     }
 
     @Get()

@@ -160,6 +160,8 @@ export class StoreRuleFilters extends SingleConditionDto {
     storeViewId: number;
 }
 
+export class StoreOptionFilters extends StoreRuleFilters {}
+
 export class StoreViewOrderedPaginationDto extends OrderedPaginationDto {
     @ApiProperty({
         title: 'Filter by Store View',

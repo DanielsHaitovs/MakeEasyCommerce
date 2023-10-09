@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import {
     CreateManyStoreOptionsDto,
@@ -14,6 +13,7 @@ import {
 import { StoreViewOption } from '../../../entities/store-attribute/attribute-option.entity';
 import { UpdateStoreOptionDto } from '../../../dto/store-attribute/option/update-attribute-option.dto';
 import { StoreOptionHelperService } from '@src/base/services/helper/store/store-attributes/attributes-option-helper.service';
+import { StoreViewOrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 
 @Injectable()
 export class StoreViewOptionService {
@@ -55,13 +55,13 @@ export class StoreViewOptionService {
     }: {
         createOptions: CreateManyStoreOptionsDto;
     }): Promise<StoreOptionResponseI> {
-        if (createOptions.relatedAttribute === 0) {
-            createOptions.relatedAttribute = null;
+        if (createOptions.storeAttribute === 0) {
+            createOptions.storeAttribute = null;
         }
         const preparedOptions: CreateStoreOptionI[] = [];
         for (const option of createOptions.options) {
             preparedOptions.push({
-                relatedAttribute: createOptions.relatedAttribute,
+                storeAttribute: createOptions.storeAttribute,
                 storeView: createOptions.storeView,
                 ...option,
             });
@@ -90,11 +90,12 @@ export class StoreViewOptionService {
     async findAll({
         condition,
     }: {
-        condition: OrderedPaginationDto;
+        condition: StoreViewOrderedPaginationDto;
     }): Promise<StoreOptionResponseI> {
         return await this.optionHelper.singleConditionOptionQuery({
             alias: 'option',
             filters: {
+                storeViewId: condition.storeViewId,
                 page: condition.page,
                 limit: condition.limit,
                 orderBy: condition.orderBy,
@@ -111,6 +112,7 @@ export class StoreViewOptionService {
         return await this.optionHelper.singleConditionOptionQuery({
             alias: 'option',
             filters: {
+                storeViewId: null,
                 page: 1,
                 limit: 0,
                 orderBy: null,
@@ -131,11 +133,12 @@ export class StoreViewOptionService {
         return await this.optionHelper.singleConditionOptionQuery({
             alias: 'option',
             filters: {
+                storeViewId: null,
                 page: 1,
                 limit: 0,
-                orderBy: 'relatedAttributeId',
+                orderBy: 'storeAttributeId',
                 orderDirection: OrderType.ASC,
-                columnName: 'relatedAttributeId',
+                columnName: 'storeAttributeId',
                 value: parentId,
                 select: null,
                 many: false,
@@ -151,8 +154,8 @@ export class StoreViewOptionService {
         updateOptionDto: UpdateStoreOptionDto;
     }): Promise<StoreOptionResponseI> {
         if (
-            updateOptionDto.relatedAttribute != 0 &&
-            updateOptionDto.relatedAttribute != null
+            updateOptionDto.storeAttribute != 0 &&
+            updateOptionDto.storeAttribute != null
         ) {
             try {
                 return (

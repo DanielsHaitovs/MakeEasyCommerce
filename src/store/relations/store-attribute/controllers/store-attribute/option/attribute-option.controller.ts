@@ -17,7 +17,6 @@ import {
     ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
-import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { GetAttributeOptions } from '@src/attribute/dto/get-attribute.dto';
 import { StoreViewOptionService } from '../../../services/store-attribute/option/attribute-option.service';
 import {
@@ -27,6 +26,7 @@ import {
 import { StoreOptionResponseI } from '../../../interface/store-attributes/attributes-option.interface';
 import { GetStoreOptionDto } from '../../../dto/store-attribute/option/get-attribute-option.dto';
 import { UpdateStoreOptionDto } from '../../../dto/store-attribute/option/update-attribute-option.dto';
+import { StoreViewOrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 
 @Controller('storeOptions')
 @ApiTags('Store Attribute Options')
@@ -74,12 +74,8 @@ export class StoreViewOptionController {
         name: 'paginate',
         description:
             'Its basically will try to find all your attribute options. You can set page and limit for this query.',
-        type: OrderedPaginationDto,
-        example: {
-            page: 1,
-            limit: 10,
-        },
-        required: true,
+        type: StoreViewOrderedPaginationDto,
+        required: false,
     })
     @ApiOkResponse({
         description: 'All Options and theirs values',

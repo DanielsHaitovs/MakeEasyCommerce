@@ -9,7 +9,6 @@ import {
 export class createStoreOptionTable implements MigrationInterface {
     constructor(private readonly queryRunner: QueryRunner) {}
     public async up(queryRunner: QueryRunner): Promise<void> {
-        console.log(123);
         await queryRunner.createTable(
             new Table({
                 name: 'test_store_option',

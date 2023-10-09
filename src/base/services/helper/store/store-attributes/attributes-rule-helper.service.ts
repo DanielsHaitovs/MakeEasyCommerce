@@ -181,11 +181,10 @@ export class StoreRuleHelperService {
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<StoreRuleResponseI> {
         if (storeViewValue === null) {
-            const result = await this.entityManager
+            const result: GetStoreRuleI = await this.entityManager
                 .getRepository(StoreViewRule)
                 .createQueryBuilder(alias)
                 .where(columnName, rawValue)
-                .andWhere(storeViewColumn, storeViewValue)
                 .select(selectList)
                 .orderBy(orderBy, orderDirection)
                 .cache(true)
@@ -201,10 +200,11 @@ export class StoreRuleHelperService {
             }
         }
 
-        const storeViewResult = await this.entityManager
+        const storeViewResult: GetStoreRuleI = await this.entityManager
             .getRepository(StoreViewRule)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
+            .andWhere(storeViewColumn, storeViewValue)
             .select(selectList)
             .orderBy(orderBy, orderDirection)
             .cache(true)
@@ -218,6 +218,7 @@ export class StoreRuleHelperService {
                 result: storeViewResult,
             };
         }
+
         return {
             status: '404',
             message: 'Rule Not Found',
@@ -259,7 +260,7 @@ export class StoreRuleHelperService {
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<StoreRuleResponseI> {
         if (storeViewValue === null) {
-            const result = await this.entityManager
+            const result: GetStoreRuleI[] = await this.entityManager
                 .getRepository(StoreViewRule)
                 .createQueryBuilder(alias)
                 .where(columnName, rawValue)
@@ -280,7 +281,7 @@ export class StoreRuleHelperService {
             }
         }
 
-        const storeViewResult = await this.entityManager
+        const storeViewResult: GetStoreRuleI[] = await this.entityManager
             .getRepository(StoreViewRule)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
