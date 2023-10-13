@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { Attributes } from '@src/attribute/entities/attributes.entity';
-import { GetAttributeI } from '@src/attribute/interfaces/attribute.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { Store } from '@src/store/entities/store.entity';
@@ -56,7 +54,7 @@ export class StoreHelperService {
             .getExists();
     }
 
-    async ifAttributeExists({
+    async isAttributeDefault({
         storeViewId,
         relatedAttributeId,
     }: {
@@ -70,50 +68,13 @@ export class StoreHelperService {
                 storeView: storeViewId,
             })
             .andWhere(
-                'storeViewAttributes.defaultAttribute = :defaultAttribute',
-                { defaultAttribute: relatedAttributeId },
+                'storeViewAttributes.relatedAttribute = :relatedAttribute',
+                { relatedAttribute: relatedAttributeId },
             )
+            .andWhere('storeViewAttributes.useDefault = :useDefault', {
+                useDefault: true,
+            })
             .getExists();
-    }
-
-    // async isAttributeDefault({
-    //     storeViewId,
-    //     relatedAttributeId,
-    // }: {
-    //     storeViewId: number;
-    //     relatedAttributeId: number;
-    // }): Promise<boolean> {
-    //     return await this.entityManager
-    //         .getRepository(StoreAttribute)
-    //         .createQueryBuilder('storeViewAttributes')
-    //         .where('storeViewAttributes.storeView = :storeView', {
-    //             storeView: storeViewId,
-    //         })
-    //         .andWhere(
-    //             'storeViewAttributes.relatedAttribute = :relatedAttribute',
-    //             { relatedAttribute: relatedAttributeId },
-    //         )
-    //         .andWhere('storeViewAttributes.useDefault = :useDefault', {
-    //             useDefault: true,
-    //         })
-    //         .getExists();
-    // }
-
-    async findAttributeDefaultCode({
-        relatedAttributeId,
-    }: {
-        relatedAttributeId: number;
-    }): Promise<GetAttributeI> {
-        try {
-            return await this.entityManager
-                .getRepository(Attributes)
-                .createQueryBuilder('attributes')
-                .where('attributes.id = :id', { id: relatedAttributeId })
-                .select(['attributes.description.code'])
-                .getOne();
-        } catch (e) {
-            return e.message;
-        }
     }
 
     async singleConditionStoreQuery({

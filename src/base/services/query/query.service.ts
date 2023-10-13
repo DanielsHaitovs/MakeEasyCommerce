@@ -6,6 +6,8 @@ import { CreateQueryService } from './create/create-query.service';
 import { GetQueryService } from './get/get-query.service';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { QueryBaseResponse } from '@src/base/dto/responses/response.create-query.dto';
+import { GetAttributeDto } from '@src/attribute/dto/get-attribute.dto';
+import { AttributesBase } from '@src/attribute/entities/attribute.base.entity';
 
 @Injectable()
 export class QueryService {

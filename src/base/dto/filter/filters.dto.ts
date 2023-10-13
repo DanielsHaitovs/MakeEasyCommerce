@@ -149,26 +149,3 @@ export class AttributeSingleConditionDto extends SingleConditionDto {
     @IsBoolean()
     joinRule: boolean;
 }
-
-export class StoreRuleFilters extends SingleConditionDto {
-    @ApiProperty({
-        title: 'Filter by Store View',
-        type: Number,
-    })
-    @IsOptional()
-    @IsNumber()
-    storeViewId: number;
-}
-
-export class StoreOptionFilters extends StoreRuleFilters {}
-
-export class StoreViewOrderedPaginationDto extends OrderedPaginationDto {
-    @ApiProperty({
-        title: 'Filter by Store View',
-        type: Number,
-        nullable: true,
-    })
-    @IsOptional()
-    @IsNumber()
-    storeViewId: number;
-}

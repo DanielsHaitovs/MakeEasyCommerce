@@ -36,6 +36,7 @@ export class Attributes extends AttributesBase {
     @OneToMany(() => Option, (options) => options.relatedAttribute, {
         cascade: false,
         eager: false,
+        orphanedRowAction: 'delete',
     })
     options: Option[];
     @RelationId((attribute: Attributes) => attribute.options)

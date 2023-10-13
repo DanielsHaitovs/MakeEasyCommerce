@@ -1,54 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { StoreRuleFilters } from '@src/base/dto/filter/filters.dto';
+import { StoreOptionFilters } from '@src/base/dto/filter/store/store-filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import { StoreViewRule } from '@src/store/relations/store-attribute/entities/store-attribute/attribute-rule.entity';
+import { StoreViewOption } from '@src/store/relations/store-attribute/entities/store-attribute/attribute-option.entity';
 import {
-    GetStoreRuleI,
-    StoreRuleResponseI,
-} from '@src/store/relations/store-attribute/interface/store-attributes/attributes-rule.interface';
+    GetStoreOptionI,
+    StoreOptionResponseI,
+} from '@src/store/relations/store-attribute/interface/store-attributes/attributes-option.interface';
 import { EntityManager } from 'typeorm';
-
-export const alias = 'storeRule';
-export const indexKey = 'fk_store_view_rule_query';
-export const RuleList: string[] = [
-    'useInCatalog',
-    'useInListing',
-    'useInLayeredNavigation',
-    'useInFilter',
-    'useInOptionFilter',
-    'useInSort',
-    'useInSearch',
-    'useInPromo',
-    'useInReport',
-];
-
+export const alias = 'storeOption';
+export const indexKey = 'fk_store_view_option_query';
 @Injectable()
-export class StoreRuleHelperService {
+export class StoreOptionHelperService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
     ) {}
-    async singleConditionRuleQuery({
+    async singleConditionOptionQuery({
         filters,
     }: {
-        filters: StoreRuleFilters;
-    }): Promise<StoreRuleResponseI> {
+        filters: StoreOptionFilters;
+    }): Promise<StoreOptionResponseI> {
         let storeViewColumn = '';
         let storeViewValue = null;
         const skip = (filters.page - 1) * filters.limit;
-        let modifiedRuleList: string[] = [];
+        let ruleList: string[] = [];
         let rawValue = null;
         let columnName = '';
         let orderBy = '';
-        if (filters.select != null && filters.select[0] != undefined) {
-            for (const addToSelect of RuleList) {
-                modifiedRuleList.push(
+        if (filters.select != null && filters.select[0] != null) {
+            for (const addToSelect of filters.select) {
+                ruleList.push(
                     alias + '.' + filters.select[0] + '.' + addToSelect,
                 );
             }
         } else {
-            modifiedRuleList = null;
+            ruleList = null;
         }
 
         if (filters.columnName != null && filters.columnName != '') {
@@ -74,7 +61,7 @@ export class StoreRuleHelperService {
                 return await this.singleNonRelationQuery({
                     storeViewColumn: storeViewColumn,
                     storeViewValue: storeViewValue,
-                    selectList: modifiedRuleList,
+                    selectList: ruleList,
                     columnName: columnName,
                     rawValue: rawValue,
                     orderBy: orderBy,
@@ -86,19 +73,18 @@ export class StoreRuleHelperService {
                     message: 'Ups, Error',
                     error: {
                         message: e.message,
-                        in: 'Store Rule Helper Query',
+                        in: 'Store Option Helper Query',
                     },
                 };
             }
         }
-
         try {
             return await this.nonRelationQuery({
-                skip: skip,
-                limit: filters.limit,
                 storeViewColumn: storeViewColumn,
                 storeViewValue: storeViewValue,
-                selectList: modifiedRuleList,
+                skip: skip,
+                limit: filters.limit,
+                selectList: ruleList,
                 columnName: columnName,
                 rawValue: rawValue,
                 orderBy: orderBy,
@@ -110,53 +96,10 @@ export class StoreRuleHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Store Rule Helper Query',
+                    in: 'Store Option Helper Query',
                 },
             };
         }
-    }
-
-    async findByStoreViewAndAttribute({
-        storeAttribute,
-        storeViewId,
-    }: {
-        storeAttribute: number;
-        storeViewId: number;
-    }): Promise<StoreRuleResponseI> {
-        const result: GetStoreRuleI = await this.entityManager
-            .getRepository(StoreViewRule)
-            .createQueryBuilder(alias)
-            .where(alias + '.storeAttribute = :storeAttribute', {
-                storeAttribute: storeAttribute,
-            })
-            .andWhere(alias + '.storeView = :storeView', {
-                storeView: storeViewId,
-            })
-            .cache(true)
-            .useIndex(indexKey)
-            .getOne();
-
-        if (result != null) {
-            return {
-                status: '200',
-                message: 'Success',
-                result: result,
-            };
-        }
-
-        return {
-            status: '404',
-            message: 'Rule Not Found',
-            error: {
-                message:
-                    'Store Rule for attribute ' +
-                    storeAttribute +
-                    ' for store view id ' +
-                    storeViewId +
-                    ' not found',
-                in: 'Store Attribute Rule Helper Service',
-            },
-        };
     }
 
     private async singleNonRelationQuery({
@@ -179,10 +122,10 @@ export class StoreRuleHelperService {
         };
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
-    }): Promise<StoreRuleResponseI> {
+    }): Promise<StoreOptionResponseI> {
         if (storeViewValue === null) {
-            const result: GetStoreRuleI = await this.entityManager
-                .getRepository(StoreViewRule)
+            const result: GetStoreOptionI = await this.entityManager
+                .getRepository(StoreViewOption)
                 .createQueryBuilder(alias)
                 .where(columnName, rawValue)
                 .select(selectList)
@@ -200,8 +143,8 @@ export class StoreRuleHelperService {
             }
         }
 
-        const storeViewResult: GetStoreRuleI = await this.entityManager
-            .getRepository(StoreViewRule)
+        const storeViewResult: GetStoreOptionI = await this.entityManager
+            .getRepository(StoreViewOption)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
             .andWhere(storeViewColumn, storeViewValue)
@@ -221,7 +164,7 @@ export class StoreRuleHelperService {
 
         return {
             status: '404',
-            message: 'Rule Not Found',
+            message: 'Store Option Not Found',
             error: {
                 message:
                     'Column ' +
@@ -229,28 +172,28 @@ export class StoreRuleHelperService {
                     ' with value ' +
                     rawValue.value +
                     ' not found',
-                in: 'Store Attribute Rule Helper Service',
+                in: 'Store Attribute Option Helper Service',
             },
         };
     }
 
     private async nonRelationQuery({
-        skip,
-        limit,
         storeViewColumn,
         storeViewValue,
+        skip,
+        limit,
         selectList,
         columnName,
         rawValue,
         orderBy,
         orderDirection,
     }: {
-        skip: number;
-        limit: number;
         storeViewColumn: string;
         storeViewValue: {
             storeViewId: number;
         };
+        skip: number;
+        limit: number;
         selectList: string[];
         columnName: string;
         rawValue: {
@@ -258,10 +201,10 @@ export class StoreRuleHelperService {
         };
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
-    }): Promise<StoreRuleResponseI> {
+    }): Promise<StoreOptionResponseI> {
         if (storeViewValue === null) {
-            const result: GetStoreRuleI[] = await this.entityManager
-                .getRepository(StoreViewRule)
+            const result: GetStoreOptionI[] = await this.entityManager
+                .getRepository(StoreViewOption)
                 .createQueryBuilder(alias)
                 .where(columnName, rawValue)
                 .select(selectList)
@@ -280,9 +223,8 @@ export class StoreRuleHelperService {
                 };
             }
         }
-
-        const storeViewResult: GetStoreRuleI[] = await this.entityManager
-            .getRepository(StoreViewRule)
+        const storeViewResult: GetStoreOptionI[] = await this.entityManager
+            .getRepository(StoreViewOption)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
             .andWhere(storeViewColumn, storeViewValue)
@@ -294,16 +236,28 @@ export class StoreRuleHelperService {
             .useIndex(indexKey)
             .getMany();
 
-        if (storeViewResult != null) {
+        if (storeViewResult.length > 0) {
             return {
                 status: '200',
                 message: 'Success',
                 result: storeViewResult,
             };
         }
+
+        if (rawValue === null) {
+            return {
+                status: '404',
+                message: 'Store Options Not Found',
+                error: {
+                    message: 'Could not find any record',
+                    in: 'Store Attribute Option Helper Service',
+                },
+            };
+        }
+
         return {
             status: '404',
-            message: 'Rule Not Found',
+            message: 'Store Options Not Found',
             error: {
                 message:
                     'Column ' +
@@ -311,7 +265,7 @@ export class StoreRuleHelperService {
                     ' with value ' +
                     rawValue.value +
                     ' not found',
-                in: 'Store Attribute Rule Helper Service',
+                in: 'Store Attribute Option Helper Service',
             },
         };
     }
