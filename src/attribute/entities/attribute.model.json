@@ -1,12 +1,12 @@
 [
   {
-    "description": {
-      "name": "color",
-      "code": "color_code",
-      "description": "string",
-      "isRequired": false,
+    "isActive": false,
+    "name": "color",
+    "code": "color_code",
+    "isRequired": false,
+    "details": {
       "dataType": "String",
-      "isActive": false,
+      "description": "string",
       "isArray": true
     },
     "rule": {
@@ -35,36 +35,32 @@
     },
     "options": [
       {
-        "value": "green",
-        "relatedAttribute": 0
+        "value": "green"
       },
       {
-        "value": 55,
-        "relatedAttribute": 0
+        "value": 55
       },
       {
-        "value": true,
-        "relatedAttribute": 0
+        "value": true
       },
       {
         "value": {
           "color_1": "green",
           "color_2": "red",
           "color_3": "black"
-        },
-        "relatedAttribute": 0
+        }
       }
     ]
   },
   {
-    "description": {
-      "name": "size",
-      "code": "size_code",
-      "description": "string",
-      "isRequired": false,
+    "isActive": false,
+    "name": "size",
+    "code": "size_code",
+    "isRequired": false,
+    "details": {
       "dataType": "String",
-      "isActive": false,
-      "isArray": true
+      "isArray": true,
+      "description": "string"
     },
     "rule": {
       "front": {
@@ -92,24 +88,20 @@
     },
     "options": [
       {
-        "value": 36,
-        "relatedAttribute": 0
+        "value": 36
       },
       {
-        "value": 37,
-        "relatedAttribute": 0
+        "value": 37
       },
       {
-        "value": 38,
-        "relatedAttribute": 0
+        "value": 38
       },
       {
         "value": {
           "size_1": "38.5",
           "size_2": "39.0",
           "size_3": "39.5"
-        },
-        "relatedAttribute": 0
+        }
       }
     ]
   }

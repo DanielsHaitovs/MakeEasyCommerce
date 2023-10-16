@@ -1,35 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AttributeService } from './services/attribute.service';
-import { ProductAttributeModule } from './relations/product-attribute/product-attribute.module';
 import { AttributeController } from './controllers/attribute.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductAttribute } from './relations/product-attribute/entities/product-attribute.entity';
-import { OptionModule } from './relations/option/option.module';
-import { RuleModule } from './relations/rule/rule.module';
-import { QueryService } from '@src/base/services/query/query.service';
-import { GetQueryService } from '@src/base/services/query/get/get-query.service';
-import { CreateQueryService } from '@src/base/services/query/create/create-query.service';
-import { OptionHelperService } from '@src/base/services/helper/attributes/option-helper.service';
-import { OptionService } from './relations/option/services/option.service';
-import { AttributeHelperService } from '@src/base/services/helper/attributes/attribute-helper.service';
-import { Attributes } from './entities/attributes.entity';
+import { Attribute } from './entities/attribute.entity';
+import { AttributeOptionModule } from './relations/attribute-option/option.module';
+import { AttributeRuleModule } from './relations/attribute-rule/rule.module';
+import { AttributeHelperService } from '@src/base/services/attribute/attribute-helper.service';
+import { AttributeOptionService } from './services/attributes/attribute-option.service';
+import { OptionService } from './relations/attribute-option/services/option.service';
+import { OptionHelperService } from '@src/base/services/attribute/attributes/option-helper.service';
+import { AttributeOptionController } from './controllers/attributes/attribute-option.controller';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Attributes, ProductAttribute]),
-        OptionModule,
-        RuleModule,
-        ProductAttributeModule,
+        AttributeOptionModule, AttributeRuleModule,
+        TypeOrmModule.forFeature([Attribute]),
     ],
-    controllers: [AttributeController],
-    providers: [
-        AttributeService,
-        AttributeHelperService,
-        OptionService,
-        OptionHelperService,
-        QueryService,
-        CreateQueryService,
-        GetQueryService,
-    ],
+    controllers: [AttributeController, AttributeOptionController],
+    providers: [AttributeService, AttributeOptionService, OptionService, AttributeHelperService, OptionHelperService],
 })
 export class AttributeModule {}

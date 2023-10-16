@@ -1,4 +1,5 @@
 export enum AttributeType {
+    Config = 'Config',
     String = 'String',
     Boolean = 'Boolean',
     Number = 'Number',
@@ -13,6 +14,12 @@ export enum AttributeRuleType {
 
 export enum JoinAttributeRelations {
     All = 'all',
+    Options = 'attribute.options',
+    Rule = 'attribute.rule',
+}
+
+export enum JoinAttributeAlias {
+    All = 'all',
     Options = 'options',
-    rule = 'rule',
+    Rule = 'rule',
 }

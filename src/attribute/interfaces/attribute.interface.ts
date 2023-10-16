@@ -1,68 +1,73 @@
-import { QueryResponseI } from '@src/base/interfaces/responses/response.create-query.dto';
-import {
-    CreateOptionI,
-    GetOptionI,
-    OptionI,
-} from '../relations/option/interfaces/option.interface';
-import {
-    CreateRuleI,
-    GetRuleI,
-    RuleI,
-} from '../relations/rule/interface/rule.interface';
+import { AttributeType } from "@src/base/enum/attributes/attribute-type.enum";
+import { CreateAttributeRuleI, GetAttributeOptionI, GetAttributeRuleI } from "./attributes/attributes.interface";
+import { QueryResponseI } from "@src/base/interface/response/response.interface";
 
-export interface GetAttributeOptionsI {
-    id: number;
-    options: OptionI[];
-}
-
-export interface AttributeDescriptionI {
-    isActive: boolean;
-    isRequired: boolean;
-    name: string;
-    code: string;
+export interface AttributeDetailsI {
     description: string;
-    dataType?: string;
     isArray: boolean;
+    dataType: AttributeType;
+    // appliesTo: ProductTypes[];
 }
 
-export interface AttributeShortI {
-    description: AttributeDescriptionI;
-}
+// export interface AttributeDescriptionShortI {
+//     isActive: boolean;
+//     name: string;
+//     code: string;
+//     isRequired: boolean;
+// }
+
+
+// export interface AttributeDescriptionI extends AttributeDescriptionShortI {
+//     details: AttributeDetailsI;
+// }
+
+// export interface CreateAttributeShortI extends AttributeDescriptionI {
+//     rule: CreateRuleAttributeI;
+// }
+
+// export interface CreateAttributeI extends CreateAttributeShortI {
+//     options: CreateOptionAttributeI[];
+// }
+
+// export interface GetAttributeShortI extends AttributeDescriptionI{
+//     id: number;
+//     rule: GetAttributeRuleI;
+// }
+
+// export interface GetAttributeI extends GetAttributeShortI {
+//     options: GetOptionAttributeI[];
+//     optionsIds?: number[];
+// }
 
 export interface CreateAttributeShortI {
-    description: AttributeDescriptionI;
+    isActive: boolean;
+    name: string;
+    code: string;
+    isRequired: boolean;
+    rule: CreateAttributeRuleI
+    details: AttributeDetailsI;
 }
 
-export interface CreateAttributeI extends CreateAttributeShortI {
-    rule: RuleI;
-    options: CreateOptionI[];
-}
-
-export interface UpdateAttributeShortI {
-    description: AttributeDescriptionI;
-}
-
-export interface UpdateAttributeI extends UpdateAttributeShortI {
-    rule: CreateRuleI;
-    options: CreateOptionI[];
-}
-
-export interface GetAttributeI {
-    id?: number;
-    description?: AttributeDescriptionI;
-    rule?: GetRuleI;
-    options?: GetOptionI[];
-    optionsIds?: number[];
-}
-
-export class GetAttributeRuleI {
+export interface GetAttributeShortI extends CreateAttributeShortI {
+    rule: GetAttributeRuleI;
     id: number;
-    rule: GetRuleI;
-    optionsIds?: number[];
 }
 
-export interface AttributeResponseI extends QueryResponseI {
+export interface GetAttributeI extends GetAttributeShortI {
+    options: GetAttributeOptionI[];
+    optionsIds: number[];
+}
+
+export interface AttributeShortResponseI extends QueryResponseI {
     status: string;
     message: string;
+    result?: GetAttributeShortI | GetAttributeShortI[];
+}
+
+export interface AttributeResponseI extends AttributeShortResponseI {
     result?: GetAttributeI | GetAttributeI[];
+}
+
+export interface AttributeOptionResponseI extends QueryResponseI {
+    result?: GetAttributeOptionI | GetAttributeOptionI[];
 }

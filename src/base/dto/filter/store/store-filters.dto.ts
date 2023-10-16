@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import {
+    IsBoolean,
+    IsNumber,
+    IsOptional,
+    ValidateNested,
+} from 'class-validator';
 import {
     AttributerRelations,
     OrderedPaginationDto,

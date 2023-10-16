@@ -1,31 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AttributeDescriptionDto } from './attribute.dto';
+import { AttributeDescriptionDto } from '@src/base/dto/mec/attribute/attribute.dto';
 import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { CreateOptionDto } from '../relations/option/dto/create-option.dto';
-import { RuleDto } from '../relations/rule/dto/rule-base.dto';
+import { CreateRuleAttributeDto } from './attributes/rule/create-attribute.rule.dto';
+import { CreateOptionAttributeDto } from './attributes/option/create-attribute.option.dto';
 
-export class CreateAttributeShortDto {
+export class CreateAttributeShortDto extends AttributeDescriptionDto {
     @ApiProperty({
-        title: 'Main Attribute Data',
-        type: AttributeDescriptionDto,
+        title: 'Attribute Rule',
+        type: CreateRuleAttributeDto,
+        nullable: false,
     })
+    @IsNotEmpty()
     @ValidateNested({ each: true })
-    description: AttributeDescriptionDto;
+    rule: CreateRuleAttributeDto;
 }
 
 export class CreateAttributeDto extends CreateAttributeShortDto {
     @ApiProperty({
-        title: 'Create Attribute rule',
-        type: RuleDto,
+        title: 'Attribute Options',
+        type: [CreateOptionAttributeDto],
         nullable: false,
     })
     @IsNotEmpty()
-    rule: RuleDto;
-
-    @ApiProperty({
-        title: 'Create Option(s) for this attribute',
-        type: [CreateOptionDto],
-    })
     @ValidateNested({ each: true })
-    options: CreateOptionDto[];
+    options: CreateOptionAttributeDto[];
 }

@@ -8,66 +8,45 @@ import {
     Delete,
     Query,
     ParseBoolPipe,
-    ParseIntPipe,
 } from '@nestjs/common';
 import { AttributeService } from '../services/attribute.service';
-import {
-    CreateAttributeDto,
-    CreateAttributeShortDto,
-} from '../dto/create-attribute.dto';
-import { UpdateAttributeShortDto } from '../dto/update-attribute.dto';
-import {
-    ApiBody,
-    ApiOkResponse,
-    ApiOperation,
-    ApiParam,
-    ApiQuery,
-    ApiTags,
-} from '@nestjs/swagger';
-import { AttributeResponseI } from '../interfaces/attribute.interface';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { CreateAttributeDto, CreateAttributeShortDto } from '../dto/create-attribute.dto';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
-import {
-    GetAttributeDto,
-    GetAttributeShortDto,
-} from '../dto/get-attribute.dto';
-import { UpdateRuleDto } from '../relations/rule/dto/update-rule.dto';
-import { UpdateManyOptionsDto } from '../relations/option/dto/update-option.dto';
+import { AttributeResponseI } from '../interfaces/attribute.interface';
+import { GetAttributeDto, GetAttributeShortDto } from '../dto/get-attribute.dto';
 
-@Controller('attribute')
 @ApiTags('Attribute')
+@Controller('attribute')
 export class AttributeController {
     constructor(private readonly attributeService: AttributeService) {}
+
+    @Post('new/short')
+    @ApiOperation({
+        summary: 'Create 1 Attribute Short',
+        description: 'Create 1 attribute only with its rule',
+    })
+    @ApiBody({
+        type: CreateAttributeShortDto,
+        description: 'Create Attribute Short',
+        required: true,
+    })
+    async createShort(@Body() createAttribute: CreateAttributeShortDto) {
+        return await this.attributeService.createShort({ createAttribute });
+    }
 
     @Post('new')
     @ApiOperation({
         summary: 'Create 1 Attribute',
-        description: 'Create 1 attribute with all data',
+        description: 'Create 1 attribute with its rule and option(s)',
     })
     @ApiBody({
         type: CreateAttributeDto,
-        description: 'Create Attribute',
+        description: 'Create Attribute & Rule & Option(s)',
         required: true,
     })
-    async create(
-        @Body() createAttribute: CreateAttributeDto,
-    ): Promise<AttributeResponseI> {
+    async create(@Body() createAttribute: CreateAttributeDto) {
         return await this.attributeService.create({ createAttribute });
-    }
-
-    @Post('short/new')
-    @ApiOperation({
-        summary: 'Create 1 Attribute Description',
-        description: 'Create 1 attribute only with description',
-    })
-    @ApiBody({
-        type: CreateAttributeShortDto,
-        description: 'Create Attribute Description',
-        required: true,
-    })
-    async createShort(
-        @Body() createAttribute: CreateAttributeShortDto,
-    ): Promise<AttributeResponseI> {
-        return await this.attributeService.createShort({ createAttribute });
     }
 
     @Get('get/all')
@@ -170,71 +149,26 @@ export class AttributeController {
         return await this.attributeService.findAttributeOptions({ id });
     }
 
-    @Patch('update/description/:id')
-    @ApiOperation({
-        summary: 'Update Attribute description by ID',
-        description: 'Update specifically attribute description data by id',
-    })
-    @ApiBody({
-        type: UpdateAttributeShortDto,
-        description: 'Attribute Description',
-        required: true,
-    })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateAttribute: UpdateAttributeShortDto,
-    ): Promise<AttributeResponseI> {
-        return this.attributeService.update({
-            id,
-            attribute: updateAttribute,
-        });
-    }
+    // @Get()
+    // findAll() {
+    //     return this.attributeService.findAll();
+    // }
 
-    @Patch('update/rule/:id')
-    @ApiOperation({
-        summary: 'Update Attribute rule by ID',
-        description: 'Update specifically attribute rule data by id',
-    })
-    @ApiBody({
-        type: UpdateRuleDto,
-        description: 'Attribute rule',
-        required: true,
-    })
-    async updateRule(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateRule: UpdateRuleDto,
-    ): Promise<AttributeResponseI> {
-        return this.attributeService.updateRule({
-            attributeId: id,
-            updateRule,
-        });
-    }
+    // @Get(':id')
+    // findOne(@Param('id') id: string) {
+    //     return this.attributeService.findOne(+id);
+    // }
 
-    @Patch('update/options/:id')
-    @ApiOperation({
-        summary: 'Update Attribute options by ID',
-        description:
-            'Update specifically attribute options data, can add, remove, update option by parent attribute id',
-    })
-    @ApiBody({
-        type: UpdateManyOptionsDto,
-        description: 'Attribute Options',
-        required: true,
-    })
-    async updateOptions(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateOptions: UpdateManyOptionsDto,
-        @Query('keepOld', ParseBoolPipe) keepOld: boolean,
-    ): Promise<AttributeResponseI> {
-        return this.attributeService.updateOptions({
-            attributeId: id,
-            updateOptions: updateOptions,
-            keepOld: keepOld,
-        });
-    }
+    // @Patch(':id')
+    // update(
+    //     @Param('id') id: string,
+    //     @Body() updateAttributeDto: UpdateAttributeDto,
+    // ) {
+    //     return this.attributeService.update(+id, updateAttributeDto);
+    // }
 
-    @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.attributeService.remove({ id });
-    }
+    // @Delete(':id')
+    // remove(@Param('id') id: string) {
+    //     return this.attributeService.remove(+id);
+    // }
 }
