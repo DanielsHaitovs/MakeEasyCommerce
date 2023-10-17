@@ -1,20 +1,10 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    Query,
-    ParseBoolPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, ParseBoolPipe } from '@nestjs/common';
 import { AttributeService } from '../services/attribute.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateAttributeDto, CreateAttributeShortDto } from '../dto/create-attribute.dto';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { AttributeResponseI } from '../interfaces/attribute.interface';
-import { GetAttributeDto, GetAttributeShortDto } from '../dto/get-attribute.dto';
+import { GetAttributeDescriptionDto, GetAttributeDto, GetAttributeShortDto } from '../dto/get-attribute.dto';
 
 @ApiTags('Attribute')
 @Controller('attribute')
@@ -79,14 +69,14 @@ export class AttributeController {
 
     @Get('get/one/by/:id')
     @ApiOperation({
-        summary: 'Find 1 Attribute by id',
+        summary: 'Find 1 Attribute Short by id',
         description:
-            'Get data of specific Attribute and its data condition, good luck!',
+            'Get data of specific Attribute Short and its data condition, good luck!',
     })
-    @ApiParam({ name: 'id', description: 'Attribute Data' })
+    @ApiParam({ name: 'id', description: 'Attribute Short Data' })
     @ApiOkResponse({
-        description: 'Specific Attribute Rule and its details',
-        type: GetAttributeDto,
+        description: 'Specific Attribute Main details',
+        type: GetAttributeDescriptionDto,
     })
     async findOneById(@Param('id') id: number): Promise<AttributeResponseI> {
         return await this.attributeService.findOneById({ id });
@@ -115,38 +105,6 @@ export class AttributeController {
                 joinOptions: includeOptions,
             },
         });
-    }
-
-    @Get('get/one/rule/by/:id')
-    @ApiOperation({
-        summary: 'Find 1 Attribute Rule by id',
-        description: 'Its basically will try to find your attributes Rule.',
-    })
-    @ApiParam({ name: 'id', description: 'Attribute Data' })
-    @ApiOkResponse({
-        description: 'Specific Attribute Rule and its details',
-        type: GetAttributeDto,
-    })
-    async findAttributeRule(
-        @Param('id') id: number,
-    ): Promise<AttributeResponseI> {
-        return await this.attributeService.findAttributeRule({ id });
-    }
-
-    @Get('options/get/one/by/:id')
-    @ApiOperation({
-        summary: 'Find Options of specific Attribute id',
-        description: 'Its basically will try to find your attributes Rule.',
-    })
-    @ApiParam({ name: 'id', description: 'Attribute Data' })
-    @ApiOkResponse({
-        description: 'Specific Attribute Options and its details',
-        type: GetAttributeDto,
-    })
-    async findAttributeOptions(
-        @Param('id') id: number,
-    ): Promise<AttributeResponseI> {
-        return await this.attributeService.findAttributeOptions({ id });
     }
 
     // @Get()

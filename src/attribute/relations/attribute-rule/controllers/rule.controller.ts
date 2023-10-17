@@ -1,22 +1,5 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    Query,
-    ParseIntPipe,
-} from '@nestjs/common';
-import {
-    ApiBody,
-    ApiOkResponse,
-    ApiOperation,
-    ApiParam,
-    ApiQuery,
-    ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { CreateRuleDto } from '../dto/create-rule.dto';
 import { GetRuleDto } from '../dto/get-rule.dto';
@@ -28,7 +11,7 @@ import { RuleResponseI } from '../interface/rule.interface';
 
 @Controller('attribute-rule')
 @ApiTags('Rule (Attribute)')
-export class AttributeRuleController {
+export class RuleController {
     constructor(
         private readonly ruleService: RuleService,
     ) {}

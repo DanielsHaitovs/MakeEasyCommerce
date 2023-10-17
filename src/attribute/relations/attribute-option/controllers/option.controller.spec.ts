@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AttributeOptionController } from './option.controller';
 import { OptionService } from '../services/option.service';
+import { OptionController } from './option.controller';
 
-describe('AttributeOptionController', () => {
-    let controller: AttributeOptionController;
+describe('OptionController', () => {
+    let controller: OptionController;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [AttributeOptionController],
+            controllers: [OptionController],
             providers: [OptionService],
         }).compile();
 
-        controller = module.get<AttributeOptionController>(
-            AttributeOptionController,
+        controller = module.get<OptionController>(
+            OptionController,
         );
     });
 

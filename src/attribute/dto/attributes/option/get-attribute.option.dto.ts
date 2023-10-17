@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { OptionDto } from "@src/base/dto/mec/attribute/attributes/option.dto";
 import { IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
 import { CreateAttributeOptionsDto, CreateOneAttributeOptionDto } from "./create-attribute.option.dto";
 

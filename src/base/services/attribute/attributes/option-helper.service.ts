@@ -1,17 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import {
-    CreateOptionI,
-    GetOptionI,
-    OptionResponseI,
-} from '@src/attribute/relations/attribute-option/interface/create-option.interface';
+import { CreateOptionI, GetOptionI, OptionResponseI } from '@src/attribute/relations/attribute-option/interface/create-option.interface';
 import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { CreateOptionDto } from '@src/attribute/relations/attribute-option/dto/create-option.dto';
 import { AttributeOption } from '@src/attribute/relations/attribute-option/entities/option.entity';
 export const alias = 'options';
-export const indexKey = 'fk_option_simple_query';
+export const indexKey = 'ik_attribute_option_index';
 
 @Injectable()
 export class OptionHelperService {

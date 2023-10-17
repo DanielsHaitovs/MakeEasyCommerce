@@ -1,17 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    IsBoolean,
-    IsNumber,
-    IsOptional,
-    ValidateNested,
-} from 'class-validator';
-import {
-    AttributerRelations,
-    OrderedPaginationDto,
-    SingleConditionDto,
-} from '../filters.dto';
+import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { AttributerRelationsDto, OrderedPaginationDto, SingleConditionDto } from '../filters.dto';
 
-export class StoreAttributeRelations extends AttributerRelations {}
+export class StoreAttributeRelations extends AttributerRelationsDto {}
 
 export class StoreFilters extends SingleConditionDto {
     @ApiProperty({

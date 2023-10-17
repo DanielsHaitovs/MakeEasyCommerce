@@ -1,8 +1,6 @@
 import {
     BaseEntity as TypeOrmBaseEntity,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
+    PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn
 } from 'typeorm';
 
 export abstract class MecBaseEntity extends TypeOrmBaseEntity {

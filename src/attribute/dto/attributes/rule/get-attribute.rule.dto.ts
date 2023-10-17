@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { GetRuleDto, GetTypeRuleDto } from "@src/attribute/relations/attribute-rule/dto/get-rule.dto";
-import { RuleDto } from "@src/base/dto/mec/attribute/attributes/rule.dto";
 import { IsNotEmpty, IsNumber } from "class-validator";
 
 export class GetAttributeRuleDto extends GetRuleDto {

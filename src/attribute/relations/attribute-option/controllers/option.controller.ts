@@ -1,22 +1,5 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseIntPipe,
-    Patch,
-    Post,
-    Query,
-} from '@nestjs/common';
-import {
-    ApiBody,
-    ApiOkResponse,
-    ApiOperation,
-    ApiParam,
-    ApiQuery,
-    ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { OptionService } from '../services/option.service';
 import { CreateOptionDto } from '../dto/create-option.dto';
@@ -44,7 +27,6 @@ export class OptionController {
         @Param('id', ParseIntPipe) id: number,
         @Body() createOption: CreateOptionDto,
     ): Promise<OptionResponseI> {
-        console.log(id);
         return await this.optionService.create({
             relatedAttribute: id,
             createOption,

@@ -3,11 +3,7 @@ import { MecBaseEntity } from '@src/base/entity/base.entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 export const AttributeOptionIndexPrefix = 'ik_attribute_option_index';
-export const AttributeOptionIndexKeys: string[] = [
-    'id',
-    'value',
-    'relatedAttribute',
-];
+export const AttributeOptionIndexKeys: string[] = [ 'id', 'value', 'relatedAttribute' ];
 
 @Entity('eav_attribute_option')
 @Index(AttributeOptionIndexPrefix, AttributeOptionIndexKeys)

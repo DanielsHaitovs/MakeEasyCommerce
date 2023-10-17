@@ -9,7 +9,7 @@ import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
 export const alias = 'rule';
-export const indexKey = 'fk_rule_simple_condition_query';
+export const indexKey = 'ik_attribute_rule_index';
 export const RuleList: string[] = [
     'useInCatalog',
     'useInListing',
@@ -147,8 +147,8 @@ export class RuleHelperService {
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<RuleResponseI> {
-        console.log(selectList);
-        const result: GetRuleI = await this.entityManager
+        try {
+            const result: GetRuleI = await this.entityManager
             .getRepository(AttributeRule)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
@@ -158,22 +158,32 @@ export class RuleHelperService {
             .useIndex(indexKey)
             .getOne();
 
-        if (result != null) {
+            if (result != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: result,
+                };
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: result,
+                status: '404',
+                message: 'Not Found',
+                error: {
+                    message: 'Return body is empty',
+                    in: 'Rule Helper -> oneNonRelationQuery',
+                },
+            };
+        } catch (e) {
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: e.message,
+                    in: 'Rule Helper -> oneNonRelationQuery',
+                },
             };
         }
-
-        return {
-            status: '404',
-            message: 'Not Found',
-            error: {
-                message: 'Return body is empty',
-                in: 'Rule Helper -> oneNonRelationQuery',
-            },
-        };
     }
 
     private async manyNonRelationQuery({
@@ -195,7 +205,8 @@ export class RuleHelperService {
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<RuleResponseI> {
-        const result: GetRuleI[] = await this.entityManager
+        try {
+            const result: GetRuleI[] = await this.entityManager
             .getRepository(AttributeRule)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
@@ -207,21 +218,31 @@ export class RuleHelperService {
             .useIndex(indexKey)
             .getMany();
 
-        if (result != null) {
+            if (result != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: result,
+                };
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: result,
+                status: '404',
+                message: 'Not Found',
+                error: {
+                    message: 'Return body is empty',
+                    in: 'Rule Helper -> manyNonRelationQuery',
+                },
+            };
+        } catch (e) {
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: e.message,
+                    in: 'Rule Helper -> manyNonRelationQuery',
+                },
             };
         }
-
-        return {
-            status: '404',
-            message: 'Not Found',
-            error: {
-                message: 'Return body is empty',
-                in: 'Rule Helper -> manyNonRelationQuery',
-            },
-        };
     }
 }

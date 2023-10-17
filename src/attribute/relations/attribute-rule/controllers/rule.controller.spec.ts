@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RuleController } from './rule.controller';
-import { RuleService } from './services/rule.service';
+import { RuleService } from '../services/rule.service';
 
 describe('RuleController', () => {
     let controller: RuleController;

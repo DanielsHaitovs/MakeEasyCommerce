@@ -4,18 +4,18 @@ import { CreateAttributeOptionsDto, CreateOneAttributeOptionDto } from "@src/att
 import { CreateRuleAttributeDto } from "@src/attribute/dto/attributes/rule/create-attribute.rule.dto";
 import { CreateAttributeShortDto } from "@src/attribute/dto/create-attribute.dto";
 import { Attribute } from "@src/attribute/entities/attribute.entity";
-import { AttributeResponseI, CreateAttributeShortI, GetAttributeI } from "@src/attribute/interfaces/attribute.interface";
+import { AttributeResponseI, CreateAttributeShortI, GetAttributeI, GetAttributeShortI } from "@src/attribute/interfaces/attribute.interface";
 import { CreateOptionAttributeI, CreateRuleAttributeI } from "@src/attribute/interfaces/attributes/attributes.interface";
 import { AttributeOption } from "@src/attribute/relations/attribute-option/entities/option.entity";
 import { AttributeRule } from "@src/attribute/relations/attribute-rule/entities/rule.entity";
-import { AttributeSingleConditionDto } from "@src/base/dto/filter/filters.dto";
+import { AttributeConditionDto } from "@src/base/dto/filter/filters.dto";
 import { JoinAttributeAlias, JoinAttributeRelations } from "@src/base/enum/attributes/attribute-type.enum";
 import { OrderType } from "@src/base/enum/query/query.enum";
+import { QueryResponseI } from "@src/base/interface/response/response.interface";
 import { EntityManager } from "typeorm";
 
 export const AttributeRelationsAlias = ['options', 'rule'];
 export const AttributeAlias = 'attribute';
-export const AttributesUniquePrefix = 'uk_attribute_index';
 export const AttributesIndexPrefix = 'ik_attribute_index';
 
 @Injectable()
@@ -82,72 +82,20 @@ export class AttributeHelperService {
         code: string;
     }): Promise<boolean> {
         return await this.entityManager.getRepository(Attribute)
-            .createQueryBuilder(AttributeAlias)
-            .where(`${AttributeAlias}.name = :name`, { name })
-            .orWhere(`${AttributeAlias}.code = :code`, { code })
-            .cache(true)
-            .useIndex('ik_attribute_index')
-            .getExists();
-    }
-
-    private prepareAttributeQueryFilter({
-        filters,
-    }: {
-        filters: AttributeSingleConditionDto;
-    }) {
-        const skip = (filters.page - 1) * filters.limit;
-        let selectList: string[] = [];
-        let rawValue = null;
-        let columnName = '';
-        if (filters.select != null && filters.select[0] != null) {
-            for (const addToSelect of filters.select) {
-                if (!AttributeRelationsAlias.includes(addToSelect)) {
-                    selectList.push(AttributeAlias + '.' + addToSelect);
-                } else {
-                    selectList.push(addToSelect);
-                }
-            }
-        } else {
-            selectList = null;
-        }
-        if (filters.columnName != null && filters.columnName != '') {
-            columnName = AttributeAlias + '.' + filters.columnName + ' = :value';
-            rawValue = {
-                value: filters.value,
-            };
-        }
-
-        if (filters.orderBy != null) {
-            filters.orderBy = AttributeAlias + '.' + filters.orderBy;
-        }
-
-        return {
-            selectList: selectList,
-            rawValue: rawValue,
-            columnName: columnName,
-            attributeRelations: JoinAttributeRelations[filters.joinOptions ? 'Options' : 'Rule'],
-            attributeRelationsAlias: JoinAttributeAlias[filters.joinOptions ? 'Options' : 'Rule'],
-            joinAttributeOption: filters.joinOptions,
-            joinOptionRelation: filters.joinOptions ? JoinAttributeRelations.Options : null,
-            joinOptionAlias: filters.joinOptions ? JoinAttributeAlias.Options : null,
-            joinAttributeRule: filters.joinRule,
-            joinRuleRelation: filters.joinRule ? JoinAttributeRelations.Rule : null,
-            joinRuleAlias: filters.joinRule ? JoinAttributeAlias.Rule : null,
-            skip: skip,
-            limit: filters.limit,
-            orderBy: filters.orderBy,
-            orderDirection: OrderType[filters.orderDirection],
-            many: filters.many,
-        }
+        .createQueryBuilder(AttributeAlias)
+        .where(`${AttributeAlias}.name = :name`, { name })
+        .orWhere(`${AttributeAlias}.code = :code`, { code })
+        .cache(true)
+        .useIndex('ik_attribute_index')
+        .getExists();
     }
 
     async attributeQueryFilter({
         filters,
     }: {
-        filters: AttributeSingleConditionDto;
+        filters: AttributeConditionDto;
     }): Promise<AttributeResponseI> {
         const queryFilter = this.prepareAttributeQueryFilter({ filters });
-        console.log(queryFilter);
         if (!queryFilter.many || queryFilter.many === null) {
         
             if (queryFilter.joinAttributeOption === true && queryFilter.joinAttributeRule === true) {
@@ -218,23 +166,32 @@ export class AttributeHelperService {
         })
     }
 
-    // async find attribute with id and its code
+    // find 1 attribute with id and its code
     async findAttributeCodeById({
             attributeId,
         }: {
             attributeId: number;
-        }): Promise<AttributeResponseI> {
+        }): Promise<string | QueryResponseI> {
             try {
+                const res: GetAttributeShortI = await this.entityManager
+                .getRepository(Attribute)
+                .createQueryBuilder(AttributeAlias)
+                .where(AttributeAlias + '.id = :id', { id: attributeId })
+                .select([AttributeAlias + '.id', AttributeAlias + '.description.code'])
+                .getOne();
+
+                if (res != null) {
+                    return res.code;
+                }
+
                 return {
-                    status: '200',
-                    message: 'Success',
-                    result: await this.entityManager
-                        .getRepository(Attribute)
-                        .createQueryBuilder(AttributeAlias)
-                        .where(AttributeAlias + '.id = :id', { id: attributeId })
-                        .select([AttributeAlias + '.id', AttributeAlias + '.description.code'])
-                        .getOne(),
-                };
+                    status: '666',
+                    message: 'Ups, Error',
+                    error: {
+                        message: 'Empty Result',
+                        in: 'Attributes Helper Query findAttributeCodeById',
+                    },
+                }
             } catch (e) {
                 return {
                     status: '666',
@@ -247,22 +204,36 @@ export class AttributeHelperService {
             }
     }
     
+    // find many attribute with id and theirs codes
     async findManyAttributeCodeById({
         attributeIds,
     }: {
         attributeIds: number[];
-    }): Promise<AttributeResponseI> {
+    }): Promise<string[] | QueryResponseI> {
         try {
+            const codes: GetAttributeShortI[] = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(AttributeAlias + '.id IN (:...ids)', { ids: attributeIds })
+            .select([AttributeAlias + '.id', AttributeAlias + '.description.code'])
+            .getMany();
+
+            if (codes != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: codes.filter((attribute) => attribute.code ),
+                };
+            }
+            
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(AttributeAlias + '.id IN (:...ids)', { ids: attributeIds })
-                    .select([AttributeAlias + '.id', AttributeAlias + '.description.code'])
-                    .getMany(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query findManyAttributeCodeById',
+                },
+            }
         } catch (e) {
             return {
                 status: '666',
@@ -291,19 +262,33 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseI> {
         try {
+            const res: GetAttributeI = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .orderBy(orderBy, orderDirection)
+            .cache(true)
+            .useIndex(AttributesIndexPrefix)
+            .getOne();
+
+            if (res != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: res,
+                };
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(columnName, rawValue)
-                    .select(selectList)
-                    .orderBy(orderBy, orderDirection)
-                    .cache(true)
-                    .useIndex(AttributesIndexPrefix)
-                    .getOne(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query singleNonRelationQuery',
+                },
+            }
+
         } catch (e) {
             return {
                 status: '666',
@@ -336,21 +321,35 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseI> {
         try {
+            const res: GetAttributeI[] = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .orderBy(orderBy, orderDirection)
+            .skip(skip)
+            .take(limit)
+            .cache(true)
+            .useIndex(AttributesIndexPrefix)
+            .getMany();
+
+            if (res != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: res,
+                };
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(columnName, rawValue)
-                    .select(selectList)
-                    .orderBy(orderBy, orderDirection)
-                    .skip(skip)
-                    .take(limit)
-                    .cache(true)
-                    .useIndex(AttributesIndexPrefix)
-                    .getMany(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query nonRelationQuery',
+                },
+            }
+
         } catch (e) {
             return {
                 status: '666',
@@ -383,20 +382,34 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseI> {
         try {
+            const res: GetAttributeI = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .leftJoinAndSelect(attributeRelation, relationAlias)
+            .orderBy(orderBy, orderDirection)
+            .cache(true)
+            .useIndex(AttributesIndexPrefix)
+            .getOne();
+
+            if (res != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: res,
+                };
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(columnName, rawValue)
-                    .select(selectList)
-                    .leftJoinAndSelect(attributeRelation, relationAlias)
-                    .orderBy(orderBy, orderDirection)
-                    .cache(true)
-                    .useIndex(AttributesIndexPrefix)
-                    .getOne(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query joinOneSingleRelationQuery',
+                },
+            }
+
         } catch (e) {
             return {
                 status: '666',
@@ -433,22 +446,36 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseI> {
         try {
+            const res : GetAttributeI[] = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .leftJoinAndSelect(attributeRelation, relationAlias)
+            .orderBy(orderBy, orderDirection)
+            .skip(skip)
+            .take(limit)
+            .cache(true)
+            .useIndex(AttributesIndexPrefix)
+            .getMany();
+
+            if (res != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: res,
+                };
+            } 
+
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(columnName, rawValue)
-                    .select(selectList)
-                    .leftJoinAndSelect(attributeRelation, relationAlias)
-                    .orderBy(orderBy, orderDirection)
-                    .skip(skip)
-                    .take(limit)
-                    .cache(true)
-                    .useIndex(AttributesIndexPrefix)
-                    .getMany(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query joinSingleRelationQuery',
+                },
+            }
+
         } catch (e) {
             return {
                 status: '666',
@@ -477,21 +504,35 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseI> {
         try {
+            const res: GetAttributeI = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .leftJoinAndSelect(JoinAttributeRelations.Options, JoinAttributeAlias.Options)
+            .leftJoinAndSelect(JoinAttributeRelations.Rule, JoinAttributeAlias.Rule)
+            .orderBy(orderBy, orderDirection)
+            .cache(true)
+            .useIndex(AttributesIndexPrefix)
+            .getOne();
+
+            if (res != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: res,
+                };    
+            }
+            
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(columnName, rawValue)
-                    .select(selectList)
-                    .leftJoinAndSelect(JoinAttributeRelations.Options, JoinAttributeAlias.Options)
-                    .leftJoinAndSelect(JoinAttributeRelations.Rule, JoinAttributeAlias.Rule)
-                    .orderBy(orderBy, orderDirection)
-                    .cache(true)
-                    .useIndex(AttributesIndexPrefix)
-                    .getOne(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query joinOneMultipleRelationQuery',
+                },
+            }
+
         } catch (e) {
             return {
                 status: '666',
@@ -524,23 +565,37 @@ export class AttributeHelperService {
         orderDirection: OrderType | OrderType.NO;
     }): Promise<AttributeResponseI> {
         try{
+            const res: GetAttributeI[] = await this.entityManager
+            .getRepository(Attribute)
+            .createQueryBuilder(AttributeAlias)
+            .where(columnName, rawValue)
+            .select(selectList)
+            .leftJoinAndSelect(JoinAttributeRelations.Options, JoinAttributeAlias.Options)
+            .leftJoinAndSelect(JoinAttributeRelations.Rule, JoinAttributeAlias.Rule)
+            .orderBy(orderBy, orderDirection)
+            .skip(skip)
+            .take(limit)
+            .cache(true)
+            .useIndex(AttributesIndexPrefix)
+            .getMany();
+
+            if (res != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: res,
+                };    
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: await this.entityManager
-                    .getRepository(Attribute)
-                    .createQueryBuilder(AttributeAlias)
-                    .where(columnName, rawValue)
-                    .select(selectList)
-                    .leftJoinAndSelect(JoinAttributeRelations.Options, JoinAttributeAlias.Options)
-                    .leftJoinAndSelect(JoinAttributeRelations.Rule, JoinAttributeAlias.Rule)
-                    .orderBy(orderBy, orderDirection)
-                    .skip(skip)
-                    .take(limit)
-                    .cache(true)
-                    .useIndex(AttributesIndexPrefix)
-                    .getMany(),
-            };
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    message: 'Empty Result',
+                    in: 'Attributes Helper Query joinMultipleRelationQuery',
+                },
+            }
+
         } catch(e) {
             return {
                 status: '666',
@@ -550,6 +605,57 @@ export class AttributeHelperService {
                     in: 'Attributes Helper Query joinMultipleRelationQuery',
                 },
             };
+        }
+    }
+    
+    private prepareAttributeQueryFilter({
+        filters,
+    }: {
+        filters: AttributeConditionDto;
+    }) {
+        const skip = (filters.page - 1) * filters.limit;
+        let selectList: string[] = [];
+        let rawValue = null;
+        let columnName = '';
+        if (filters.select != null && filters.select[0] != null) {
+            for (const addToSelect of filters.select) {
+                if (!AttributeRelationsAlias.includes(addToSelect)) {
+                    selectList.push(AttributeAlias + '.' + addToSelect);
+                } else {
+                    selectList.push(addToSelect);
+                }
+            }
+        } else {
+            selectList = null;
+        }
+        if (filters.columnName != null && filters.columnName != '') {
+            columnName = AttributeAlias + '.' + filters.columnName + ' = :value';
+            rawValue = {
+                value: filters.value,
+            };
+        }
+
+        if (filters.orderBy != null) {
+            filters.orderBy = AttributeAlias + '.' + filters.orderBy;
+        }
+
+        return {
+            selectList: selectList,
+            rawValue: rawValue,
+            columnName: columnName,
+            attributeRelations: JoinAttributeRelations[filters.joinOptions ? 'Options' : 'Rule'],
+            attributeRelationsAlias: JoinAttributeAlias[filters.joinOptions ? 'Options' : 'Rule'],
+            joinAttributeOption: filters.joinOptions,
+            joinOptionRelation: filters.joinOptions ? JoinAttributeRelations.Options : null,
+            joinOptionAlias: filters.joinOptions ? JoinAttributeAlias.Options : null,
+            joinAttributeRule: filters.joinRule,
+            joinRuleRelation: filters.joinRule ? JoinAttributeRelations.Rule : null,
+            joinRuleAlias: filters.joinRule ? JoinAttributeAlias.Rule : null,
+            skip: skip,
+            limit: filters.limit,
+            orderBy: filters.orderBy,
+            orderDirection: OrderType[filters.orderDirection],
+            many: filters.many,
         }
     }
 }

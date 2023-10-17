@@ -9,14 +9,15 @@ import { AttributeHelperService } from '@src/base/services/attribute/attribute-h
 import { AttributeOptionService } from './services/attributes/attribute-option.service';
 import { OptionService } from './relations/attribute-option/services/option.service';
 import { OptionHelperService } from '@src/base/services/attribute/attributes/option-helper.service';
-import { AttributeOptionController } from './controllers/attributes/attribute-option.controller';
+import { AttributeOptionController } from './controllers/attributes/options/attribute-option.controller';
+import { AttributeRuleController } from './controllers/attributes/rule/attribute-rule.controller';
 
 @Module({
     imports: [
         AttributeOptionModule, AttributeRuleModule,
         TypeOrmModule.forFeature([Attribute]),
     ],
-    controllers: [AttributeController, AttributeOptionController],
+    controllers: [AttributeController, AttributeOptionController, AttributeRuleController],
     providers: [AttributeService, AttributeOptionService, OptionService, AttributeHelperService, OptionHelperService],
 })
 export class AttributeModule {}

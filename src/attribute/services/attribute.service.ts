@@ -1,20 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { OrderType } from '@src/base/enum/query/query.enum';
-import {
-    AttributerRelations,
-    OrderedPaginationDto,
-} from '@src/base/dto/filter/filters.dto';
+import { AttributerRelationsDto, OrderedPaginationDto } from '@src/base/dto/filter/filters.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { CreateAttributeDto, CreateAttributeShortDto } from '../dto/create-attribute.dto';
 import { Attribute } from '../entities/attribute.entity';
 import { AttributeHelperService } from '@src/base/services/attribute/attribute-helper.service';
 import { AttributeOptionService } from './attributes/attribute-option.service';
 import { AttributeResponseI, AttributeShortResponseI, GetAttributeShortI } from '../interfaces/attribute.interface';
-
-// It might be also good to keep in mind that
-// result amount that is based on page and limit #(.getMany())
-// can be represent 1 that we can predict...
 
 // There is option to load data about table columns from database
 export const AttributeDescriptionList = {
@@ -184,7 +177,7 @@ export class AttributeService {
         relations,
     }: {
         id: number;
-        relations: AttributerRelations;
+        relations: AttributerRelationsDto;
     }): Promise<AttributeResponseI> {
         return await this.attributeHelper.attributeQueryFilter({
             filters: {
@@ -218,27 +211,6 @@ export class AttributeService {
                 select: ['id', 'rule'],
                 joinOptions: false,
                 joinRule: true,
-                many: false,
-            },
-        });
-    }
-
-    async findAttributeOptions({
-        id,
-    }: {
-        id: number;
-    }): Promise<AttributeResponseI> {
-        return await this.attributeHelper.attributeQueryFilter({
-            filters: {
-                page: 1,
-                limit: 1,
-                orderBy: null,
-                orderDirection: OrderType.NO,
-                columnName: 'id',
-                value: id,
-                select: ['id', 'options'],
-                joinOptions: true,
-                joinRule: false,
                 many: false,
             },
         });

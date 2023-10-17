@@ -1,4 +1,3 @@
-import { CreateOptionI } from "@src/attribute/relations/attribute-option/interface/create-option.interface";
 import { CreateRuleI } from "@src/attribute/relations/attribute-rule/interface/rule.interface";
 import { OptionI } from "@src/base/interface/attribute/attributes/option-base.interface";
 

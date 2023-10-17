@@ -1,14 +1,5 @@
 import { AttributesBase } from '@src/base/entity/attribute/attribute-base';
-import {
-    Entity,
-    Index,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    RelationId,
-    Unique,
-} from 'typeorm';
+import { Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, RelationId, Unique } from 'typeorm';
 import { AttributeRule } from '../relations/attribute-rule/entities/rule.entity';
 import { AttributeOption } from '../relations/attribute-option/entities/option.entity';
 export const AttributesIndexPrefix = 'ik_attribute_index';
