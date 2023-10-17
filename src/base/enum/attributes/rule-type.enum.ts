@@ -24,3 +24,10 @@ export const defaultRule: CreateRuleI = {
         useInReport: false,
     },
 };
+
+export enum RuleFilter {
+    All = 'all',
+    Id = 'id',
+    Front = 'front',
+    Back = 'back',
+}

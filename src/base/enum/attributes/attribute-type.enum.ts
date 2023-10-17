@@ -12,6 +12,13 @@ export enum AttributeRuleType {
     Back = 'back',
 }
 
+export enum AttributeRuleFilter {
+    All = 'all',
+    Id = 'id',
+    Front = 'front',
+    Back = 'back',
+}
+
 export enum JoinAttributeRelations {
     All = 'all',
     Options = 'attribute.options',

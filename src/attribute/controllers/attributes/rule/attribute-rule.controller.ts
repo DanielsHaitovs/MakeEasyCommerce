@@ -24,4 +24,7 @@ export class AttributeRuleController {
     ): Promise<AttributeResponseI> {
         return await this.attributeService.findAttributeRule({ id });
     }
+
+
+    // Here is missing update
 }

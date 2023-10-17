@@ -99,7 +99,7 @@ export class AttributeHelperService {
         if (!queryFilter.many || queryFilter.many === null) {
         
             if (queryFilter.joinAttributeOption === true && queryFilter.joinAttributeRule === true) {
-                return await this.joinOneMultipleRelationQuery({
+                return await this.joinOneMultiRelationQuery({
                     selectList: queryFilter.selectList,
                     columnName: queryFilter.columnName,
                     rawValue: queryFilter.rawValue,
@@ -109,7 +109,7 @@ export class AttributeHelperService {
             }
 
             if (queryFilter.joinAttributeRule === true || queryFilter.joinAttributeOption === true) {
-                return await this.joinOneSingleRelationQuery({
+                return await this.joinOneRelationQuery({
                     attributeRelation: queryFilter.attributeRelations,
                     relationAlias: queryFilter.attributeRelationsAlias,
                     selectList: queryFilter.selectList,
@@ -120,7 +120,7 @@ export class AttributeHelperService {
                 });
             }
 
-            return await this.singleNonRelationQuery({
+            return await this.oneNonRelationQuery({
                 selectList: queryFilter.selectList,
                 columnName: queryFilter.columnName,
                 rawValue: queryFilter.rawValue,
@@ -130,7 +130,7 @@ export class AttributeHelperService {
         }
 
         if (queryFilter.joinAttributeOption === true && queryFilter.joinAttributeRule === true) {
-            return await this.joinMultipleRelationQuery({
+            return await this.joinMultiRelationQuery({
                 skip: queryFilter.skip,
                 limit: queryFilter.limit,
                 selectList: queryFilter.selectList,
@@ -142,7 +142,7 @@ export class AttributeHelperService {
         }
 
         if (queryFilter.joinAttributeOption === true || queryFilter.joinAttributeRule === true) {
-            return await this.joinSingleRelationQuery({
+            return await this.joinRelationQuery({
                 attributeRelation: queryFilter.attributeRelations,
                 relationAlias: queryFilter.attributeRelationsAlias,
                 skip: queryFilter.skip,
@@ -246,7 +246,7 @@ export class AttributeHelperService {
         }
     }
     
-    private async singleNonRelationQuery({
+    private async oneNonRelationQuery({
         selectList,
         columnName,
         rawValue,
@@ -285,7 +285,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: 'Empty Result',
-                    in: 'Attributes Helper Query singleNonRelationQuery',
+                    in: 'Attributes Helper Query oneNonRelationQuery',
                 },
             }
 
@@ -295,7 +295,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Attributes Helper Query singleNonRelationQuery',
+                    in: 'Attributes Helper Query oneNonRelationQuery',
                 },
             };
         }
@@ -362,7 +362,7 @@ export class AttributeHelperService {
         }
     }
 
-    private async joinOneSingleRelationQuery({
+    private async joinOneRelationQuery({
         attributeRelation,
         relationAlias,
         selectList,
@@ -406,7 +406,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: 'Empty Result',
-                    in: 'Attributes Helper Query joinOneSingleRelationQuery',
+                    in: 'Attributes Helper Query joinOneRelationQuery',
                 },
             }
 
@@ -416,13 +416,13 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Attributes Helper Query joinOneSingleRelationQuery',
+                    in: 'Attributes Helper Query joinOneRelationQuery',
                 },
             };
         }
     }
 
-    private async joinSingleRelationQuery({
+    private async joinRelationQuery({
         attributeRelation,
         relationAlias,
         skip,
@@ -472,7 +472,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: 'Empty Result',
-                    in: 'Attributes Helper Query joinSingleRelationQuery',
+                    in: 'Attributes Helper Query joinRelationQuery',
                 },
             }
 
@@ -482,13 +482,13 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Attributes Helper Query joinSingleRelationQuery',
+                    in: 'Attributes Helper Query joinRelationQuery',
                 },
             };
         }
     }
 
-    private async joinOneMultipleRelationQuery({
+    private async joinOneMultiRelationQuery({
         selectList,
         columnName,
         rawValue,
@@ -529,7 +529,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: 'Empty Result',
-                    in: 'Attributes Helper Query joinOneMultipleRelationQuery',
+                    in: 'Attributes Helper Query joinOneMultiRelationQuery',
                 },
             }
 
@@ -539,13 +539,13 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Attributes Helper Query joinOneMultipleRelationQuery',
+                    in: 'Attributes Helper Query joinOneMultiRelationQuery',
                 },
             };
         }
     }
 
-    private async joinMultipleRelationQuery({
+    private async joinMultiRelationQuery({
         skip,
         limit,
         selectList,
@@ -592,7 +592,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: 'Empty Result',
-                    in: 'Attributes Helper Query joinMultipleRelationQuery',
+                    in: 'Attributes Helper Query joinMultiRelationQuery',
                 },
             }
 
@@ -602,7 +602,7 @@ export class AttributeHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Attributes Helper Query joinMultipleRelationQuery',
+                    in: 'Attributes Helper Query joinMultiRelationQuery',
                 },
             };
         }

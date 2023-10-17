@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AttributeRuleController } from '@src/attribute/relations/attribute-rule/controllers/rule.controller';
 import { AttributeService } from '@src/attribute/services/attribute.service';
+import { AttributeRuleController } from './attribute-rule.controller';
 
 describe('AttributeRuleController', () => {
     let controller: AttributeRuleController;

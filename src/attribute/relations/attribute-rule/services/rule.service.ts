@@ -9,6 +9,7 @@ import { UpdateRuleDto } from '../dto/update-rule.dto';
 import { RuleFindByType } from '@src/base/dto/mec/attribute/attributes/rule.dto';
 import { RuleHelperService } from '@src/base/services/attribute/attributes/rule-helper.service';
 import { RuleResponseI } from '../interface/rule.interface';
+import { RuleFilter } from '@src/base/enum/attributes/rule-type.enum';
 
 @Injectable()
 export class RuleService {
@@ -55,8 +56,8 @@ export class RuleService {
                 orderDirection: OrderType.ASC,
                 columnName: 'id',
                 value: id,
-                select: null,
                 many: false,
+                ruleSelect: RuleFilter.All,
             },
         });
     }
@@ -76,8 +77,8 @@ export class RuleService {
                 orderDirection: OrderType.ASC,
                 columnName: 'id',
                 value: id,
-                select: [type.ruleType],
                 many: false,
+                ruleSelect: RuleFilter[type.ruleType]
             },
         });
     }
@@ -95,8 +96,8 @@ export class RuleService {
                 orderDirection: condition.orderDirection,
                 columnName: null,
                 value: null,
-                select: null,
                 many: true,
+                ruleSelect: RuleFilter.All,
             },
         });
     }

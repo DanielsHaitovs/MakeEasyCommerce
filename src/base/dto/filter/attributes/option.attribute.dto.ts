@@ -1,3 +1,3 @@
-import { SingleConditionDto } from "../filters.dto";
+import { OptionConditionDto } from "../filters.dto";
 
-export class OptionFilterDto extends SingleConditionDto {}
+export class OptionFilterDto extends OptionConditionDto {}

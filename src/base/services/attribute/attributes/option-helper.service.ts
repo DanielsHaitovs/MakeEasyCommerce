@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { CreateOptionI, GetOptionI, OptionResponseI } from '@src/attribute/relations/attribute-option/interface/create-option.interface';
-import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
+import { OptionConditionDto } from '@src/base/dto/filter/filters.dto';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { CreateOptionDto } from '@src/attribute/relations/attribute-option/dto/create-option.dto';
 import { AttributeOption } from '@src/attribute/relations/attribute-option/entities/option.entity';
@@ -78,80 +78,90 @@ export class OptionHelperService {
 
         return null;
     }
-
+    
     async simpleOptionQuery({
         filters,
     }: {
-        filters: SingleConditionDto;
+        filters: OptionConditionDto;
     }): Promise<OptionResponseI> {
-        const skip = (filters.page - 1) * filters.limit;
-        let ruleList: string[] = [];
-        let rawValue = null;
-        let columnName = '';
-        let orderBy = '';
-        if (filters.select != null && filters.select[0] != null) {
-            for (const addToSelect of filters.select) {
-                ruleList.push(
-                    alias + '.' + filters.select[0] + '.' + addToSelect,
-                );
-            }
-        } else {
-            ruleList = null;
-        }
-        if (filters.columnName != null && filters.columnName != '') {
-            columnName = alias + '.' + filters.columnName + ' = :value';
-            rawValue = {
-                value: filters.value,
-            };
-        }
 
-        if (filters.orderBy != null) {
-            orderBy = alias + '.' + filters.orderBy;
-        }
-
+        const queryFilter = this.prepareOptionFilter({ filters });
         if (!filters.many || filters.many === null) {
-            try {
-                return await this.oneNonRelationQuery({
-                    selectList: ruleList,
-                    columnName: columnName,
-                    rawValue: rawValue,
-                    orderBy: orderBy,
-                    orderDirection: filters.orderDirection,
-                });
-            } catch (e) {
+            return await this.oneNonRelationQuery({
+                selectList: queryFilter.selectForOption,
+                columnName: queryFilter.column,
+                rawValue: queryFilter.value,
+                orderBy: queryFilter.orderBy,
+                orderDirection: queryFilter.orderDirection,
+            });
+        }
+        
+        return await this.nonRelationQuery({
+            skip: queryFilter.skip,
+            limit: queryFilter.limit,
+            selectList: queryFilter.selectForOption,
+            columnName: queryFilter.column,
+            rawValue: queryFilter.value,
+            orderBy: queryFilter.orderBy,
+            orderDirection: queryFilter.orderDirection,
+        });
+    }
+
+    private async oneNonRelationQuery({
+        selectList,
+        columnName,
+        rawValue,
+        orderBy,
+        orderDirection,
+    }: {
+        selectList: string[];
+        columnName: string;
+        rawValue: {
+            value: string | number | boolean | Date | JSON;
+        };
+        orderBy: string;
+        orderDirection: OrderType | OrderType.ASC;
+    }): Promise<OptionResponseI> {
+        try {
+            const result: GetOptionI = await this.entityManager
+                .getRepository(AttributeOption)
+                .createQueryBuilder(alias)
+                .where(columnName, rawValue)
+                .select(selectList)
+                .orderBy(orderBy, orderDirection)
+                .cache(true)
+                .useIndex(indexKey)
+                .getOne();
+
+            if (result != null) {
                 return {
-                    status: '666',
-                    message: 'Ups, Error',
-                    error: {
-                        message: e.message,
-                        in: 'Option Helper Query',
-                    },
+                    status: '200',
+                    message: 'Success',
+                    result: result,
                 };
             }
-        }
-        try {
-            return await this.manyNonRelationQuery({
-                skip: skip,
-                limit: filters.limit,
-                selectList: ruleList,
-                columnName: columnName,
-                rawValue: rawValue,
-                orderBy: orderBy,
-                orderDirection: filters.orderDirection,
-            });
+
+            return {
+                status: '404',
+                message: 'Not Found',
+                error: {
+                    message: 'Return body is empty',
+                    in: 'Option Helper -> oneNonRelationQuery',
+                },
+            };
         } catch (e) {
             return {
-                status: '666',
-                message: 'Ups, Error',
+                status: '404',
+                message: 'Not Found',
                 error: {
                     message: e.message,
-                    in: 'Option Helper Query',
+                    in: 'Option Helper -> oneNonRelationQuery',
                 },
             };
         }
     }
 
-    private async manyNonRelationQuery({
+    private async nonRelationQuery({
         skip,
         limit,
         selectList,
@@ -170,7 +180,8 @@ export class OptionHelperService {
         orderBy: string;
         orderDirection: OrderType | OrderType.ASC;
     }): Promise<OptionResponseI> {
-        const result: GetOptionI[] = await this.entityManager
+        try {
+            const result: GetOptionI[] = await this.entityManager
             .getRepository(AttributeOption)
             .createQueryBuilder(alias)
             .where(columnName, rawValue)
@@ -182,64 +193,71 @@ export class OptionHelperService {
             .useIndex(indexKey)
             .getMany();
 
-        if (result != null) {
+            if (result != null) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: result,
+                };
+            }
+
             return {
-                status: '200',
-                message: 'Success',
-                result: result,
+                status: '404',
+                message: 'Not Found',
+                error: {
+                    message: 'Return body is empty',
+                    in: 'Option Helper -> nonRelationQuery',
+                },
+            };
+        } catch (e) {
+            return {
+                status: '404',
+                message: 'Not Found',
+                error: {
+                    message: e.message,
+                    in: 'Option Helper -> nonRelationQuery',
+                },
             };
         }
-
-        return {
-            status: '404',
-            message: 'Not Found',
-            error: {
-                message: 'Return body is empty',
-                in: 'Option Helper -> manyNonRelationQuery',
-            },
-        };
     }
 
-    private async oneNonRelationQuery({
-        selectList,
-        columnName,
-        rawValue,
-        orderBy,
-        orderDirection,
+    private prepareOptionFilter({
+        filters,
     }: {
-        selectList: string[];
-        columnName: string;
-        rawValue: {
-            value: string | number | boolean | Date | JSON;
-        };
-        orderBy: string;
-        orderDirection: OrderType | OrderType.ASC;
-    }): Promise<OptionResponseI> {
-        const result: GetOptionI = await this.entityManager
-            .getRepository(AttributeOption)
-            .createQueryBuilder(alias)
-            .where(columnName, rawValue)
-            .select(selectList)
-            .orderBy(orderBy, orderDirection)
-            .cache(true)
-            .useIndex(indexKey)
-            .getOne();
+        filters: OptionConditionDto;
+    }) {
+        const skip = (filters.page - 1) * filters.limit;
+        const toSelect: string[] = [];
+        let rawValue = null;
+        let columnName = '';
 
-        if (result != null) {
-            return {
-                status: '200',
-                message: 'Success',
-                result: result,
+        if (filters.select != null) {
+            for (const addToSelect of filters.select) {
+                toSelect.push(
+                    alias + '.' + filters.select[0] + '.' + addToSelect,
+                );
+            }
+        }
+
+        if (filters.columnName != null && filters.columnName != '') {
+            columnName = alias + '.' + filters.columnName + ' = :value';
+            rawValue = {
+                value: filters.value,
             };
         }
 
+        if (filters.orderBy != null) {
+            filters.orderBy = alias + '.' + filters.orderBy;
+        }
+
         return {
-            status: '404',
-            message: 'Not Found',
-            error: {
-                message: 'Return body is empty',
-                in: 'Option Helper -> oneNonRelationQuery',
-            },
-        };
+            skip: skip,
+            limit: filters.limit,
+            selectForOption: toSelect,
+            column: columnName,
+            value: rawValue,
+            orderBy: filters.orderBy,
+            orderDirection: filters.orderDirection,
+        }
     }
 }

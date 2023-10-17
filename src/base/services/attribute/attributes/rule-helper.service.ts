@@ -3,24 +3,13 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { CreateRuleDto } from '@src/attribute/relations/attribute-rule/dto/create-rule.dto';
 import { AttributeRule } from '@src/attribute/relations/attribute-rule/entities/rule.entity';
 import { CreateRuleI, GetRuleI, RuleResponseI } from '@src/attribute/relations/attribute-rule/interface/rule.interface';
-
-import { SingleConditionDto } from '@src/base/dto/filter/filters.dto';
+import { RuleConditionDto } from '@src/base/dto/filter/filters.dto';
+import { RuleFilter } from '@src/base/enum/attributes/rule-type.enum';
 import { OrderType } from '@src/base/enum/query/query.enum';
 import { EntityManager } from 'typeorm';
 
 export const alias = 'rule';
 export const indexKey = 'ik_attribute_rule_index';
-export const RuleList: string[] = [
-    'useInCatalog',
-    'useInListing',
-    'useInLayeredNavigation',
-    'useInFilter',
-    'useInOptionFilter',
-    'useInSort',
-    'useInSearch',
-    'useInPromo',
-    'useInReport',
-];
 
 @Injectable()
 export class RuleHelperService {
@@ -54,82 +43,29 @@ export class RuleHelperService {
     async singleConditionRuleQuery({
         filters,
     }: {
-        filters: SingleConditionDto;
+        filters: RuleConditionDto;
     }): Promise<RuleResponseI> {
-        const skip = (filters.page - 1) * filters.limit;
-        let modifiedRuleList: string[] = [];
-        let rawValue = null;
-        let columnName = '';
-        let orderBy = '';
-
-        if (
-            filters.select != null &&
-            filters.select[0] != undefined &&
-            filters.select[0] === 'id'
-        ) {
-            modifiedRuleList.push(alias + '.' + filters.select[0]);
-        } else if (filters.select != null && filters.select[0] != undefined) {
-            for (const addToSelect of RuleList) {
-                modifiedRuleList.push(
-                    alias + '.' + filters.select[0] + '.' + addToSelect,
-                );
-            }
-        } else {
-            modifiedRuleList = null;
-        }
-
-        if (filters.columnName != null && filters.columnName != '') {
-            columnName = alias + '.' + filters.columnName + ' = :value';
-            rawValue = {
-                value: filters.value,
-            };
-        }
-
-        if (filters.orderBy != null) {
-            orderBy = alias + '.' + filters.orderBy;
-        }
+        const queryFilter = this.prepareRuleFilter({ filters });
 
         if (!filters.many || filters.many === null) {
-            try {
-                return await this.oneNonRelationQuery({
-                    selectList: modifiedRuleList,
-                    columnName: columnName,
-                    rawValue: rawValue,
-                    orderBy: orderBy,
-                    orderDirection: filters.orderDirection,
-                });
-            } catch (e) {
-                return {
-                    status: '666',
-                    message: 'Ups, Error',
-                    error: {
-                        message: e.message,
-                        in: 'Rule Helper Query',
-                    },
-                };
-            }
+            return await this.oneNonRelationQuery({
+                selectList: queryFilter.selectForRule,
+                columnName: queryFilter.column,
+                rawValue: queryFilter.value,
+                orderBy: queryFilter.orderBy,
+                orderDirection: queryFilter.orderDirection,
+            });
         }
 
-        try {
-            return await this.manyNonRelationQuery({
-                skip: skip,
-                limit: filters.limit,
-                selectList: modifiedRuleList,
-                columnName: columnName,
-                rawValue: rawValue,
-                orderBy: orderBy,
-                orderDirection: filters.orderDirection,
-            });
-        } catch (e) {
-            return {
-                status: '666',
-                message: 'Ups, Error',
-                error: {
-                    message: e.message,
-                    in: 'Rule Helper Query',
-                },
-            };
-        }
+        return await this.nonRelationQuery({
+            skip: queryFilter.skip,
+            limit: queryFilter.limit,
+            selectList: queryFilter.selectForRule,
+            columnName: queryFilter.column,
+            rawValue: queryFilter.value,
+            orderBy: queryFilter.orderBy,
+            orderDirection: queryFilter.orderDirection,
+        });
     }
 
     private async oneNonRelationQuery({
@@ -186,7 +122,7 @@ export class RuleHelperService {
         }
     }
 
-    private async manyNonRelationQuery({
+    private async nonRelationQuery({
         skip,
         limit,
         selectList,
@@ -231,7 +167,7 @@ export class RuleHelperService {
                 message: 'Not Found',
                 error: {
                     message: 'Return body is empty',
-                    in: 'Rule Helper -> manyNonRelationQuery',
+                    in: 'Rule Helper -> nonRelationQuery',
                 },
             };
         } catch (e) {
@@ -240,9 +176,49 @@ export class RuleHelperService {
                 message: 'Ups, Error',
                 error: {
                     message: e.message,
-                    in: 'Rule Helper -> manyNonRelationQuery',
+                    in: 'Rule Helper -> nonRelationQuery',
                 },
             };
+        }
+    }
+
+    
+    private prepareRuleFilter({
+        filters,
+    }: {
+        filters: RuleConditionDto;
+    }) {
+        const skip = (filters.page - 1) * filters.limit;
+        const modifiedRuleList: string[] = [];
+        let rawValue = null;
+        let columnName = '';
+
+        if (filters.columnName != null && filters.value != null) {
+            columnName = alias + '.' + filters.columnName + ' = :value';
+            rawValue = {
+                value: filters.value,
+            };
+        }
+
+        if (filters.ruleSelect != RuleFilter.All) {
+            modifiedRuleList.push(
+                alias + '.' + RuleFilter[filters.ruleSelect],
+            );
+        }
+
+        if (filters.orderBy != null) {
+            filters.orderBy = alias + '.' + filters.orderBy;
+        }
+
+        return {
+            skip: skip,
+            limit: filters.limit,
+            selectForRule: modifiedRuleList,
+            value: rawValue,
+            column: columnName,
+            orderBy: filters.orderBy,
+            orderDirection: filters.orderDirection,
+            many: filters.many,
         }
     }
 }
