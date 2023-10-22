@@ -1,45 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
-import { CreateRuleAttributeDto } from './attributes/rule/create-attribute.rule.dto';
-import { CreateAttributeDto, CreateAttributeShortDto } from './create-attribute.dto';
-import { GetAttributeRuleDto } from './attributes/rule/get-attribute.rule.dto';
-import { GetOneAttributeOptionDto } from './attributes/option/get-attribute.option.dto';
-import { AttributeDescriptionDto } from '@src/base/dto/mec/attribute/attribute.dto';
+import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import {
+    CreateAttributeDto,
+    CreateAttributeShortDto,
+} from './create-attribute.dto';
+import { GetRuleDto } from '@src/rule/dto/get-rule.dto';
 
-export class GetAttributeDescriptionDto extends AttributeDescriptionDto {
+export class GetAttributeShortDto extends CreateAttributeShortDto {
     @ApiProperty({
-        title: 'Attribute ID',
+        title: 'Attribute Id',
         type: Number,
         nullable: false,
     })
     @IsNotEmpty()
     @IsNumber()
     id: number;
-
-    @ApiProperty({
-        title: 'Attribute Option Relations ID',
-        type: [Number],
-        nullable: true,
-    })
-    @IsOptional()
-    @IsNumber()
-    optionsIds: number[];
-}
-
-export class GetAttributeShortDto extends CreateAttributeShortDto {
-    @ApiProperty({
-        title: 'Attribute Rule',
-        type: CreateRuleAttributeDto,
-        nullable: false,
-    })
-    @IsNotEmpty()
-    @ValidateNested({ each: true })
-    rule: GetAttributeRuleDto;
 }
 
 export class GetAttributeDto extends CreateAttributeDto {
     @ApiProperty({
-        title: 'Attribute ID',
+        title: 'Attribute Id',
         type: Number,
         nullable: false,
     })
@@ -49,19 +29,10 @@ export class GetAttributeDto extends CreateAttributeDto {
 
     @ApiProperty({
         title: 'Attribute Rule',
-        type: CreateRuleAttributeDto,
+        type: GetRuleDto,
         nullable: false,
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })
-    rule: GetAttributeRuleDto;
-
-    @ApiProperty({
-        title: 'Attribute Options',
-        type: [GetOneAttributeOptionDto],
-        nullable: false,
-    })
-    @IsNotEmpty()
-    @ValidateNested({ each: true })
-    options: GetOneAttributeOptionDto[];
+    rule: GetRuleDto;
 }
