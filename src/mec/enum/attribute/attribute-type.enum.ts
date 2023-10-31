@@ -20,6 +20,7 @@ export enum JoinAttributeAlias {
 }
 
 export enum AttributeSelect {
+    All = 'ALL',
     Id = 'attribute.id',
     Name = 'attribute.name',
     Code = 'attribute.code',
@@ -29,6 +30,4 @@ export enum AttributeSelect {
     Description = 'attribute.details.description',
     DataType = 'attribute.details.dataType',
     IsArray = 'attribute.details.isArray',
-    Rule = 'attribute.rule',
-    // Options = 'attribute.options',
 }

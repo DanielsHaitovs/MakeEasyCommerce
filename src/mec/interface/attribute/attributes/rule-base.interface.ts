@@ -1,6 +1,4 @@
-import { RuleSelect } from '@src/mec/enum/attribute/attributes/rule-type.enum';
 import { QueryFilterI } from '../../query/query-base.interface';
-import { OptionI } from './option-base.interface';
 import { SelectQueryBuilder } from 'typeorm';
 import { Rule } from '@src/rule/entities/rule.entity';
 

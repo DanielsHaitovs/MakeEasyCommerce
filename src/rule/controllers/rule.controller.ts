@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     Patch,
     Delete,
+    ParseArrayPipe,
 } from '@nestjs/common';
 import { RuleService } from '../services/rule.service';
 import { CreateRuleDto } from '../dto/create-rule.dto';
@@ -23,12 +24,11 @@ import { RuleResponseI } from '../interface/get-rule.interface';
 import { GetRuleDto } from '../dto/get-rule.dto';
 import {
     RuleFilterRequestDto,
-    RuleQueryFilterDto,
     RuleSelectDto,
 } from '@src/mec/dto/query/attribute/attributes/rule-filter.dto';
-import { OrderDto, PaginationDto } from '@src/mec/dto/query/query-filter.dto';
 import { UpdateRuleDto } from '../dto/update-rule.dto';
 import { RuleSelect } from '@src/mec/enum/attribute/attributes/rule-type.enum';
+import { FilterRequestDto } from '@src/mec/dto/query/query-filter.dto';
 
 @ApiTags('Rule (Attribute)')
 @Controller('rule')
@@ -60,12 +60,29 @@ export class RuleController {
         description: 'Provides all available filters',
         type: RuleFilterRequestDto,
     })
+    @ApiQuery({
+        name: 'selectForQuery',
+        description: 'Select Rule Query Filter',
+        type: [RuleSelectDto],
+        enum: RuleSelect,
+        example: [RuleSelect.Id],
+        isArray: true,
+        required: false,
+    })
     @ApiOkResponse({
         description: 'Specific Rule Rule and its details',
         type: [GetRuleDto],
     })
-    async findAttributeQuery(@Query() ruleQuery): Promise<RuleResponseI> {
-        return await this.ruleService.findRuleQuery({ ruleQuery });
+    async findRuleQuery(
+        @Query() ruleQuery,
+        @Query('selectForQuery', ParseArrayPipe) select: string[],
+    ): Promise<RuleResponseI> {
+        return await this.ruleService.findRuleQuery({
+            ruleQuery: {
+                selectProp: select,
+                ...ruleQuery,
+            },
+        });
     }
 
     @Get('get/all')
@@ -74,36 +91,33 @@ export class RuleController {
         description: 'Get data of all rules, good luck!',
     })
     @ApiQuery({
-        name: 'Order For Query',
-        description: 'Order Rule Query Filter',
-        type: OrderDto,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'Select For Query',
+        name: 'selectForQuery',
         description: 'Select Rule Query Filter',
-        type: RuleSelectDto,
+        type: [RuleSelectDto],
+        enum: RuleSelect,
+        example: [RuleSelect.Id],
         isArray: true,
-        required: false,
     })
     @ApiQuery({
-        name: 'Paginate For Query',
-        description: 'Paginate Rule Query',
-        type: PaginationDto,
-        required: false,
+        name: 'orderForQuery',
+        description: 'Order Rule Query Filter',
+        type: FilterRequestDto,
     })
     @ApiOkResponse({
         description: 'All Attributes and theirs details',
         type: [GetRuleDto],
     })
-    async findAll(@Query() ruleQuery): Promise<RuleResponseI> {
+    async findAll(
+        @Query('selectForQuery', ParseArrayPipe) select: string[],
+        @Query() filter,
+    ): Promise<RuleResponseI> {
         return await this.ruleService.findRuleQuery({
             ruleQuery: {
-                page: Number(ruleQuery.page),
-                limit: Number(ruleQuery.limit),
-                by: ruleQuery.orderBy,
-                direction: ruleQuery.orderDirection,
-                select: ruleQuery.select,
+                page: filter.page,
+                limit: filter.limit,
+                by: filter.by,
+                direction: filter.direction,
+                selectProp: select,
                 valueIds: null,
                 valueSettings: null,
             },
@@ -131,7 +145,7 @@ export class RuleController {
                 limit: null,
                 by: null,
                 direction: null,
-                select: null,
+                selectProp: null,
             },
         });
     }
@@ -147,15 +161,17 @@ export class RuleController {
         type: GetRuleDto,
     })
     @ApiQuery({
-        name: 'Select For Query',
+        name: 'selectForQuery',
         description: 'Select Rule Query Filter',
-        type: RuleSelectDto,
+        type: [RuleSelectDto],
+        enum: RuleSelect,
+        example: [RuleSelect.Id],
         isArray: true,
         required: false,
     })
     async findOneAndSelect(
         @Param('id', ParseIntPipe) id: number,
-        @Query() ruleQuery,
+        @Query('selectForQuery', ParseArrayPipe) select: string[],
     ): Promise<RuleResponseI> {
         return await this.ruleService.findRuleQuery({
             ruleQuery: {
@@ -165,7 +181,7 @@ export class RuleController {
                 limit: null,
                 by: null,
                 direction: null,
-                select: ruleQuery.select,
+                selectProp: select,
             },
         });
     }

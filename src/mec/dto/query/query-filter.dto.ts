@@ -37,7 +37,7 @@ export class OrderDto {
         title: 'Order by value',
         type: String,
         nullable: true,
-        required: false,
+        required: true,
     })
     @IsOptional()
     @IsString()

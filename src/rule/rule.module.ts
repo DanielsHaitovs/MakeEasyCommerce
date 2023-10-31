@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Rule } from './entities/rule.entity';
 import { RuleController } from './controllers/rule.controller';
 import { RuleService } from './services/rule.service';
-import { RuleHelperService } from '@src/mec/services/attribute/attributes/rule-helper.service';
-import { QueryHelperService } from '@src/mec/services/query/helper/query-help.service';
+import { RuleHelperService } from '@src/mec/services/attribute/attributes/rule/rule-helper.service';
+import { DataHelperService } from '@src/utils/data-help.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Rule])],
     controllers: [RuleController],
-    providers: [RuleService, RuleHelperService, QueryHelperService],
+    providers: [RuleService, RuleHelperService, DataHelperService],
 })
 export class RuleModule {}

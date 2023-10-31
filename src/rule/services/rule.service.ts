@@ -7,7 +7,7 @@ import { Rule } from '../entities/rule.entity';
 import { CreateRuleDto } from '../dto/create-rule.dto';
 import { UpdateRuleDto } from '../dto/update-rule.dto';
 
-import { RuleHelperService } from '@src/mec/services/attribute/attributes/rule-helper.service';
+import { RuleHelperService } from '@src/mec/services/attribute/attributes/rule/rule-helper.service';
 import { GetRuleI, RuleResponseI } from '../interface/get-rule.interface';
 import { RuleFilterRequestDto } from '@src/mec/dto/query/attribute/attributes/rule-filter.dto';
 
@@ -76,20 +76,19 @@ export class RuleService {
         });
     }
 
-    //   async findOneById({ id }: { id: number }): Promise<RuleResponseI> {
-    //     return await this.ruleHelper.ruleQueryFilter({
-    //         filters: {
-    //             page: 1,
-    //             limit: 0,
-    //             orderBy: 'id',
-    //             orderDirection: OrderDirection.ASC,
-    //             columnName: 'id',
-    //             value: id,
-    //             many: false,
-    //             ruleSelect: [RuleSelect.All],
-    //         },
-    //     });
-    // }
+    async findOneById({ id }: { id: number }): Promise<RuleResponseI> {
+        return await this.ruleHelper.ruleQuery({
+            filters: {
+                valueIds: [id],
+                valueSettings: null,
+                page: null,
+                limit: null,
+                by: null,
+                direction: null,
+                selectProp: null,
+            },
+        });
+    }
 
     async update({
         id,

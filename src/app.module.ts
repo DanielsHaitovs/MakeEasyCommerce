@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RuleModule } from './rule/rule.module';
 import { Rule } from './rule/entities/rule.entity';
-// import { AttributeModule } from './attribute/attribute.module';
-// import { Attribute } from './attribute/entities/attribute.entity';
+import { AttributeModule } from './attribute/attribute.module';
+import { Attribute } from './attribute/entities/attribute.entity';
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -17,7 +17,7 @@ import { Rule } from './rule/entities/rule.entity';
                 // Store ->
                 // <- Store
                 // Attribute ->
-                // Attribute,
+                Attribute,
                 Rule,
                 // <- Attribute
             ],
@@ -26,7 +26,7 @@ import { Rule } from './rule/entities/rule.entity';
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
-        // AttributeModule,
+        AttributeModule,
         RuleModule,
     ],
     controllers: [],

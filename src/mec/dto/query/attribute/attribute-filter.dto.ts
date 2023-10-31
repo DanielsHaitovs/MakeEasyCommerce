@@ -6,33 +6,23 @@ import {
     IsOptional,
     ValidateNested,
 } from 'class-validator';
-import { OrderDto, PaginationDto, QueryFilterDto } from '../query-filter.dto';
+import { FilterRequestDto } from '../query-filter.dto';
 import { AttributeSelect } from '@src/mec/enum/attribute/attribute-type.enum';
 
-export class AttributeQueryFilterDto extends QueryFilterDto {
-    @ApiProperty({
-        title: 'Attribute IDs',
-        type: [Number],
-        nullable: true,
-        default: null,
-        required: false,
-    })
-    @IsOptional()
-    @IsNumber()
-    attributeIds: number[];
-
+export class AttributeSelectDto {
     @ApiProperty({
         title: 'Select Attribute Properties',
-        nullable: false,
         enum: AttributeSelect,
         isArray: true,
         default: AttributeSelect.Id,
         required: false,
     })
-    @IsNotEmpty()
+    @IsOptional()
     @ValidateNested({ each: true })
     select: AttributeSelect[];
+}
 
+export class AttributeRelationSelectDto {
     @ApiProperty({
         title: 'Join Options Relation for Attribute Query',
         nullable: false,
@@ -54,16 +44,62 @@ export class AttributeQueryFilterDto extends QueryFilterDto {
     joinRule: boolean;
 }
 
-export class AttributeNonRelationQuery extends QueryFilterDto {
+export class AttributeQueryFilterDto extends FilterRequestDto {
+    @ApiProperty({
+        title: 'Attribute ID(s)',
+        type: [Number],
+        nullable: true,
+        default: null,
+        required: false,
+    })
+    @IsOptional()
+    @IsNumber()
+    valueIds: number[];
+
     @ApiProperty({
         title: 'Select Attribute Properties',
-        nullable: false,
-        enum: AttributeSelect,
         isArray: true,
-        default: AttributeSelect.Id,
-        required: false,
+        enum: AttributeSelect,
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })
-    select: AttributeSelect[];
+    selectProp: AttributeSelect[];
+
+    @ApiProperty({
+        title: 'Join Options Relation for Attribute Query',
+        nullable: false,
+        default: false,
+        required: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    joinOptions: boolean;
+
+    @ApiProperty({
+        title: 'Join Rule Relation for Attribute Query',
+        nullable: false,
+        default: false,
+        required: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    joinRule: boolean;
+
+    @ApiProperty({
+        title: 'Is Active',
+        nullable: true,
+        required: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    isActive: boolean;
+
+    @ApiProperty({
+        title: 'Is Required',
+        nullable: true,
+        required: false,
+    })
+    @IsOptional()
+    @IsBoolean()
+    isRequired: boolean;
 }

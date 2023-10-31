@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { QueryResponseI } from '@src/mec/interface/response/response.interface';
 
 @Injectable()
-export class QueryHelperService {
+export class DataHelperService {
     valueToBoolean(value: any) {
         if (value === undefined || value === null) {
             return null;
@@ -20,11 +20,12 @@ export class QueryHelperService {
         return null;
     }
 
-    toSingleObject({ response }: { response: QueryResponseI }) {
-        if (Array.isArray(response.result)) {
-            return response.result[0];
+    toSingleObject({ response }: { response: QueryResponseI }): any {
+        if (response.result != undefined && response.result != null) {
+            if (Array.isArray(response.result)) {
+                return response.result[0];
+            }
+            return response.result;
         }
-
-        return response.result;
     }
 }

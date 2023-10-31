@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAttributeDto } from '../dto/create-attribute.dto';
-import { UpdateAttributeDto } from '../dto/update-attribute.dto';
+import { UpdateAttributeShortDto } from '../dto/update-attribute.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import {
     AttributeResponseI,
     GetAttributeI,
-    GetAttributeShortI,
 } from '../interface/get-attribute.interface';
 import { AttributeHelperService } from '@src/mec/services/attribute/attribute-helper.service';
 import { Attribute } from '../entities/attribute.entity';
@@ -78,21 +77,75 @@ export class AttributeService {
     }: {
         attributeQuery: AttributeQueryFilterDto;
     }): Promise<AttributeResponseI> {
-        return await this.attributeHelper.attributeQueryFilter({
+        console.log(attributeQuery);
+        return await this.attributeHelper.attributeQuery({
             filters: { ...attributeQuery },
         });
     }
 
-    findAll() {
-        return `This action returns all attribute`;
-    }
+    async update({
+        id,
+        attribute,
+    }: {
+        id: number;
+        attribute: UpdateAttributeShortDto;
+    }): Promise<AttributeResponseI> {
+        try {
+            const preload = await this.entityManager.preload(Attribute, {
+                id: id,
+            });
 
-    findOne(id: number) {
-        return `This action returns a #${id} attribute`;
-    }
+            if (
+                preload.code != attribute.code ||
+                preload.name != attribute.name
+            ) {
+                const check = await this.attributeHelper.ifExists({
+                    name: attribute.name,
+                    code: attribute.code,
+                });
+                if (check) {
+                    return {
+                        status: '770',
+                        message: 'Duplicate',
+                        error: {
+                            message:
+                                'Attribute code or name already exist already exists',
+                            in: 'Attribute Entity',
+                        },
+                    };
+                }
+            }
 
-    update(id: number, updateAttributeDto: UpdateAttributeDto) {
-        return `This action updates a #${id} attribute`;
+            const affected = (
+                await this.entityManager.update(Attribute, id, attribute)
+            ).affected;
+
+            if (affected > 0) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: [],
+                };
+            }
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                result: preload,
+                error: {
+                    in: 'Attribute Service',
+                    message: 'Could not update this records',
+                },
+            };
+        } catch (e) {
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    in: 'Attribute Service',
+                    message: e.message,
+                },
+            };
+        }
     }
 
     remove(id: number) {
