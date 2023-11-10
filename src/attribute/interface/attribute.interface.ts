@@ -1,15 +1,36 @@
-import { AttributeShortI } from '@src/mec/interface/attribute/attribute-base.interface';
-import { CreateRuleI } from '@src/rule/interface/rule.interface';
-import { QueryResponseI } from '@src/mec/interface/response/response.interface';
+import { SelectQueryBuilder } from 'typeorm';
+import { AttributeType } from '@src/mec/enum/attribute/attribute.enum';
+import {
+    QueryFilterI,
+    QueryResponseI,
+} from '@src/mec/interface/query/query.interface';
+import { Attribute } from '../entities/attribute.entity';
 
-export type CreateAttributeShortI = AttributeShortI;
-export interface CreateAttributeI extends AttributeShortI {
-    rule: CreateRuleI;
+export interface AttributeI {
+    name: string;
+    code: string;
+    isActive: boolean;
+    isRequired: boolean;
+    description: string;
+    dataType: AttributeType;
+    isArray: boolean;
 }
 
-export type UpdateAttributeShortI = CreateAttributeShortI;
+export type CreateAttributeI = AttributeI;
 export type UpdateAttributeI = CreateAttributeI;
 
-export interface PrepareAttributeResponseI extends QueryResponseI {
-    result?: CreateAttributeI;
+export interface GetAttributeShortI extends CreateAttributeI {
+    id: number;
+}
+
+export type GetAttributeI = GetAttributeShortI;
+
+export interface AttributeResponseI extends QueryResponseI {
+    result?: GetAttributeI | GetAttributeI[];
+}
+
+export interface AttributeQueryFilterI extends QueryFilterI {
+    message?: string;
+    many: boolean;
+    query: SelectQueryBuilder<Attribute>;
 }

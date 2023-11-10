@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
-import {
-    CreateAttributeDto,
-    CreateAttributeShortDto,
-} from './create-attribute.dto';
-import { GetRuleDto } from '@src/rule/dto/get-rule.dto';
+import { CreateAttributeShortDto } from './create-attribute.dto';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class GetAttributeShortDto extends CreateAttributeShortDto {
     @ApiProperty({
@@ -17,22 +13,4 @@ export class GetAttributeShortDto extends CreateAttributeShortDto {
     id: number;
 }
 
-export class GetAttributeDto extends CreateAttributeDto {
-    @ApiProperty({
-        title: 'Attribute Id',
-        type: Number,
-        nullable: false,
-    })
-    @IsNotEmpty()
-    @IsNumber()
-    id: number;
-
-    @ApiProperty({
-        title: 'Attribute Rule',
-        type: GetRuleDto,
-        nullable: false,
-    })
-    @IsNotEmpty()
-    @ValidateNested({ each: true })
-    rule: GetRuleDto;
-}
+export class GetAttributeDto extends GetAttributeShortDto {}

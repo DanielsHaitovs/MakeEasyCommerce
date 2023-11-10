@@ -3,12 +3,14 @@ module.exports = {
   parserOptions: {
     project: 'tsconfig.json',
     sourceType: 'module',
+    // tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint'],
   extends: [
-    'plugin:@typescript-eslint/recommended',
+    "prettier",
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:prettier/recommended',
-    "prettier"
+    'plugin:@typescript-eslint/recommended',
   ],
   root: true,
   env: {
@@ -17,9 +19,9 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
+    // '@typescript-eslint/interface-name-prefix': 'off',
+    // '@typescript-eslint/explicit-function-return-type': 'off',
+    // '@typescript-eslint/explicit-module-boundary-types': 'off',
+    // '@typescript-eslint/no-explicit-any': 'off',
   },
 };

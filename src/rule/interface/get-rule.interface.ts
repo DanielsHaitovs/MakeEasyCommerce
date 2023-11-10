@@ -1,22 +1,18 @@
-import { QueryResponseI } from '@src/mec/interface/response/response.interface';
-import { CreateRuleI } from './rule.interface';
-import {
-    BackRuleSettingsI,
-    FrontRuleSettingsI,
-} from '@src/mec/interface/attribute/attributes/rule-base.interface';
+import { QueryResponseI } from '@src/mec/interface/query/query.interface';
+import { CreateRuleI, RuleBaseI } from './rule.interface';
 
 export interface GetRuleI extends CreateRuleI {
     id: number;
 }
 
-export interface GetRuleFrontI {
+export interface GetFrontRuleI {
     id: number;
-    front: FrontRuleSettingsI;
+    front: RuleBaseI;
 }
 
-export interface GetRuleBackI {
+export interface GetBackRuleI {
     id: number;
-    back: BackRuleSettingsI;
+    back: RuleBaseI;
 }
 
 export interface RuleResponseI extends QueryResponseI {

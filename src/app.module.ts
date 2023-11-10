@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RuleModule } from './rule/rule.module';
-import { Rule } from './rule/entities/rule.entity';
+import { MecModule } from './mec/mec.module';
 import { AttributeModule } from './attribute/attribute.module';
 import { Attribute } from './attribute/entities/attribute.entity';
+import { AttributeRuleModule } from './rule/rule.module';
+import { AttributeRule } from './rule/entities/rule.entity';
+
 @Module({
     imports: [
         TypeOrmModule.forRoot({
@@ -18,7 +20,7 @@ import { Attribute } from './attribute/entities/attribute.entity';
                 // <- Store
                 // Attribute ->
                 Attribute,
-                Rule,
+                AttributeRule,
                 // <- Attribute
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
@@ -26,8 +28,9 @@ import { Attribute } from './attribute/entities/attribute.entity';
             logger: 'file',
             synchronize: true, // never use TRUE in production!
         }),
+        MecModule,
         AttributeModule,
-        RuleModule,
+        AttributeRuleModule,
     ],
     controllers: [],
     providers: [],

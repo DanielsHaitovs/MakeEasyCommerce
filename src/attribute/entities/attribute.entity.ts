@@ -1,17 +1,12 @@
-import { AttributesBase } from '@src/mec/entity/attribute/attribute-base';
-import { Rule } from '@src/rule/entities/rule.entity';
-import {
-    Entity,
-    Index,
-    JoinColumn,
-    ManyToOne,
-    OneToOne,
-    Unique,
-} from 'typeorm';
+import { AttributesBase } from '@src/mec/entities/attribute/attribute-base.entity';
+import { Entity, Index, JoinColumn, ManyToOne, Unique } from 'typeorm';
 
-export const AttributesIndexPrefix = 'ik_attribute_index';
-export const AttributesUniquePrefix = 'uk_attribute_index';
-export const AttributesUniqueKeys: string[] = ['id', 'name', 'code', 'rule'];
+export const AttributeAlias = 'attribute';
+export const AttributesIndex = 'ik_attribute_index';
+export const AttributesUnique = 'uk_attribute_index';
+export const AttributeRelationsAlias = ['options', 'rule'];
+
+export const AttributesUniqueKeys: string[] = ['id', 'name', 'code'];
 export const AttributesIndexKeys: string[] = [
     'id',
     'code',
@@ -19,27 +14,38 @@ export const AttributesIndexKeys: string[] = [
     'isRequired',
     'name',
     'parent',
-    'rule',
 ];
 
 @Entity('eav_attribute_index')
-@Unique(AttributesUniquePrefix, AttributesUniqueKeys)
-@Index(AttributesIndexPrefix, AttributesIndexKeys)
+@Unique(AttributesUnique, AttributesUniqueKeys)
+@Index(AttributesIndex, AttributesIndexKeys)
 export class Attribute extends AttributesBase {
     @ManyToOne(() => Attribute, { onDelete: 'CASCADE' })
     @JoinColumn({
-        foreignKeyConstraintName: 'fk_attribute_index_attribute',
+        foreignKeyConstraintName: 'fk_attribute_index_parent',
     })
     parent: Attribute;
-
-    @OneToOne(() => Rule, (rule) => rule.id, {
-        cascade: true,
-        nullable: true,
-    })
-    @JoinColumn({
-        name: 'rule_id',
-        referencedColumnName: 'id',
-        foreignKeyConstraintName: 'fk_attribute_index_rule',
-    })
-    rule: Rule;
 }
+
+// @OneToOne(() => Rule, (rule) => rule.id, {
+//     cascade: true,
+//     nullable: true,
+// })
+// @JoinColumn({
+//     name: 'rule_id',
+//     referencedColumnName: 'id',
+//     foreignKeyConstraintName: 'fk_attribute_index_rule',
+// })
+// rule: Rule;
+
+// @OneToMany(() => Value, (values) => values.attributeId, {
+//     cascade: false,
+//     eager: false,
+//     nullable: true,
+// })
+// @JoinColumn({
+//     foreignKeyConstraintName: 'fk_attribute_index_values',
+// })
+// values: Value[];
+// @RelationId((attribute: Attribute) => attribute.values)
+// valuesIds: number[];

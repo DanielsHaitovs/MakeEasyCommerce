@@ -1,18 +1,44 @@
 import {
-    BackRuleSettingsI,
-    FrontRuleSettingsI,
-    RuleBaseI,
-} from '@src/mec/interface/attribute/attributes/rule-base.interface';
-import { QueryResponseI } from '@src/mec/interface/response/response.interface';
+    QueryFilterI,
+    QueryResponseI,
+} from '@src/mec/interface/query/query.interface';
+import { SelectQueryBuilder } from 'typeorm';
+import { AttributeRule } from '../entities/rule.entity';
 
-export type RuleI = RuleBaseI;
+export interface RuleBaseI {
+    useInCatalog: boolean;
+    useInListing: boolean;
+    useInLayeredNavigation: boolean;
+    useInFilter: boolean;
+    useInOptionFilter: boolean;
+    useInSort: boolean;
+    useInSearch: boolean;
+    useInPromo: boolean;
+    useInReport: boolean;
+}
+export interface RuleI {
+    front: RuleBaseI;
+    back: RuleBaseI;
+}
+
 export type CreateRuleI = RuleI;
 
 export interface UpdateRuleI {
-    front?: FrontRuleSettingsI;
-    back?: BackRuleSettingsI;
+    front?: RuleBaseI;
+    back?: RuleBaseI;
 }
 
 export interface PrepareRuleResponseI extends QueryResponseI {
     result?: CreateRuleI;
+}
+
+export interface RuleQueryFilterI extends QueryFilterI {
+    message?: string;
+    many: boolean;
+    query: SelectQueryBuilder<AttributeRule>;
+}
+
+export interface RuleQueryI {
+    many: boolean;
+    query: SelectQueryBuilder<AttributeRule>;
 }

@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
+import { AttributeRuleService } from './service/rule.service';
+import { AttributeRuleController } from './controller/rule.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { Rule } from './entities/rule.entity';
-import { RuleController } from './controllers/rule.controller';
-import { RuleService } from './services/rule.service';
-import { RuleHelperService } from '@src/mec/services/attribute/attributes/rule/rule-helper.service';
-import { DataHelperService } from '@src/utils/data-help.service';
+import { AttributeRule } from './entities/rule.entity';
+import { MecModule } from '@src/mec/mec.module';
+import { RuleHelperService } from './service/query/rule-helper.service';
+import { RuleQueryService } from './service/query/rule-query.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Rule])],
-    controllers: [RuleController],
-    providers: [RuleService, RuleHelperService, DataHelperService],
+    imports: [TypeOrmModule.forFeature([AttributeRule]), MecModule],
+    controllers: [AttributeRuleController],
+    providers: [AttributeRuleService, RuleHelperService, RuleQueryService],
+    exports: [AttributeRuleService, RuleHelperService],
 })
-export class RuleModule {}
+export class AttributeRuleModule {}

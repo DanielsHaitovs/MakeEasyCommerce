@@ -7,4 +7,5 @@ import {
 export class UpdateAttributeShortDto extends PartialType(
     CreateAttributeShortDto,
 ) {}
+
 export class UpdateAttributeDto extends PartialType(CreateAttributeDto) {}
