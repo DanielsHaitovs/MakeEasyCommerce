@@ -4,8 +4,10 @@
 export class DataHelperService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     valueToBoolean(value: any): boolean {
-        if (value === undefined || value === null) return null;
-        if (typeof value === 'boolean') return value;
+        if (value === undefined || value === null) return undefined;
+        if (typeof value === 'boolean') {
+            return value;
+        }
 
         if (['true', 'on', 'yes', '1'].includes(value.toLowerCase())) {
             return true;
@@ -13,7 +15,7 @@ export class DataHelperService {
         if (['false', 'off', 'no', '0'].includes(value.toLowerCase())) {
             return false;
         }
-        return null;
+        return undefined;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

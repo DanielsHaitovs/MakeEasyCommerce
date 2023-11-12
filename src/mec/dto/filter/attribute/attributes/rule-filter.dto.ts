@@ -6,6 +6,7 @@ import {
     RuleType,
     RuleWhere,
 } from '@src/mec/enum/attribute/attributes/rule.enum';
+import { IsBoolean } from '@nestjs/class-validator';
 
 export class RuleFindByType {
     @ApiProperty({
@@ -31,15 +32,28 @@ export class RuleSelectDto {
 
 export class RuleWhereDto {
     @ApiProperty({
-        title: 'Select Rule Properties',
+        title: 'Where Rule Properties',
         nullable: false,
         enum: RuleWhere,
+        default: '',
         isArray: true,
         required: false,
     })
     @IsOptional()
     @ValidateNested({ each: true })
-    select: RuleWhere[];
+    selectWhere: RuleWhere[];
+}
+
+export class RuleWhereValueDto {
+    @ApiProperty({
+        title: 'Where Rule is this boolean value',
+        description: 'If "selectWhere" is not provided, this will be ignored',
+        type: Boolean || null,
+        nullable: true,
+        required: false,
+    })
+    @IsOptional()
+    value: boolean | null;
 }
 
 export class RuleQueryFilterDto extends FilterRequestDto {
@@ -71,10 +85,11 @@ export class RuleQueryFilterDto extends FilterRequestDto {
         title: 'Where Rule is this boolean value',
         description: 'If "selectWhere" is not provided, this will be ignored',
         type: Boolean,
-        nullable: false,
+        nullable: true,
         required: false,
     })
     @IsOptional()
+    @IsBoolean()
     whereValue: boolean;
 
     @ApiProperty({

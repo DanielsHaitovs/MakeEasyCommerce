@@ -69,10 +69,10 @@ export class AttributeQueryService extends QueryFilterService {
                     query: attributeQuery,
                     entity: Attribute,
                 });
-                if (isActive != null) {
+                if (isActive != undefined) {
                     attributeQuery = this.andWhereQuery({
                         alias: alias + '.isActive = :value',
-                        value: {
+                        data: {
                             value: isActive,
                         },
                         query: attributeQuery,
@@ -80,10 +80,10 @@ export class AttributeQueryService extends QueryFilterService {
                     });
                 }
 
-                if (isRequired != null) {
+                if (isRequired != undefined) {
                     attributeQuery = this.andWhereQuery({
                         alias: alias + '.isRequired = :value',
-                        value: {
+                        data: {
                             value: isRequired,
                         },
                         query: attributeQuery,
@@ -104,10 +104,10 @@ export class AttributeQueryService extends QueryFilterService {
                     });
                 }
 
-                if (isRequired != null) {
+                if (isRequired != undefined) {
                     attributeQuery = this.andWhereQuery({
                         alias: alias + '.isRequired = :value',
-                        value: {
+                        data: {
                             value: isRequired,
                         },
                         query: attributeQuery,
@@ -116,7 +116,7 @@ export class AttributeQueryService extends QueryFilterService {
                 }
             }
 
-            if (joinOptions != null && joinOptions) {
+            if (joinOptions != undefined && joinOptions) {
                 attributeQuery = this.relationQuery({
                     joinAlias: JoinAttributeRelations.Options,
                     relationsAlias: JoinAttributeAlias.Options,
@@ -125,7 +125,7 @@ export class AttributeQueryService extends QueryFilterService {
                 });
             }
 
-            if (joinRule != null && joinRule) {
+            if (joinRule != undefined && joinRule) {
                 attributeQuery = this.relationQuery({
                     joinAlias: JoinAttributeRelations.Rule,
                     relationsAlias: JoinAttributeAlias.Rule,
@@ -133,7 +133,7 @@ export class AttributeQueryService extends QueryFilterService {
                     entity: Attribute,
                 });
             }
-            if (filters.selectProp != null) {
+            if (filters.selectProp != undefined) {
                 attributeQuery = this.selectQuery({
                     properties: Array.isArray(filters.selectProp)
                         ? filters.selectProp
@@ -145,7 +145,7 @@ export class AttributeQueryService extends QueryFilterService {
                 });
             }
 
-            if (queryFilter.order.by != null) {
+            if (queryFilter.order.by != undefined) {
                 attributeQuery.orderBy(
                     queryFilter.order.by,
                     queryFilter.order.direction,

@@ -27,6 +27,7 @@ import { AttributeSelectDto } from '@src/mec/dto/filter/attribute/attribute-filt
 import { GetAttributeDto } from '../dto/get-attribute.dto';
 import { AttributeSelect } from '@src/mec/enum/attribute/attribute.enum';
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
+import { FilterByIdsDto } from '@src/mec/dto/filter/query-filter.dto';
 
 @ApiTags('Attribute')
 @Controller('attribute')
@@ -71,10 +72,8 @@ export class AttributeController {
     })
     @ApiQuery({
         name: 'valueIds',
-        description: 'Where Attribute ID Query Filter',
-        type: [Number],
-        isArray: true,
         required: false,
+        type: FilterByIdsDto,
     })
     @ApiQuery({
         name: 'orderQueryBy',
@@ -130,7 +129,7 @@ export class AttributeController {
     })
     async find(
         @Query('selectForQuery', ParseArrayPipe) selectProp: AttributeSelect[],
-        @Query('valueIds', ParseArrayPipe) valueIds: number[],
+        @Query('valueIds') valueIds: number[],
         @Query('paginate', ParseIntPipe) page: number,
         @Query('limit', ParseIntPipe) limit: number,
         @Query('orderQueryBy') by: string,
@@ -138,7 +137,7 @@ export class AttributeController {
         @Query('joinRule', ParseBoolPipe) joinRule: boolean,
         @Query('joinOption', ParseBoolPipe) joinOptions: boolean,
         @Query('isActive', ParseBoolPipe) isRequired: boolean,
-        @Query('isRequire', ParseBoolPipe) isActive: boolean,
+        @Query('isRequired', ParseBoolPipe) isActive: boolean,
     ): Promise<AttributeResponseI> {
         return await this.attributeService.findAttributeQuery({
             attributeQuery: {

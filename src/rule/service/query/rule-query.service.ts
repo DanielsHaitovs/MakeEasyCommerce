@@ -33,14 +33,15 @@ export class RuleQueryService extends QueryFilterService {
         alias: string;
     }): RuleQueryFilterI {
         const queryFilter = super.prepareQueryFilter({ filters, alias });
-        let many = true;
         filters = this.resolveRuleFilter({ filters });
+        let many = true;
+
         try {
             let ruleQuery = this.entityManager
                 .getRepository(AttributeRule)
                 .createQueryBuilder(alias);
 
-            if (filters.ruleIds != null) {
+            if (filters.ruleIds != undefined) {
                 if (filters.ruleIds.length === 1) many = false;
 
                 ruleQuery = this.resolveWhereQuery({
@@ -50,7 +51,7 @@ export class RuleQueryService extends QueryFilterService {
                 });
             }
 
-            if (filters.selectWhere !== null) {
+            if (filters.selectWhere != undefined) {
                 ruleQuery = this.prepareRuleWhere({
                     ruleWhere: filters.selectWhere,
                     whereValue: filters.whereValue,
@@ -59,7 +60,7 @@ export class RuleQueryService extends QueryFilterService {
                 });
             }
 
-            if (filters.selectProp != null) {
+            if (filters.selectProp != undefined) {
                 ruleQuery = this.selectQuery({
                     properties: filters.selectProp,
                     query: ruleQuery,
@@ -67,7 +68,7 @@ export class RuleQueryService extends QueryFilterService {
                 });
             }
 
-            if (queryFilter.order.by != null) {
+            if (queryFilter.order.by != undefined) {
                 ruleQuery = this.orderQuery({
                     by: queryFilter.order.by,
                     direction: queryFilter.order.direction,
@@ -75,7 +76,6 @@ export class RuleQueryService extends QueryFilterService {
                     entity: AttributeRule,
                 });
             }
-
             if (many) {
                 ruleQuery = this.paginateQuery({
                     page: queryFilter.pagination.page,
@@ -86,7 +86,7 @@ export class RuleQueryService extends QueryFilterService {
             }
 
             return {
-                message: null,
+                message: undefined,
                 many: many,
                 query: ruleQuery,
                 ...queryFilter,
@@ -95,8 +95,8 @@ export class RuleQueryService extends QueryFilterService {
             const error = e as Error;
             return {
                 message: error.message,
-                query: null,
-                many: null,
+                query: undefined,
+                many: undefined,
                 ...queryFilter,
             };
         }
@@ -135,23 +135,21 @@ export class RuleQueryService extends QueryFilterService {
     }: {
         filters: RuleQueryFilterDto;
     }): RuleQueryFilterDto {
-        filters.whereValue = this.dataHelper.valueToBoolean(filters.whereValue);
-
-        if (!Array.isArray(filters.selectWhere)) {
-            filters.selectWhere = [filters.selectWhere];
+        if (
+            filters.selectWhere != undefined &&
+            filters.selectWhere.length > 0
+        ) {
+            if (!Array.isArray(filters.selectWhere))
+                filters.selectWhere = [filters.selectWhere];
+            filters.whereValue = filters.whereValue ?? true;
+        } else {
+            filters.selectWhere = undefined;
+            filters.whereValue = undefined;
         }
 
-        if (filters.ruleIds === undefined && filters.ruleIds == null) {
-            filters.ruleIds = null;
+        if (!Array.isArray(filters.ruleIds) && filters.ruleIds < 1) {
+            filters.ruleIds = undefined;
         }
-        if (!Array.isArray(filters.ruleIds) && filters.ruleIds !== null) {
-            if (filters.ruleIds === 0) {
-                delete filters.ruleIds;
-            } else {
-                filters.ruleIds = [filters.ruleIds];
-            }
-        }
-
         return filters;
     }
 
@@ -166,11 +164,10 @@ export class RuleQueryService extends QueryFilterService {
         entity: EntityTarget<Entity>;
     }): SelectQueryBuilder<Entity> {
         if (ruleWhere === undefined || ruleWhere == null) return query;
-
         ruleWhere.forEach((whereAlias) => {
             query = this.andWhereQuery({
                 alias: whereAlias + ' = :value',
-                value: {
+                data: {
                     value: whereValue,
                 },
                 query,

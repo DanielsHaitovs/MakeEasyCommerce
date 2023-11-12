@@ -85,7 +85,7 @@ export class RuleHelperService {
             filters,
             alias: RuleAlias,
         });
-        if (ruleQuery.message === null) {
+        if (ruleQuery.message === undefined) {
             try {
                 ruleQuery.query.cache(true);
                 ruleQuery.query.useIndex(RuleIndex);
@@ -98,7 +98,7 @@ export class RuleHelperService {
                     if (rules != null && rules.length > 0) {
                         return {
                             status: '200',
-                            message: 'test',
+                            message: 'Success',
                             result: rules,
                         };
                     }

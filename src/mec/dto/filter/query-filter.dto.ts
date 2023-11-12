@@ -12,6 +12,20 @@ import {
 
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
+export class FilterByIdsDto {
+    @ApiProperty({
+        title: 'Filter by ids',
+        type: [Number],
+        nullable: true,
+        required: false,
+    })
+    @IsOptional()
+    @IsNumber()
+    // @IsNumber({}, { each: true }) // typescript (docs) way
+    @ValidateNested({ each: true })
+    ids: number[];
+}
+
 export class PaginationDto {
     @ApiProperty({
         title: 'Page number',

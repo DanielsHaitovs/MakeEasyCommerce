@@ -72,21 +72,61 @@ export class AttributeRuleService {
         });
     }
 
-    findAll() {
-        return `This action returns all attributeRule`;
+    async update({
+        id,
+        rule,
+    }: {
+        id: number;
+        rule: UpdateRuleDto;
+    }): Promise<RuleResponseI> {
+        try {
+            const affected: number = (
+                await this.entityManager.update(AttributeRule, id, rule)
+            ).affected;
+
+            if (affected > 0) {
+                return {
+                    status: '200',
+                    message: 'Success',
+                    result: null,
+                };
+            }
+
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    in: 'Rule Service Update',
+                    message: 'Could not update rule',
+                },
+            };
+        } catch (e) {
+            const error = e as Error;
+            return this.handleError({
+                e: error,
+                where: 'Update',
+            });
+        }
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} attributeRule`;
-    }
-
-    update(id: number, updateAttributeRuleDto: UpdateRuleDto) {
-        console.log(updateAttributeRuleDto);
-        return `This action updates a #${id} attributeRule`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} attributeRule`;
+    async remove({ id }: { id: number }): Promise<RuleResponseI> {
+        try {
+            if (
+                (await this.entityManager.delete(AttributeRule, id)).affected >
+                0
+            ) {
+                return {
+                    status: '200',
+                    message: `Record with id ${id} was removed`,
+                };
+            }
+        } catch (e) {
+            const error = e as Error;
+            return this.handleError({
+                e: error,
+                where: 'Remove',
+            });
+        }
     }
 
     private handleError({

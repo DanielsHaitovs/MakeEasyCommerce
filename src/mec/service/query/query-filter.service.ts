@@ -14,15 +14,14 @@ export class QueryFilterService {
         filters: FilterRequestDto;
         alias: string;
     }): QueryFilterDto {
-        if (filters.page === undefined) filters.page = 0;
-        if (filters.limit === undefined) filters.limit = 0;
-        if (filters.by === undefined || filters.by === null) {
-            filters.by = null;
-            filters.direction = null;
-        } else {
-            filters.by = alias + '.' + filters.by;
-        }
+        if (!Number.isInteger(filters.page)) filters.page = 0;
+        if (!Number.isInteger(filters.limit)) filters.limit = 0;
 
+        if (filters.by != undefined) {
+            filters.by = alias + '.' + filters.by;
+        } else {
+            filters.direction = undefined;
+        }
         return {
             pagination: {
                 page: filters.page,
@@ -31,9 +30,9 @@ export class QueryFilterService {
             order: {
                 by: filters.by,
                 direction:
-                    filters.by != null
+                    filters.by != undefined
                         ? OrderDirection[filters.direction]
-                        : null,
+                        : undefined,
             },
         };
     }
@@ -50,8 +49,7 @@ export class QueryFilterService {
         };
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (data.value === undefined || data.value === null || alias === null)
-            return query;
+        if (data.value === undefined || alias === undefined) return query;
 
         return query.where(alias, data);
     }
@@ -66,32 +64,43 @@ export class QueryFilterService {
         alias: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (ids === null || alias === null) return query;
-        if (Array.isArray(ids)) {
-            return query.where(alias + WhereManyIdAlias, {
-                ids: ids,
-            });
+        if (ids === undefined || alias === undefined) return query;
+
+        if (ids.length > 1) {
+            if (!Array.isArray(ids)) {
+                ids = [ids];
+            }
+
+            if (ids[0] !== 0) {
+                return query.where(alias + WhereManyIdAlias, {
+                    ids: ids,
+                });
+            }
+        } else if (ids.length > 0) {
+            if (ids[0] !== 0) {
+                return query.where(alias + '.id = :id', {
+                    id: ids[0],
+                });
+            }
         }
 
-        return query.where(alias + '.id = :id', {
-            id: ids[0],
-        });
+        return query;
     }
 
     protected andWhereQuery<Entity>({
         alias,
-        value,
+        data,
         query,
     }: {
         entity: EntityTarget<Entity>;
         alias: string;
-        value: {
+        data: {
             value: unknown;
         };
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (value === null || alias === null) return query;
-        return query.andWhere(alias, value);
+        if (data === undefined || alias === undefined) return query;
+        return query.andWhere(alias, data);
     }
 
     protected orWhereQuery<Entity>({
@@ -106,7 +115,7 @@ export class QueryFilterService {
         };
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (value === null || alias === null) return query;
+        if (value === undefined || alias === undefined) return query;
         return query.orWhere(alias, value);
     }
 
@@ -124,7 +133,8 @@ export class QueryFilterService {
         query: SelectQueryBuilder<Entity>;
         entity: EntityTarget<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (groupBy === null || value === null || alias === null) return query;
+        if (groupBy === undefined || value === undefined || alias === undefined)
+            return query;
         query.groupBy(groupBy);
         return query.andHaving(alias, value);
     }
@@ -143,7 +153,8 @@ export class QueryFilterService {
         groupBy: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (groupBy === null || value === null || alias === null) return query;
+        if (groupBy === undefined || value === undefined || alias === undefined)
+            return query;
         query.groupBy(groupBy);
         return query.orHaving(alias, value);
     }
@@ -175,7 +186,7 @@ export class QueryFilterService {
         properties: string[];
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (properties.length === 0) return query;
+        if (properties.length === undefined) return query;
         if (!Array.isArray(properties)) {
             return query.select([properties]);
         }
@@ -192,7 +203,7 @@ export class QueryFilterService {
         direction: OrderDirection;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (by === null || direction === null) return query;
+        if (by === undefined || direction === undefined) return query;
         return query.orderBy(by, direction);
     }
 
@@ -206,7 +217,8 @@ export class QueryFilterService {
         relationsAlias: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (joinAlias === null || relationsAlias === null) return query;
+        if (joinAlias === undefined || relationsAlias === undefined)
+            return query;
         return query.leftJoinAndSelect(joinAlias, relationsAlias);
     }
 }
