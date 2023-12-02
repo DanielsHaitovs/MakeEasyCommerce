@@ -18,23 +18,20 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { CreateRuleDto } from '../dto/create-rule.dto';
-import { UpdateRuleDto } from '../dto/update-rule.dto';
+import { UpdateRuleDto, UpdateRuleTypeDto } from '../dto/update-rule.dto';
 import { GetRuleDto } from '../dto/get-rule.dto';
 import {
     RuleSelectDto,
     RuleWhereDto,
-} from '@src/mec/dto/filter/attribute/attributes/rule-filter.dto';
+} from '@src/rule/dto/filter/rule-filter.dto';
 
 import { RuleResponseI } from '../interface/get-rule.interface';
 
 import { AttributeRuleService } from '../service/rule.service';
-import {
-    RuleSelect,
-    RuleWhere,
-} from '@src/mec/enum/attribute/attributes/rule.enum';
+import { RuleSelect, RuleType, RuleWhere } from '@src/rule/enum/rule.enum';
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 import { FilterByIdsDto } from '@src/mec/dto/filter/query-filter.dto';
-import { DataHelperService } from '@src/mec/utils/data-help.service';
+import { DataHelperService } from '@src/utils/data-help.service';
 
 @ApiTags('Attribute Rule')
 @Controller('attribute-rule')
@@ -136,7 +133,7 @@ export class AttributeRuleController {
         @Query('queryPage') page: number,
         @Query('queryLimit') limit: number,
         @Query('selectWhereQuery') selectWhere: RuleWhere[],
-        @Query('filterValue') whereValue: string,
+        @Query('filterValue') whereValue: boolean,
         @Query('selectForQuery') selectProp: RuleSelect[],
         @Query('orderQueryBy') by: string,
         @Query('orderQueryDirection') direction: OrderDirection,
@@ -149,7 +146,7 @@ export class AttributeRuleController {
                 direction,
                 selectProp,
                 selectWhere,
-                whereValue: this.dataHelper.valueToBoolean(whereValue),
+                whereValue,
                 ruleIds,
             },
         });
@@ -221,7 +218,7 @@ export class AttributeRuleController {
         @Query('queryPage') page: number,
         @Query('queryLimit') limit: number,
         @Query('selectWhereQuery') selectWhere: RuleWhere[],
-        @Query('filterValue') whereValue: string,
+        @Query('filterValue') whereValue: boolean,
         @Query('selectForQuery') selectProp: RuleSelect[],
         @Query('orderQueryBy') by: string,
         @Query('orderQueryDirection') direction: OrderDirection,
@@ -234,8 +231,8 @@ export class AttributeRuleController {
                 direction,
                 selectProp,
                 selectWhere,
-                whereValue: this.dataHelper.valueToBoolean(whereValue),
-                ruleIds: null,
+                whereValue,
+                ruleIds: undefined,
             },
         });
     }
@@ -323,6 +320,48 @@ export class AttributeRuleController {
     ): Promise<RuleResponseI> {
         return await this.attributeRuleService.update({
             id: id,
+            rule: updateRuleDto,
+        });
+    }
+
+    @Patch('update/front/:id')
+    @ApiOperation({
+        summary: 'Update specific rule setting by ID',
+        description: 'Update specifically front rule property(s) by id.',
+    })
+    @ApiBody({
+        type: UpdateRuleTypeDto,
+        description: 'Attribute Rule',
+        required: true,
+    })
+    async updateFrontRule(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateRuleDto: UpdateRuleTypeDto,
+    ): Promise<RuleResponseI> {
+        return await this.attributeRuleService.updateType({
+            id: id,
+            type: RuleType.Front,
+            rule: updateRuleDto,
+        });
+    }
+
+    @Patch('update/back/:id')
+    @ApiOperation({
+        summary: 'Update specific rule setting by ID',
+        description: 'Update specifically front rule property(s) by id.',
+    })
+    @ApiBody({
+        type: UpdateRuleTypeDto,
+        description: 'Attribute Rule',
+        required: true,
+    })
+    async updateBackRule(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateRuleDto: UpdateRuleTypeDto,
+    ): Promise<RuleResponseI> {
+        return await this.attributeRuleService.updateType({
+            id: id,
+            type: RuleType.Back,
             rule: updateRuleDto,
         });
     }

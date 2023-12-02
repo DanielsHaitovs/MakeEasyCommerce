@@ -5,6 +5,8 @@ import { AttributeModule } from './attribute/attribute.module';
 import { Attribute } from './attribute/entities/attribute.entity';
 import { AttributeRuleModule } from './rule/rule.module';
 import { AttributeRule } from './rule/entities/rule.entity';
+import { AttributeOptionModule } from './option/option.module';
+import { AttributeOption } from './option/entities/option.entity';
 
 @Module({
     imports: [
@@ -21,6 +23,7 @@ import { AttributeRule } from './rule/entities/rule.entity';
                 // Attribute ->
                 Attribute,
                 AttributeRule,
+                AttributeOption,
                 // <- Attribute
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
@@ -31,6 +34,7 @@ import { AttributeRule } from './rule/entities/rule.entity';
         MecModule,
         AttributeModule,
         AttributeRuleModule,
+        AttributeOptionModule,
     ],
     controllers: [],
     providers: [],

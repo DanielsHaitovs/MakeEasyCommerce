@@ -6,20 +6,36 @@ import {
     IsOptional,
     ValidateNested,
 } from 'class-validator';
-import { FilterRequestDto } from '../query-filter.dto';
-import { AttributeSelect } from '@src/mec/enum/attribute/attribute.enum';
+import { AttributeProperties } from '@src/attribute/enum/attribute.enum';
+import { FilterRequestDto } from '@src/mec/dto/filter/query-filter.dto';
 
 export class AttributeSelectDto {
     @ApiProperty({
         title: 'Select Attribute Properties',
-        enum: AttributeSelect,
+        enum: AttributeProperties,
         isArray: true,
-        default: AttributeSelect.Id,
+        default: AttributeProperties.Id,
         required: false,
     })
     @IsOptional()
     @ValidateNested({ each: true })
-    select: AttributeSelect[];
+    select: AttributeProperties[];
+}
+
+export class AttributeWhereDto {
+    @ApiProperty({
+        title: 'Where Rule Properties',
+        description:
+            'Option to include more then 1 of existing rule properties into filtering using same boolean from "whereValue"',
+        nullable: false,
+        enum: AttributeProperties,
+        default: '',
+        isArray: true,
+        required: false,
+    })
+    @IsOptional()
+    @ValidateNested({ each: true })
+    selectWhere: AttributeProperties[];
 }
 
 export class AttributeRelationSelectDto {
@@ -59,11 +75,11 @@ export class AttributeQueryFilterDto extends FilterRequestDto {
     @ApiProperty({
         title: 'Select Attribute Properties',
         isArray: true,
-        enum: AttributeSelect,
+        enum: AttributeProperties,
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })
-    selectProp: AttributeSelect[];
+    selectProp: AttributeProperties[];
 
     @ApiProperty({
         title: 'Join Options Relation for Attribute Query',

@@ -1,10 +1,10 @@
 import { SelectQueryBuilder } from 'typeorm';
-import { AttributeType } from '@src/mec/enum/attribute/attribute.enum';
 import {
     QueryFilterI,
     QueryResponseI,
 } from '@src/mec/interface/query/query.interface';
 import { Attribute } from '../entities/attribute.entity';
+import { AttributeType } from '../enum/attribute.enum';
 
 export interface AttributeI {
     name: string;

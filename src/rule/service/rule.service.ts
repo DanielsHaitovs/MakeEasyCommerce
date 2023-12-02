@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRuleDto } from '../dto/create-rule.dto';
-import { UpdateRuleDto } from '../dto/update-rule.dto';
+import { UpdateRuleDto, UpdateRuleTypeDto } from '../dto/update-rule.dto';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { GetRuleI, RuleResponseI } from '../interface/get-rule.interface';
 import { AttributeRule } from '../entities/rule.entity';
-import { RuleHelperService } from '@src/rule/service/query/rule-helper.service';
-import { RuleQueryFilterDto } from '@src/mec/dto/filter/attribute/attributes/rule-filter.dto';
+import { RuleQueryFilterDto } from '@src/rule/dto/filter/rule-filter.dto';
+import { RuleType } from '@src/rule/enum/rule.enum';
+import { RuleHelperService } from '@src/rule/service/helper/rule-helper.service';
 
 @Injectable()
 export class AttributeRuleService {
@@ -88,7 +89,46 @@ export class AttributeRuleService {
                 return {
                     status: '200',
                     message: 'Success',
-                    result: null,
+                };
+            }
+
+            return {
+                status: '666',
+                message: 'Ups, Error',
+                error: {
+                    in: 'Rule Service Update',
+                    message: 'Could not update rule',
+                },
+            };
+        } catch (e) {
+            const error = e as Error;
+            return this.handleError({
+                e: error,
+                where: 'Update',
+            });
+        }
+    }
+
+    async updateType({
+        id,
+        rule,
+        type,
+    }: {
+        id: number;
+        rule: UpdateRuleTypeDto;
+        type: RuleType;
+    }): Promise<RuleResponseI> {
+        try {
+            const affected: number = (
+                await this.entityManager.update(AttributeRule, id, {
+                    [type]: rule,
+                })
+            ).affected;
+
+            if (affected > 0) {
+                return {
+                    status: '200',
+                    message: 'Success',
                 };
             }
 

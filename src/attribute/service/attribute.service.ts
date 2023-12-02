@@ -9,8 +9,8 @@ import {
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { Attribute } from '../entities/attribute.entity';
-import { AttributeHelperService } from '@src/mec/service/attribute/attribute-helper.service';
-import { AttributeQueryFilterDto } from '@src/mec/dto/filter/attribute/attribute-filter.dto';
+import { AttributeHelperService } from '@src/attribute/service/helper/attribute-helper.service';
+import { AttributeQueryFilterDto } from '@src/attribute/dto/filter/attribute-filter.dto';
 
 @Injectable()
 export class AttributeService {
@@ -99,7 +99,6 @@ export class AttributeService {
     }: {
         attributeQuery: AttributeQueryFilterDto;
     }): Promise<AttributeResponseI> {
-        console.log(attributeQuery);
         return await this.attributeHelper.attributeQuery({
             filters: { ...attributeQuery },
         });

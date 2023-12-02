@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+
+import { QueryResponseI } from '@src/mec/interface/query/query.interface';
+
 export class DataHelperService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    valueToBoolean(value: any): boolean {
+    valueToBoolean({ value }: { value: any }): boolean {
         if (value === undefined || value === null) return undefined;
         if (typeof value === 'boolean') {
             return value;
@@ -19,11 +22,11 @@ export class DataHelperService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toSingleObject({ response }: { response: any }): any {
+    toObject({ response }: { response: QueryResponseI }): any {
         if (response.result != undefined && response.result != null)
             return response;
 
-        if (Array.isArray(response.result)) {
+        if (Array.isArray(response.result) && response.result.length === 1) {
             return response.result[0];
         }
 

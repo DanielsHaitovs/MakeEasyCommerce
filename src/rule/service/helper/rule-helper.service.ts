@@ -14,13 +14,14 @@ import {
 import {
     CreateRuleI,
     PrepareRuleResponseI,
+    RuleQueryFilterI,
 } from '@src/rule/interface/rule.interface';
 
 import { CreateRuleDto } from '@src/rule/dto/create-rule.dto';
-import { RuleQueryFilterDto } from '@src/mec/dto/filter/attribute/attributes/rule-filter.dto';
+import { RuleQueryFilterDto } from '@src/rule/dto/filter/rule-filter.dto';
 
-import { DataHelperService } from '@src/mec/utils/data-help.service';
-import { RuleQueryService } from './rule-query.service';
+import { RuleQueryService } from '../query/rule-query.service';
+import { DataHelperService } from '@src/utils/data-help.service';
 
 @Injectable()
 export class RuleHelperService {
@@ -73,7 +74,7 @@ export class RuleHelperService {
 
     singleRule({ response }: { response: RuleResponseI }): GetRuleI {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return this.ruleDataHelper.toSingleObject({ response });
+        return this.ruleDataHelper.toObject({ response });
     }
 
     async ruleQuery({
@@ -81,7 +82,7 @@ export class RuleHelperService {
     }: {
         filters: RuleQueryFilterDto;
     }): Promise<RuleResponseI> {
-        const ruleQuery = this.queryService.prepareQueryFilter({
+        const ruleQuery: RuleQueryFilterI = this.queryService.queryFilter({
             filters,
             alias: RuleAlias,
         });

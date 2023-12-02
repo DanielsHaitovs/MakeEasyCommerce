@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import {
-    Entity,
-    EntityManager,
-    EntityTarget,
-    SelectQueryBuilder,
-} from 'typeorm';
+import { Entity, EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
-import { RuleWhere } from '@src/mec/enum/attribute/attributes/rule.enum';
 
-import { RuleQueryFilterDto } from '@src/mec/dto/filter/attribute/attributes/rule-filter.dto';
+import { RuleQueryFilterDto } from '@src/rule/dto/filter/rule-filter.dto';
 import { RuleQueryFilterI } from '@src/rule/interface/rule.interface';
 
 import { QueryFilterService } from '@src/mec/service/query/query-filter.service';
-import { DataHelperService } from '@src/mec/utils/data-help.service';
+import { FilterWhereValueDto } from '@src/mec/dto/filter/query-filter.dto';
+import { DataHelperService } from '@src/utils/data-help.service';
 
 @Injectable()
 export class RuleQueryService extends QueryFilterService {
@@ -25,15 +20,18 @@ export class RuleQueryService extends QueryFilterService {
         super();
     }
 
-    prepareQueryFilter({
+    queryFilter({
         filters,
         alias,
     }: {
         filters: RuleQueryFilterDto;
         alias: string;
     }): RuleQueryFilterI {
-        const queryFilter = super.prepareQueryFilter({ filters, alias });
-        filters = this.resolveRuleFilter({ filters });
+        filters = this.ruleQueryFilter({ filters });
+        const queryFilter = super.queryFilter({ filters, alias });
+        const selectWhere: FilterWhereValueDto[] = this.prepareRuleWhere({
+            filters,
+        });
         let many = true;
 
         try {
@@ -44,17 +42,17 @@ export class RuleQueryService extends QueryFilterService {
             if (filters.ruleIds != undefined) {
                 if (filters.ruleIds.length === 1) many = false;
 
-                ruleQuery = this.resolveWhereQuery({
+                ruleQuery = this.whereIdsQuery({
+                    ids: filters.ruleIds,
                     alias: alias,
                     query: ruleQuery,
-                    filters: filters,
+                    entity: Entity,
                 });
             }
 
             if (filters.selectWhere != undefined) {
-                ruleQuery = this.prepareRuleWhere({
-                    ruleWhere: filters.selectWhere,
-                    whereValue: filters.whereValue,
+                ruleQuery = this.andWhereQuery({
+                    where: selectWhere,
                     query: ruleQuery,
                     entity: AttributeRule,
                 });
@@ -76,6 +74,7 @@ export class RuleQueryService extends QueryFilterService {
                     entity: AttributeRule,
                 });
             }
+
             if (many) {
                 ruleQuery = this.paginateQuery({
                     page: queryFilter.pagination.page,
@@ -102,35 +101,7 @@ export class RuleQueryService extends QueryFilterService {
         }
     }
 
-    private resolveWhereQuery({
-        alias,
-        query,
-        filters,
-    }: {
-        alias: string;
-        query: SelectQueryBuilder<AttributeRule>;
-        filters: RuleQueryFilterDto;
-    }): SelectQueryBuilder<AttributeRule> {
-        query = this.whereIdsQuery({
-            ids: filters.ruleIds,
-            alias: alias,
-            query,
-            entity: Entity,
-        });
-
-        if (filters.selectWhere !== null) {
-            query = this.prepareRuleWhere({
-                ruleWhere: filters.selectWhere,
-                whereValue: filters.whereValue,
-                query,
-                entity: Entity,
-            });
-        }
-
-        return query;
-    }
-
-    private resolveRuleFilter({
+    protected ruleQueryFilter({
         filters,
     }: {
         filters: RuleQueryFilterDto;
@@ -150,31 +121,31 @@ export class RuleQueryService extends QueryFilterService {
         if (!Array.isArray(filters.ruleIds) && filters.ruleIds < 1) {
             filters.ruleIds = undefined;
         }
+
+        if (filters.selectProp === null || filters.selectProp.length < 1)
+            filters.selectProp = undefined;
+
         return filters;
     }
 
-    private prepareRuleWhere<Entity>({
-        ruleWhere,
-        whereValue,
-        query,
+    private prepareRuleWhere({
+        filters,
     }: {
-        ruleWhere: RuleWhere[];
-        whereValue: boolean;
-        query: SelectQueryBuilder<Entity>;
-        entity: EntityTarget<Entity>;
-    }): SelectQueryBuilder<Entity> {
-        if (ruleWhere === undefined || ruleWhere == null) return query;
-        ruleWhere.forEach((whereAlias) => {
-            query = this.andWhereQuery({
-                alias: whereAlias + ' = :value',
-                data: {
-                    value: whereValue,
-                },
-                query,
-                entity: Entity,
-            });
-        });
+        filters: RuleQueryFilterDto;
+    }): FilterWhereValueDto[] {
+        if (filters.selectWhere === undefined) return undefined;
 
-        return query;
+        const condition: FilterWhereValueDto[] = [];
+        for (const where of filters.selectWhere) {
+            condition.push({
+                alias: where.toString(),
+                where:
+                    this.dataHelper.valueToBoolean({
+                        value: filters.whereValue,
+                    }) ?? true,
+            });
+        }
+
+        return condition;
     }
 }

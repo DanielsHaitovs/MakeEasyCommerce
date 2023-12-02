@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { QueryFilterService } from './service/query/query-filter.service';
-import { DataHelperService } from './utils/data-help.service';
+import { ErrorHandlerService } from '@src/utils/error-handler.service';
+import { DataHelperService } from '@src/utils/data-help.service';
 
 @Module({
-    providers: [QueryFilterService, DataHelperService],
-    exports: [QueryFilterService, DataHelperService],
+    providers: [QueryFilterService, DataHelperService, ErrorHandlerService],
+    exports: [QueryFilterService, DataHelperService, ErrorHandlerService],
 })
 export class MecModule {}

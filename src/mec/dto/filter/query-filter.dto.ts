@@ -12,6 +12,28 @@ import {
 
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
+export class FilterWhereValueDto {
+    @ApiProperty({
+        title: 'Value which should be used in filter',
+        nullable: true,
+    })
+    where: string | number | boolean | Date | JSON;
+
+    // @ApiProperty({
+    //     title: 'Property Name Alias for where statement',
+    //     type: String,
+    //     nullable: true,
+    // })
+    // propertyName: string;
+
+    @ApiProperty({
+        title: 'Alias for where statement',
+        type: String,
+        nullable: true,
+    })
+    alias: string;
+}
+
 export class FilterByIdsDto {
     @ApiProperty({
         title: 'Filter by ids',

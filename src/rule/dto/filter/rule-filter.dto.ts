@@ -1,12 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FilterRequestDto } from '../../query-filter.dto';
 import { IsNumber, IsOptional, ValidateNested } from 'class-validator';
-import {
-    RuleSelect,
-    RuleType,
-    RuleWhere,
-} from '@src/mec/enum/attribute/attributes/rule.enum';
+import { RuleSelect, RuleType, RuleWhere } from '@src/rule/enum/rule.enum';
 import { IsBoolean } from '@nestjs/class-validator';
+import { FilterRequestDto } from '@src/mec/dto/filter/query-filter.dto';
 
 export class RuleFindByType {
     @ApiProperty({
@@ -19,6 +15,8 @@ export class RuleFindByType {
 export class RuleSelectDto {
     @ApiProperty({
         title: 'Select Rule Properties',
+        description:
+            'We can define how will look our response body by providing list of rule properties to select',
         nullable: false,
         enum: RuleSelect,
         isArray: true,
@@ -27,12 +25,14 @@ export class RuleSelectDto {
     })
     @IsOptional()
     @ValidateNested({ each: true })
-    select: RuleSelect[];
+    selectProp: RuleSelect[];
 }
 
 export class RuleWhereDto {
     @ApiProperty({
         title: 'Where Rule Properties',
+        description:
+            'Option to include more then 1 of existing rule properties into filtering using same boolean from "whereValue"',
         nullable: false,
         enum: RuleWhere,
         default: '',
@@ -47,18 +47,20 @@ export class RuleWhereDto {
 export class RuleWhereValueDto {
     @ApiProperty({
         title: 'Where Rule is this boolean value',
-        description: 'If "selectWhere" is not provided, this will be ignored',
-        type: Boolean || null,
+        description:
+            'If "selectWhere" is not provided, this will be ignored! This value is been used in "selectWhere"',
+        type: Boolean,
         nullable: true,
         required: false,
     })
     @IsOptional()
-    value: boolean | null;
+    value: boolean;
 }
 
 export class RuleQueryFilterDto extends FilterRequestDto {
     @ApiProperty({
-        title: 'Filter Rule by this value',
+        title: 'Filter Rule by ID(s)',
+        description: 'We can specify with which rule(s) we need to work',
         type: [Number],
         nullable: true,
         required: false,
@@ -71,7 +73,8 @@ export class RuleQueryFilterDto extends FilterRequestDto {
 
     @ApiProperty({
         title: 'Where Rule Properties',
-        description: 'If "selectWhere" is not provided, this will be ignored',
+        description:
+            'Option to include more then 1 of existing rule properties into filtering using same boolean from "whereValue"',
         isArray: true,
         enum: RuleWhere,
         required: false,
@@ -83,7 +86,8 @@ export class RuleQueryFilterDto extends FilterRequestDto {
 
     @ApiProperty({
         title: 'Where Rule is this boolean value',
-        description: 'If "selectWhere" is not provided, this will be ignored',
+        description:
+            'If "selectWhere" is not provided, this will be ignored! This value is been used in "selectWhere"',
         type: Boolean,
         nullable: true,
         required: false,
@@ -94,7 +98,8 @@ export class RuleQueryFilterDto extends FilterRequestDto {
 
     @ApiProperty({
         title: 'Select Rule Properties',
-        description: 'If "selectProp" is not provided, this will be ignored',
+        description:
+            'We can define how will look our response body by providing list of rule properties to select',
         isArray: true,
         enum: RuleSelect,
         required: false,

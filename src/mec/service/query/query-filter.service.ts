@@ -1,13 +1,14 @@
 import { EntityTarget, SelectQueryBuilder } from 'typeorm';
 import {
     FilterRequestDto,
+    FilterWhereValueDto,
     QueryFilterDto,
 } from '@src/mec/dto/filter/query-filter.dto';
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
 const WhereManyIdAlias = '.id IN (:...ids)';
 export class QueryFilterService {
-    protected prepareQueryFilter({
+    protected queryFilter({
         filters,
         alias,
     }: {
@@ -17,11 +18,17 @@ export class QueryFilterService {
         if (!Number.isInteger(filters.page)) filters.page = 0;
         if (!Number.isInteger(filters.limit)) filters.limit = 0;
 
+        if (filters.page === 0 || filters.limit === 0) {
+            filters.page = undefined;
+            filters.limit = undefined;
+        }
+
         if (filters.by != undefined) {
             filters.by = alias + '.' + filters.by;
         } else {
             filters.direction = undefined;
         }
+
         return {
             pagination: {
                 page: filters.page,
@@ -65,12 +72,9 @@ export class QueryFilterService {
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
         if (ids === undefined || alias === undefined) return query;
-
+        if (!Array.isArray(ids)) ids = [ids];
         if (ids.length > 1) {
-            if (!Array.isArray(ids)) {
-                ids = [ids];
-            }
-
+            console.log(123);
             if (ids[0] !== 0) {
                 return query.where(alias + WhereManyIdAlias, {
                     ids: ids,
@@ -78,6 +82,7 @@ export class QueryFilterService {
             }
         } else if (ids.length > 0) {
             if (ids[0] !== 0) {
+                console.log(ids[0]);
                 return query.where(alias + '.id = :id', {
                     id: ids[0],
                 });
@@ -88,19 +93,40 @@ export class QueryFilterService {
     }
 
     protected andWhereQuery<Entity>({
-        alias,
-        data,
+        where,
         query,
     }: {
         entity: EntityTarget<Entity>;
-        alias: string;
-        data: {
-            value: unknown;
-        };
+        where: FilterWhereValueDto[];
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (data === undefined || alias === undefined) return query;
-        return query.andWhere(alias, data);
+        if (where === undefined) return query;
+        if (Array.isArray(where) && where.length > 1) {
+            for (const condition of where) {
+                if (
+                    condition.where != undefined &&
+                    condition.alias != undefined
+                ) {
+                    const propertyName = condition.alias.substring(
+                        condition.alias.lastIndexOf('.') + 1,
+                    );
+                    const alias = condition.alias + ' = :' + propertyName;
+                    query = query.andWhere(alias, {
+                        [propertyName]: condition.where,
+                    });
+                }
+            }
+
+            return query;
+        }
+        const single: FilterWhereValueDto = where.shift();
+        const propertyName = single.alias.substring(
+            single.alias.lastIndexOf('.') + 1,
+        );
+        const alias = single.alias + ' = :' + propertyName;
+        return query.andWhere(alias, {
+            [propertyName]: single.where,
+        });
     }
 
     protected orWhereQuery<Entity>({
@@ -169,12 +195,10 @@ export class QueryFilterService {
         limit: number;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (Number.isInteger(Number(limit)) && Number.isInteger(Number(page))) {
-            // ^^^^ HA-HA XD XD XD ^^^^ ^^^^ HA-HA XD XD XD ^^^^ ^^^^ HA-HA XD XD XD ^^^^
-            query.skip((Number(page) - 1) * Number(limit));
-            query.take(Number(limit));
-        }
+        if (page === undefined || limit === undefined) return query;
 
+        query.skip((Number(page) - 1) * Number(limit));
+        query.take(Number(limit));
         return query;
     }
 
@@ -186,7 +210,7 @@ export class QueryFilterService {
         properties: string[];
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (properties.length === undefined) return query;
+        if (properties === undefined) return query;
         if (!Array.isArray(properties)) {
             return query.select([properties]);
         }

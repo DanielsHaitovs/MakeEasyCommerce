@@ -1,7 +1,7 @@
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { Column } from 'typeorm';
-import { MecBaseEntity } from '../mec.entity';
-import { AttributeType } from '@src/mec/enum/attribute/attribute.enum';
+import { AttributeType } from '@src/attribute/enum/attribute.enum';
+import { MecBaseEntity } from '@src/mec/entities/mec.entity';
 
 export abstract class AttributesBase extends MecBaseEntity {
     @Column({ default: false })

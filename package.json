@@ -30,7 +30,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^7.1.15",
-    "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/typeorm": "^10.0.1",
     "dotenv": "^16.3.1",
     "eslint-plugin-react": "^7.33.2",
     "express-rate-limit": "^7.1.4",

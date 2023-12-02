@@ -1,6 +1,6 @@
+import { MecBaseEntity } from '@src/mec/entities/mec.entity';
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 import { Column } from 'typeorm';
-import { MecBaseEntity } from '../../mec.entity';
 
 export abstract class RuleConfigEntity {
     @Column({

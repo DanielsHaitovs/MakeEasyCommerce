@@ -7,12 +7,12 @@ import {
     AttributesIndex,
 } from '@src/attribute/entities/attribute.entity';
 
-import { DataHelperService } from '../../utils/data-help.service';
-import { AttributeQueryService } from './attribute-query.service';
+import { AttributeQueryService } from '../query/attribute-query.service';
 
 import { CreateAttributeShortDto } from '@src/attribute/dto/create-attribute.dto';
-import { AttributeQueryFilterDto } from '@src/mec/dto/filter/attribute/attribute-filter.dto';
+import { AttributeQueryFilterDto } from '@src/attribute/dto/filter/attribute-filter.dto';
 import {
+    AttributeQueryFilterI,
     AttributeResponseI,
     CreateAttributeI,
     GetAttributeI,
@@ -23,7 +23,6 @@ export class AttributeHelperService {
     constructor(
         @InjectEntityManager()
         private readonly attributeManager: EntityManager,
-        private readonly attributeDataHelper: DataHelperService,
         private readonly queryService: AttributeQueryService,
     ) {}
 
@@ -57,10 +56,11 @@ export class AttributeHelperService {
     }: {
         filters: AttributeQueryFilterDto;
     }): Promise<AttributeResponseI> {
-        const attributeQuery = this.queryService.prepareQueryFilter({
-            filters,
-            alias: AttributeAlias,
-        });
+        const attributeQuery: AttributeQueryFilterI =
+            this.queryService.queryFilter({
+                filters,
+                alias: AttributeAlias,
+            });
         if (attributeQuery.message === null) {
             try {
                 attributeQuery.query.cache(true);
@@ -78,17 +78,17 @@ export class AttributeHelperService {
                         attributeQuery.query.getMany(),
                     );
 
-                    if (attributes != null && attributes.length > 0) {
+                    if (attributes.length > 0) {
                         return {
                             status: '200',
-                            message: 'test',
+                            message: 'Success',
                             result: attributes,
                         };
                     }
 
                     return {
                         status: '404',
-                        message: 'Ups, Error',
+                        message: 'Ups',
                         error: {
                             in: 'attributeQuery',
                             message: 'Not found',
@@ -110,7 +110,7 @@ export class AttributeHelperService {
 
                 return {
                     status: '404',
-                    message: 'Ups, Error',
+                    message: 'Ups',
                     error: {
                         in: 'attributeQuery',
                         message: 'Not found',

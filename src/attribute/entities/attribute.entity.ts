@@ -1,5 +1,5 @@
-import { AttributesBase } from '@src/mec/entities/attribute/attribute-base.entity';
 import { Entity, Index, JoinColumn, ManyToOne, Unique } from 'typeorm';
+import { AttributesBase } from './base/attribute-base.entity';
 
 export const AttributeAlias = 'attribute';
 export const AttributesIndex = 'ik_attribute_index';

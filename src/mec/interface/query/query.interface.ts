@@ -2,7 +2,7 @@ import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
 export interface QueryResponseI {
     status: string;
-    message: string;
+    message?: string;
     result?: unknown | unknown[];
     error?: {
         message: string;

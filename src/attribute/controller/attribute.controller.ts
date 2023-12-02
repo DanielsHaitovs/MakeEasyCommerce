@@ -23,11 +23,14 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { AttributeResponseI } from '../interface/attribute.interface';
-import { AttributeSelectDto } from '@src/mec/dto/filter/attribute/attribute-filter.dto';
+import {
+    AttributeSelectDto,
+    AttributeWhereDto,
+} from '@src/attribute/dto/filter/attribute-filter.dto';
 import { GetAttributeDto } from '../dto/get-attribute.dto';
-import { AttributeSelect } from '@src/mec/enum/attribute/attribute.enum';
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 import { FilterByIdsDto } from '@src/mec/dto/filter/query-filter.dto';
+import { AttributeProperties } from '../enum/attribute.enum';
 
 @ApiTags('Attribute')
 @Controller('attribute')
@@ -56,48 +59,12 @@ export class AttributeController {
         description:
             'Provides all available query filters for Attribute. You can use this to find specific Attribute with its relations. Not All of them are nullable, OrderBy, ColumnName and Value are nullable',
     })
-    // @ApiQuery({
-    //     name: 'Attribute Query Filter',
-    //     description: 'Provides all available filters',
-    //     type: AttributeQueryFilterDto,
-    // })
     @ApiQuery({
-        name: 'selectForQuery',
-        description: 'Select Attribute Query Filter',
-        type: [AttributeSelectDto],
-        enum: AttributeSelect,
-        example: AttributeSelect.All,
-        isArray: true,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'valueIds',
+        name: 'ids',
+        description:
+            'If id(s) are mentioned then rest filtering will be based on this array of ids',
         required: false,
         type: FilterByIdsDto,
-    })
-    @ApiQuery({
-        name: 'orderQueryBy',
-        description: 'Attribute Query Order By Filter',
-        type: String,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'orderQueryDirection',
-        description: 'Attribute Query Order Direction',
-        enum: OrderDirection,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'paginate',
-        description: 'Attribute Query Page',
-        type: Number,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'limit',
-        description: 'Attribute Query Page Limit',
-        type: Number,
-        required: false,
     })
     @ApiQuery({
         name: 'joinRule',
@@ -123,21 +90,75 @@ export class AttributeController {
         type: Boolean,
         required: false,
     })
+    @ApiQuery({
+        name: 'queryPage',
+        description: 'Attribute Query Page',
+        type: Number,
+        required: false,
+        example: 0,
+    })
+    @ApiQuery({
+        name: 'queryLimit',
+        description: 'Attribute Query Page Limit',
+        type: Number,
+        required: false,
+        example: 0,
+    })
+    @ApiQuery({
+        name: 'selectWhereQuery',
+        description:
+            'Select one or many records from rule property list if you want to filter by this property value (true | false) -> "filterValue"',
+        type: [AttributeWhereDto],
+        enum: AttributeProperties,
+        isArray: true,
+        required: false,
+    })
+    // @ApiQuery({
+    //     name: 'filterValue',
+    //     description:
+    //         'This value is used in "selectWhereQuery" filter to determine if the value is true or false',
+    //     type: Boolean,
+    //     required: false,
+    // })
+    @ApiQuery({
+        name: 'selectForQuery',
+        required: true,
+        description:
+            'Select one or many records from rule property list if you want to return only these properties',
+        type: [AttributeSelectDto],
+        enum: AttributeProperties,
+        example: [AttributeProperties.Id],
+        isArray: true,
+    })
+    @ApiQuery({
+        name: 'orderQueryBy',
+        description: 'Order Rule By rule property',
+        type: String,
+        required: false,
+    })
+    @ApiQuery({
+        name: 'orderQueryDirection',
+        description: 'Attribute Query Order Direction -> ASC | DESC',
+        enum: OrderDirection,
+        required: false,
+    })
     @ApiOkResponse({
         description: 'Specific Attribute Attribute and its details',
         type: [GetAttributeDto],
     })
     async find(
-        @Query('selectForQuery', ParseArrayPipe) selectProp: AttributeSelect[],
-        @Query('valueIds') valueIds: number[],
-        @Query('paginate', ParseIntPipe) page: number,
-        @Query('limit', ParseIntPipe) limit: number,
+        @Query('ids') valueIds: number[],
+        @Query('isActive') active: boolean,
+        @Query('isRequired') required: boolean,
+        @Query('joinRule') joinRule: boolean,
+        @Query('joinOption') joinOptions: boolean,
+        @Query('queryPage') page: number,
+        @Query('queryLimit') limit: number,
         @Query('orderQueryBy') by: string,
         @Query('orderQueryDirection') direction: OrderDirection,
-        @Query('joinRule', ParseBoolPipe) joinRule: boolean,
-        @Query('joinOption', ParseBoolPipe) joinOptions: boolean,
-        @Query('isActive', ParseBoolPipe) isRequired: boolean,
-        @Query('isRequired', ParseBoolPipe) isActive: boolean,
+        @Query('selectForQuery', ParseArrayPipe)
+        selectProp: AttributeProperties[],
+        // @Query('selectWhereQuery') selectWhere: AttributeProperties[],
     ): Promise<AttributeResponseI> {
         return await this.attributeService.findAttributeQuery({
             attributeQuery: {
@@ -147,10 +168,10 @@ export class AttributeController {
                 direction,
                 selectProp,
                 valueIds,
-                joinOptions,
-                joinRule,
-                isActive,
-                isRequired,
+                joinOptions: joinOptions,
+                joinRule: joinRule,
+                isActive: active,
+                isRequired: required,
             },
         });
     }
@@ -164,8 +185,8 @@ export class AttributeController {
         name: 'selectForQuery',
         description: 'Select Attribute Query Filter',
         type: [AttributeSelectDto],
-        enum: AttributeSelect,
-        example: AttributeSelect.All,
+        enum: AttributeProperties,
+        example: AttributeProperties.All,
         isArray: true,
         required: true,
     })
@@ -222,7 +243,8 @@ export class AttributeController {
         type: [GetAttributeDto],
     })
     async findAll(
-        @Query('selectForQuery', ParseArrayPipe) selectProp: AttributeSelect[],
+        @Query('selectForQuery', ParseArrayPipe)
+        selectProp: AttributeProperties[],
         @Query('paginate', ParseIntPipe) page: number,
         @Query('limit', ParseIntPipe) limit: number,
         @Query('orderQueryBy') by: string,
@@ -269,8 +291,8 @@ export class AttributeController {
         name: 'selectForQuery',
         description: 'Select Attribute Query Filter',
         type: [AttributeSelectDto],
-        enum: AttributeSelect,
-        example: AttributeSelect.All,
+        enum: AttributeProperties,
+        example: AttributeProperties.All,
         isArray: true,
         required: false,
     })
@@ -294,7 +316,7 @@ export class AttributeController {
         @Param('id', ParseIntPipe) id: number,
         @Query('isActive', ParseBoolPipe) isActive: boolean,
         @Query('isRequired', ParseBoolPipe) isRequired: boolean,
-        @Query('selectForQuery', ParseArrayPipe) select: AttributeSelect[],
+        @Query('selectForQuery', ParseArrayPipe) select: AttributeProperties[],
         @Query('selectRuleRelation', ParseBoolPipe) joinRule: boolean,
         @Query('selectOptionRelation', ParseBoolPipe) joinOption: boolean,
     ): Promise<AttributeResponseI> {

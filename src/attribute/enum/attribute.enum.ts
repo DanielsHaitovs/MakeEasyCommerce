@@ -19,7 +19,7 @@ export enum JoinAttributeAlias {
     Rule = 'rule',
 }
 
-export enum AttributeSelect {
+export enum AttributeProperties {
     All = 'ALL',
     Id = 'attribute.id',
     Name = 'attribute.name',
@@ -27,7 +27,7 @@ export enum AttributeSelect {
     IsActive = 'attribute.isActive',
     IsRequired = 'attribute.isRequired',
     Parent = 'attribute.parent',
-    Description = 'attribute.details.description',
-    DataType = 'attribute.details.dataType',
-    IsArray = 'attribute.details.isArray',
+    Description = 'attribute.description',
+    DataType = 'attribute.dataType',
+    IsArray = 'attribute.isArray',
 }
