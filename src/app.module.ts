@@ -1,23 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
-import { OrderModule } from './order/order.module';
-import { CustomerModule } from './customer/customer.module';
-import { BasketModule } from './basket/basket.module';
-import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Customer } from './customer/entities/customer.entity';
-import { Address } from './customer/entities/address.entity';
-import { Details } from './customer/entities/details.entity';
-import { Product } from './product/entities/product.entity';
-import { Basket } from './basket/entities/basket.entity';
-import { Order } from './order/entities/order.entity';
+import { MecModule } from './mec/mec.module';
+import { AttributeModule } from './attribute/attribute.module';
+import { Attribute } from './attribute/entities/attribute.entity';
+import { AttributeRuleModule } from './rule/rule.module';
+import { AttributeRule } from './rule/entities/rule.entity';
+import { AttributeOptionModule } from './option/option.module';
+import { AttributeOption } from './option/entities/option.entity';
 
 @Module({
     imports: [
-        OrderModule,
-        CustomerModule,
-        ProductModule,
-        BasketModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.TYPEORM_HOST,
@@ -25,14 +17,26 @@ import { Order } from './order/entities/order.entity';
             database: process.env.TYPEORM_DATABASE,
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
-            entities: [Customer, Address, Details, Product, Basket, Order],
+            entities: [
+                // Store ->
+                // <- Store
+                // Attribute ->
+                Attribute,
+                AttributeRule,
+                AttributeOption
+                // <- Attribute
+            ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
-            synchronize: true, // never use TRUE in production!
+            synchronize: true // never use TRUE in production!
         }),
+        MecModule,
+        AttributeModule,
+        AttributeRuleModule,
+        AttributeOptionModule
     ],
     controllers: [],
-    providers: [AppService],
+    providers: []
 })
 export class AppModule {}

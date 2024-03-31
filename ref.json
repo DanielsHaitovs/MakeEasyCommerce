@@ -1,9 +1,140 @@
-const basket = await this.entityManager
-.getRepository(Basket)
-.createQueryBuilder()
-.relation(Basket, 'products')
-.of(1)
-.add(3);
-
-this will add record to already existing relation
-it won't update main entity
+SelectQueryBuilder {
+    '@instanceof': Symbol(SelectQueryBuilder),
+    parameterIndex: 0,
+    connection:<ref *1> DataSource {
+    '@instanceof': Symbol(DataSource),
+    migrations: [],
+    subscribers: [],
+    entityMetadatas: [ [EntityMetadata] ],
+    entityMetadatasMap: Map(1) { [Function] => [EntityMetadata] },
+    name: 'default',
+    options: {
+        type: 'postgres',
+        host: 'commerce_db',
+        port: 5432,
+        database: 'easyCommerce',
+        username: 'dbUser',
+        password: 'dbPass',
+        entities: [Array],
+        migrations: [Array],
+        migrationsTableName: 'typeorm_migrations',
+        logger: 'file',
+        synchronize: true
+},
+    logger: FileLogger { options: undefined, fileLoggerOptions: undefined },
+    driver: PostgresDriver {
+        slaves: [],
+        connectedQueryRunners: [],
+        isReplicated: false,
+        treeSupport: true,
+        transactionSupport: 'nested',
+        supportedDataTypes: [Array],
+        supportedUpsertTypes: [Array],
+        spatialTypes: [Array],
+        withLengthColumnTypes: [Array],
+        withPrecisionColumnTypes: [Array],
+        withScaleColumnTypes: [Array],
+        mappedDataTypes: [Object],
+        dataTypeDefaults: [Object],
+        maxAliasLength: 63,
+        isGeneratedColumnsSupported: true,
+        cteCapabilities: [Object],
+        connection: [Circular *1],
+        options: [Object],
+        postgres: [PG],
+        database: 'easyCommerce',
+        schema: 'public',
+        master: [BoundPool],
+        searchSchema: 'public',
+        version: '15.2'
+},
+    manager: EntityManager {
+        '@instanceof': Symbol(EntityManager),
+        repositories: [Map],
+        treeRepositories: [],
+        plainObjectToEntityTransformer: PlainObjectToNewEntityTransformer {},
+        connection: [Circular *1]
+},
+    namingStrategy: DefaultNamingStrategy {
+        nestedSetColumnNames: [Object],
+        materializedPathColumnName: 'mpath'
+},
+    metadataTableName: 'typeorm_metadata',
+    queryResultCache: undefined,
+    relationLoader: RelationLoader { connection: [Circular *1] },
+    relationIdLoader: RelationIdLoader {
+        connection: [Circular *1],
+        queryRunner: undefined
+},
+    isInitialized: true
+},
+    queryRunner: undefined,
+    expressionMap: QueryExpressionMap {
+    connection: <ref *1> DataSource {
+        '@instanceof': Symbol(DataSource),
+        migrations: [],
+        subscribers: [],
+        entityMetadatas: [Array],
+        entityMetadatasMap: [Map],
+        name: 'default',
+        options: [Object],
+        logger: [FileLogger],
+        driver: [PostgresDriver],
+        manager: [EntityManager],
+        namingStrategy: [DefaultNamingStrategy],
+        metadataTableName: 'typeorm_metadata',
+        queryResultCache: undefined,
+        relationLoader: [RelationLoader],
+        relationIdLoader: [RelationIdLoader],
+        isInitialized: true
+},
+    relationLoadStrategy: 'join',
+    queryEntity: false,
+    aliases: [ [Alias] ],
+    queryType: 'select',
+    selects: [ [Object] ],
+    maxExecutionTime: 0,
+    selectDistinct: false,
+    selectDistinctOn: [],
+    extraReturningColumns: [],
+    onConflict: '',
+    onIgnore: false,
+    joinAttributes: [],
+    relationIdAttributes: [],
+    relationCountAttributes: [],
+    wheres: [ [Object], [Object] ],
+    havings: [],
+    orderBys: {},
+    groupBys: [],
+    withDeleted: false,
+    parameters: { value: true },
+    disableEscaping: true,
+    enableRelationIdValues: false,
+    extraAppendedAndWhereCondition: '',
+    subQuery: false,
+    aliasNamePrefixingEnabled: true,
+    cache: false,
+    options: [],
+    insertColumns: [],
+    whereEntities: [],
+    updateEntity: true,
+    callListeners: true,
+    useTransaction: false,
+    nativeParameters: {},
+    locallyGenerated: {},
+    commonTableExpressions: [],
+    timeTravel: false,
+    mainAlias: Alias {
+        type: 'from',
+        name: 'rule',
+        _metadata: [EntityMetadata],
+        tablePath: 'eav_attribute_rule'
+}
+},
+    findOptions: {},
+    selects: [],
+    joins: [],
+    conditions: '',
+    orderBys: [],
+    relationMetadatas: []
+}
