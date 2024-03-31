@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { QueryService } from './query-filter.service';
+import { AttributeHelperService } from './helper.service';
 
-describe('QueryService', () => {
-    let service: QueryService;
+describe('AttributeHelperService', () => {
+    let service: AttributeHelperService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [QueryService]
+            providers: [AttributeHelperService]
         }).compile();
 
-        service = module.get<QueryService>(QueryService);
+        service = module.get<AttributeHelperService>(AttributeHelperService);
     });
 
     it('should be defined', () => {

@@ -1,12 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-        cors: true,
+        cors: true
     });
 
     // app.use(
@@ -17,17 +16,7 @@ async function bootstrap() {
     // );
 
     // Automatically validate data on every request
-    app.useGlobalPipes(
-        new ValidationPipe({
-            skipMissingProperties: false,
-            transform: true,
-            transformOptions: {
-                enableImplicitConversion: true,
-            },
-            whitelist: true,
-            forbidNonWhitelisted: true,
-        }),
-    );
+    // app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     const config = new DocumentBuilder()
         .setTitle('MakeEasyCommerce')

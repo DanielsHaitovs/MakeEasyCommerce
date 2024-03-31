@@ -1,12 +1,35 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { AttributeType } from '../enum/attribute.enum';
+import { CreateRuleDto } from '@src/rule/dto/create-rule.dto';
+import { ValidateNested } from '@nestjs/class-validator';
+import { Type } from '@nestjs/class-transformer';
 
-export class CreateAttributeShortDto {
+export class AttributeBaseDto {
+    @ApiProperty({
+        title: 'Is Attribute Active',
+        type: Boolean,
+        nullable: false,
+        default: false
+    })
+    @IsNotEmpty()
+    @IsBoolean()
+    isActive: boolean;
+
+    @ApiProperty({
+        title: 'Is Attribute Required',
+        type: Boolean,
+        nullable: false,
+        default: false
+    })
+    @IsNotEmpty()
+    @IsBoolean()
+    isRequired: boolean;
+
     @ApiProperty({
         title: 'Attribute Name',
         type: String,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsString()
@@ -15,36 +38,16 @@ export class CreateAttributeShortDto {
     @ApiProperty({
         title: 'Attribute Code',
         type: String,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsString()
     code: string;
 
     @ApiProperty({
-        title: 'Is Attribute Required',
-        type: Boolean,
-        nullable: false,
-        default: false,
-    })
-    @IsNotEmpty()
-    @IsBoolean()
-    isRequired: boolean;
-
-    @ApiProperty({
-        title: 'Is Attribute Active',
-        type: Boolean,
-        nullable: false,
-        default: false,
-    })
-    @IsNotEmpty()
-    @IsBoolean()
-    isActive: boolean;
-
-    @ApiProperty({
         title: 'Attribute description',
         type: String,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsString()
@@ -54,7 +57,7 @@ export class CreateAttributeShortDto {
         title: 'Attribute Type',
         type: String,
         nullable: false,
-        enum: AttributeType,
+        enum: AttributeType
     })
     @IsNotEmpty()
     @IsEnum(AttributeType)
@@ -64,11 +67,23 @@ export class CreateAttributeShortDto {
         title: 'Is Attribute Array',
         type: Boolean,
         nullable: false,
-        default: false,
+        default: false
     })
     @IsNotEmpty()
     @IsBoolean()
     isArray: boolean;
 }
 
-export class CreateAttributeDto extends CreateAttributeShortDto {}
+export class CreateAttributeDto extends AttributeBaseDto {
+    @ApiProperty({
+        title: 'Attribute Rule',
+        type: CreateRuleDto,
+        nullable: false,
+        required: true,
+        isArray: false
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => CreateRuleDto)
+    rule: CreateRuleDto;
+}

@@ -1,33 +1,19 @@
 import { SelectQueryBuilder } from 'typeorm';
-import {
-    QueryFilterI,
-    QueryResponseI,
-} from '@src/mec/interface/query/query.interface';
+import { QueryFilterI, QueryResponseI } from '@src/mec/interface/query/query.interface';
 import { Attribute } from '../entities/attribute.entity';
-import { AttributeType } from '../enum/attribute.enum';
 
-export interface AttributeI {
-    name: string;
-    code: string;
-    isActive: boolean;
-    isRequired: boolean;
-    description: string;
-    dataType: AttributeType;
-    isArray: boolean;
-}
+export type AttributeI = Attribute;
 
 export type CreateAttributeI = AttributeI;
 export type UpdateAttributeI = CreateAttributeI;
 
-export interface GetAttributeShortI extends CreateAttributeI {
+export type PrepareAttributeResponseI = QueryResponseI<CreateAttributeI>;
+
+export interface GetAttributeI extends CreateAttributeI {
     id: number;
 }
 
-export type GetAttributeI = GetAttributeShortI;
-
-export interface AttributeResponseI extends QueryResponseI {
-    result?: GetAttributeI | GetAttributeI[];
-}
+export type AttributeResponseI<T> = QueryResponseI<T>;
 
 export interface AttributeQueryFilterI extends QueryFilterI {
     message?: string;

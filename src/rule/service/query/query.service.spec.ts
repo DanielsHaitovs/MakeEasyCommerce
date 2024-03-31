@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { QueryService } from './query-filter.service';
+import { RuleQueryService } from './query.service';
 
-describe('QueryService', () => {
-    let service: QueryService;
+describe('RuleQueryService', () => {
+    let service: RuleQueryService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [QueryService]
+            providers: [RuleQueryService]
         }).compile();
 
-        service = module.get<QueryService>(QueryService);
+        service = module.get<RuleQueryService>(RuleQueryService);
     });
 
     it('should be defined', () => {

@@ -15,8 +15,4 @@ export interface GetBackRuleI {
     back: RuleBaseI;
 }
 
-export interface RuleResponseI extends QueryResponseI {
-    status: string;
-    message: string;
-    result?: GetRuleI | GetRuleI[];
-}
+export type RuleResponseI<T> = QueryResponseI<T>;

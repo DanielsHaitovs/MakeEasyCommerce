@@ -5,7 +5,7 @@ export enum ProductTypes {
     PERSONALIZED = 'personalized',
     GROUPED = 'grouped',
     VARIATION = 'variation',
-    VIRTUAL = 'virtual',
+    VIRTUAL = 'virtual'
 }
 
 export enum GroupTypes {
@@ -15,7 +15,7 @@ export enum GroupTypes {
     CONTENT_BLOCK = 'content-block',
     SLIDER = 'slider',
     CAMPAIGN = 'campaign',
-    SALES = 'sales',
+    SALES = 'sales'
 }
 
 export enum ProductVisibility {
@@ -23,5 +23,5 @@ export enum ProductVisibility {
     CATALOG = 'catalog',
     SEARCH = 'search',
     NOT_VISIBLE = 'not_visible',
-    SOLD_OUT = 'sold_out',
+    SOLD_OUT = 'sold_out'
 }

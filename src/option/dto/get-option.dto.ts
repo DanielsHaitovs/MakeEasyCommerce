@@ -6,7 +6,7 @@ export class GetOptionDto extends CreateOptionDto {
         title: 'Attribute Option ID',
         description: 'Option that is assigned to specific attribute',
         required: true,
-        type: Number,
+        type: Number
     })
     id: number;
 }

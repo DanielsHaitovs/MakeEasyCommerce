@@ -1,7 +1,4 @@
-import {
-    QueryFilterI,
-    QueryResponseI,
-} from '@src/mec/interface/query/query.interface';
+import { QueryResponseI } from '@src/mec/interface/query/query.interface';
 import { SelectQueryBuilder } from 'typeorm';
 import { AttributeRule } from '../entities/rule.entity';
 
@@ -16,10 +13,8 @@ export interface RuleBaseI {
     useInPromo: boolean;
     useInReport: boolean;
 }
-export interface RuleI {
-    front: RuleBaseI;
-    back: RuleBaseI;
-}
+
+export type RuleI = AttributeRule;
 
 export type CreateRuleI = RuleI;
 
@@ -28,11 +23,9 @@ export interface UpdateRuleI {
     back?: RuleBaseI;
 }
 
-export interface PrepareRuleResponseI extends QueryResponseI {
-    result?: CreateRuleI;
-}
+export type PrepareRuleResponseI = QueryResponseI<CreateRuleI>;
 
-export interface RuleQueryFilterI extends QueryFilterI {
+export interface RuleQueryFilterI {
     message?: string;
     many: boolean;
     query: SelectQueryBuilder<AttributeRule>;

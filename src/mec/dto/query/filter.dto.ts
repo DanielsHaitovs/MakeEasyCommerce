@@ -1,21 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    IsEnum,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    Length,
-    Min,
-    ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
 export class FilterWhereValueDto {
     @ApiProperty({
         title: 'Value which should be used in filter',
-        nullable: true,
+        nullable: true
     })
     where: string | number | boolean | Date | JSON;
 
@@ -29,7 +20,7 @@ export class FilterWhereValueDto {
     @ApiProperty({
         title: 'Alias for where statement',
         type: String,
-        nullable: true,
+        nullable: true
     })
     alias: string;
 }
@@ -39,12 +30,10 @@ export class FilterByIdsDto {
         title: 'Filter by ids',
         type: [Number],
         nullable: true,
-        required: false,
+        required: false
     })
     @IsOptional()
-    @IsNumber()
-    // @IsNumber({}, { each: true }) // typescript (docs) way
-    @ValidateNested({ each: true })
+    @IsNumber({}, { each: true }) // typescript (docs) way
     ids: number[];
 }
 
@@ -53,20 +42,22 @@ export class PaginationDto {
         title: 'Page number',
         type: Number,
         nullable: true,
-        required: false,
+        required: false
     })
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
+    @Min(0)
     page: number;
 
     @ApiProperty({
         title: 'Limit page items',
         type: Number,
         nullable: true,
-        required: false,
+        required: false
     })
     @IsNumber()
     @IsOptional()
+    @Min(1)
     limit: number;
 }
 
@@ -75,7 +66,7 @@ export class OrderDto {
         title: 'Order by value',
         type: String,
         nullable: true,
-        required: true,
+        required: true
     })
     @IsOptional()
     @IsString()
@@ -84,9 +75,9 @@ export class OrderDto {
     @ApiProperty({
         title: 'Order Direction for Query',
         enum: OrderDirection,
-        default: OrderDirection.ASC, //??May increase time, but supposed to be followed by index and cache
-        nullable: true,
-        required: false,
+        default: OrderDirection.None,
+        nullable: false,
+        required: true
     })
     @IsOptional()
     @IsEnum(OrderDirection)
@@ -98,7 +89,7 @@ export class QueryFilterDto {
         title: 'Pagination Settings',
         type: PaginationDto,
         nullable: false,
-        required: true,
+        required: true
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })
@@ -108,57 +99,9 @@ export class QueryFilterDto {
         title: 'Order Settings',
         type: OrderDto,
         nullable: false,
-        required: true,
+        required: true
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })
     order: OrderDto;
-}
-
-export class FilterRequestDto {
-    @ApiProperty({
-        title: 'Order by value',
-        description: 'If "by" is not provided, this will be ignored',
-        type: String,
-        nullable: true,
-        required: false,
-    })
-    @IsOptional()
-    @IsString()
-    @Length(1, 255)
-    by: string;
-
-    @ApiProperty({
-        title: 'Order Direction for Query',
-        description: 'If "by" is not provided, this will be ignored',
-        enum: OrderDirection,
-        default: OrderDirection.ASC,
-        nullable: true,
-        required: false,
-    })
-    @IsOptional()
-    @IsEnum(OrderDirection)
-    direction: OrderDirection;
-
-    @ApiProperty({
-        title: 'Page number',
-        type: Number,
-        nullable: true,
-        required: false,
-    })
-    @IsNumber()
-    @IsOptional()
-    @Min(0)
-    page: number;
-
-    @ApiProperty({
-        title: 'Limit page items',
-        type: Number,
-        nullable: true,
-        required: false,
-    })
-    @IsNumber()
-    @IsOptional()
-    @Min(1)
-    limit: number;
 }

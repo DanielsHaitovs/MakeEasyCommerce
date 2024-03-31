@@ -1,53 +1,55 @@
 import { EntityTarget, SelectQueryBuilder } from 'typeorm';
-import {
-    FilterRequestDto,
-    FilterWhereValueDto,
-    QueryFilterDto,
-} from '@src/mec/dto/filter/query-filter.dto';
+import { FilterWhereValueDto, QueryFilterDto } from '@src/mec/dto/query/filter.dto';
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
-const WhereManyIdAlias = '.id IN (:...ids)';
-export class QueryFilterService {
-    protected queryFilter({
-        filters,
-        alias,
-    }: {
-        filters: FilterRequestDto;
-        alias: string;
-    }): QueryFilterDto {
-        if (!Number.isInteger(filters.page)) filters.page = 0;
-        if (!Number.isInteger(filters.limit)) filters.limit = 0;
+export class QueryService {
+    private whereManyIdAlias = '.id IN (:...ids)';
 
-        if (filters.page === 0 || filters.limit === 0) {
-            filters.page = undefined;
-            filters.limit = undefined;
+    protected prepareFilter({ filters, alias }: { filters: QueryFilterDto; alias: string }): QueryFilterDto {
+        try {
+            const { pagination } = filters;
+            if (!Number.isInteger(pagination.page) || !Number.isInteger(pagination.limit)) {
+                filters.pagination = {
+                    page: 0,
+                    limit: 0
+                };
+            } else if (pagination.page === 0 || pagination.limit === 0) {
+                filters.pagination = {
+                    page: 0,
+                    limit: 0
+                };
+            }
+
+            filters.pagination = {
+                page: pagination.page,
+                limit: pagination.limit
+            };
+        } catch {
+            filters.pagination = {
+                page: 0,
+                limit: 0
+            };
         }
 
-        if (filters.by != undefined) {
-            filters.by = alias + '.' + filters.by;
-        } else {
-            filters.direction = undefined;
+        try {
+            const { order } = filters;
+
+            if (order.by != undefined) {
+                filters.order.by = alias + '.' + order.by;
+            } else {
+                filters.order = undefined;
+            }
+        } catch {
+            filters.order = undefined;
         }
 
-        return {
-            pagination: {
-                page: filters.page,
-                limit: filters.limit,
-            },
-            order: {
-                by: filters.by,
-                direction:
-                    filters.by != undefined
-                        ? OrderDirection[filters.direction]
-                        : undefined,
-            },
-        };
+        return filters;
     }
 
     protected whereQuery<Entity>({
         alias,
         data,
-        query,
+        query
     }: {
         entity: EntityTarget<Entity>;
         alias: string;
@@ -64,7 +66,7 @@ export class QueryFilterService {
     protected whereIdsQuery<Entity>({
         ids,
         alias,
-        query,
+        query
     }: {
         ids: number[];
         entity: EntityTarget<Entity>;
@@ -73,18 +75,31 @@ export class QueryFilterService {
     }): SelectQueryBuilder<Entity> {
         if (ids === undefined || alias === undefined) return query;
         if (!Array.isArray(ids)) ids = [ids];
-        if (ids.length > 1) {
-            console.log(123);
-            if (ids[0] !== 0) {
-                return query.where(alias + WhereManyIdAlias, {
-                    ids: ids,
-                });
-            }
-        } else if (ids.length > 0) {
-            if (ids[0] !== 0) {
-                console.log(ids[0]);
-                return query.where(alias + '.id = :id', {
-                    id: ids[0],
+
+        return query.where(alias + this.whereManyIdAlias, {
+            ids: ids
+        });
+    }
+
+    protected andWhereQuery<Entity>({
+        where,
+        query
+    }: {
+        entity: EntityTarget<Entity>;
+        where: FilterWhereValueDto[];
+        query: SelectQueryBuilder<Entity>;
+    }): SelectQueryBuilder<Entity> {
+        if (where === undefined) return query;
+        if (!Array.isArray(where)) {
+            where = [where];
+        }
+
+        for (const condition of where) {
+            if (condition.where != undefined && condition.alias != undefined) {
+                const propertyName = condition.alias.substring(condition.alias.lastIndexOf('.') + 1);
+                const alias = condition.alias + ' = :' + propertyName;
+                query = query.andWhere(alias, {
+                    [propertyName]: condition.where
                 });
             }
         }
@@ -92,47 +107,10 @@ export class QueryFilterService {
         return query;
     }
 
-    protected andWhereQuery<Entity>({
-        where,
-        query,
-    }: {
-        entity: EntityTarget<Entity>;
-        where: FilterWhereValueDto[];
-        query: SelectQueryBuilder<Entity>;
-    }): SelectQueryBuilder<Entity> {
-        if (where === undefined) return query;
-        if (Array.isArray(where) && where.length > 1) {
-            for (const condition of where) {
-                if (
-                    condition.where != undefined &&
-                    condition.alias != undefined
-                ) {
-                    const propertyName = condition.alias.substring(
-                        condition.alias.lastIndexOf('.') + 1,
-                    );
-                    const alias = condition.alias + ' = :' + propertyName;
-                    query = query.andWhere(alias, {
-                        [propertyName]: condition.where,
-                    });
-                }
-            }
-
-            return query;
-        }
-        const single: FilterWhereValueDto = where.shift();
-        const propertyName = single.alias.substring(
-            single.alias.lastIndexOf('.') + 1,
-        );
-        const alias = single.alias + ' = :' + propertyName;
-        return query.andWhere(alias, {
-            [propertyName]: single.where,
-        });
-    }
-
     protected orWhereQuery<Entity>({
         alias,
         value,
-        query,
+        query
     }: {
         entity: EntityTarget<Entity>;
         alias: string;
@@ -149,7 +127,7 @@ export class QueryFilterService {
         alias,
         value,
         groupBy,
-        query,
+        query
     }: {
         alias: string;
         value: {
@@ -159,8 +137,7 @@ export class QueryFilterService {
         query: SelectQueryBuilder<Entity>;
         entity: EntityTarget<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (groupBy === undefined || value === undefined || alias === undefined)
-            return query;
+        if (groupBy === undefined || value === undefined || alias === undefined) return query;
         query.groupBy(groupBy);
         return query.andHaving(alias, value);
     }
@@ -169,7 +146,7 @@ export class QueryFilterService {
         alias,
         value,
         query,
-        groupBy,
+        groupBy
     }: {
         entity: EntityTarget<Entity>;
         alias: string;
@@ -179,8 +156,7 @@ export class QueryFilterService {
         groupBy: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (groupBy === undefined || value === undefined || alias === undefined)
-            return query;
+        if (groupBy === undefined || value === undefined || alias === undefined) return query;
         query.groupBy(groupBy);
         return query.orHaving(alias, value);
     }
@@ -188,14 +164,14 @@ export class QueryFilterService {
     protected paginateQuery<Entity>({
         page,
         limit,
-        query,
+        query
     }: {
         entity: EntityTarget<Entity>;
         page: number;
         limit: number;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (page === undefined || limit === undefined) return query;
+        if (page === 0 && limit === 0) return query;
 
         query.skip((Number(page) - 1) * Number(limit));
         query.take(Number(limit));
@@ -204,7 +180,7 @@ export class QueryFilterService {
 
     protected selectQuery<Entity>({
         properties,
-        query,
+        query
     }: {
         entity: EntityTarget<Entity>;
         properties: string[];
@@ -220,29 +196,29 @@ export class QueryFilterService {
     protected orderQuery<Entity>({
         by,
         direction,
-        query,
+        query
     }: {
         entity: EntityTarget<Entity>;
         by: string;
         direction: OrderDirection;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (by === undefined || direction === undefined) return query;
+        if (by === undefined || direction === undefined || direction === OrderDirection.None) return query;
+
         return query.orderBy(by, direction);
     }
 
     protected relationQuery<Entity>({
         joinAlias,
         relationsAlias,
-        query,
+        query
     }: {
         entity: EntityTarget<Entity>;
         joinAlias: string;
         relationsAlias: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (joinAlias === undefined || relationsAlias === undefined)
-            return query;
+        if (joinAlias === undefined || relationsAlias === undefined) return query;
         return query.leftJoinAndSelect(joinAlias, relationsAlias);
     }
 }

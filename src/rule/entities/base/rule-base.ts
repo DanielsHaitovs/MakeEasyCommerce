@@ -1,11 +1,10 @@
-import { MecBaseEntity } from '@src/mec/entities/mec.entity';
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 import { Column } from 'typeorm';
 
 export abstract class RuleConfigEntity {
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -13,7 +12,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -21,7 +20,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -29,7 +28,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -37,7 +36,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -45,7 +44,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -53,7 +52,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -61,7 +60,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -69,7 +68,7 @@ export abstract class RuleConfigEntity {
 
     @Column({
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -78,11 +77,3 @@ export abstract class RuleConfigEntity {
 
 export abstract class FrontRuleConfigEntity extends RuleConfigEntity {}
 export abstract class BackRuleConfigEntity extends RuleConfigEntity {}
-
-export abstract class RuleBaseEntity extends MecBaseEntity {
-    @Column(() => FrontRuleConfigEntity)
-    front: FrontRuleConfigEntity;
-
-    @Column(() => BackRuleConfigEntity)
-    back: BackRuleConfigEntity;
-}

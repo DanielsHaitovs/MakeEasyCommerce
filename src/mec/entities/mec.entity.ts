@@ -1,9 +1,4 @@
-import {
-    BaseEntity as TypeOrmBaseEntity,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity as TypeOrmBaseEntity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export abstract class MecBaseEntity extends TypeOrmBaseEntity {
     @PrimaryGeneratedColumn()

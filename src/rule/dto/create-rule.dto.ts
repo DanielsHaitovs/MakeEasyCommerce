@@ -6,7 +6,7 @@ export class RuleBaseDto {
         title: 'Use In Catalog Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInCatalog: boolean;
@@ -15,7 +15,7 @@ export class RuleBaseDto {
         title: 'Use In Listing Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInListing: boolean;
@@ -24,7 +24,7 @@ export class RuleBaseDto {
         title: 'Use In LayeredNavigation Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInLayeredNavigation: boolean;
@@ -33,7 +33,7 @@ export class RuleBaseDto {
         title: 'Use In Filter Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInFilter: boolean;
@@ -42,7 +42,7 @@ export class RuleBaseDto {
         title: 'Use In OptionFilter Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInOptionFilter: boolean;
@@ -51,7 +51,7 @@ export class RuleBaseDto {
         title: 'Use In Sort Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInSort: boolean;
@@ -60,7 +60,7 @@ export class RuleBaseDto {
         title: 'Use In Search Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInSearch: boolean;
@@ -69,7 +69,7 @@ export class RuleBaseDto {
         title: 'Use In Promo Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInPromo: boolean;
@@ -78,7 +78,7 @@ export class RuleBaseDto {
         title: 'Use In Report Rule Boolean',
         type: Boolean,
         default: false,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     useInReport: boolean;
@@ -91,7 +91,7 @@ export class RuleDto {
     @ApiProperty({
         title: 'Front end Attribute Rule',
         type: FrontRuleDto,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })
@@ -100,7 +100,7 @@ export class RuleDto {
     @ApiProperty({
         title: 'Back end Attribute Rule',
         type: BackRuleDto,
-        nullable: false,
+        nullable: false
     })
     @IsNotEmpty()
     @ValidateNested({ each: true })

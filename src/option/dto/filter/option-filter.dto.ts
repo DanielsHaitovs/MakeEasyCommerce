@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FilterRequestDto } from '@src/mec/dto/filter/query-filter.dto';
+import { QueryFilterDto } from '@src/mec/dto/query/filter.dto';
 import { IsNumber, IsOptional } from 'class-validator';
 
-export class OptionQueryFilterDto extends FilterRequestDto {
+export class OptionQueryFilterDto extends QueryFilterDto {
     @ApiProperty({
         title: 'Attribute Option ID(s)',
         type: [Number],
         nullable: true,
         default: null,
-        required: false,
+        required: false
     })
     @IsOptional()
     @IsNumber()

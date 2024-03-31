@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AttributeOptionService } from './option.service';
+import { RuleHelperService } from './helper.service';
 
-describe('AttributeOptionService', () => {
-    let service: AttributeOptionService;
+describe('RuleHelperService', () => {
+    let service: RuleHelperService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [AttributeOptionService],
+            providers: [RuleHelperService]
         }).compile();
 
-        service = module.get<AttributeOptionService>(AttributeOptionService);
+        service = module.get<RuleHelperService>(RuleHelperService);
     });
 
     it('should be defined', () => {

@@ -4,19 +4,19 @@ export enum AttributeType {
     Number = 'Number',
     JSON = 'JSON',
     Date = 'Date',
-    Config = 'Config',
+    Config = 'Config'
 }
 
 export enum JoinAttributeRelations {
     All = 'all',
     Options = 'attribute.options',
-    Rule = 'attribute.rule',
+    Rule = 'attribute.rule'
 }
 
 export enum JoinAttributeAlias {
     All = 'all',
     Options = 'options',
-    Rule = 'rule',
+    Rule = 'rule'
 }
 
 export enum AttributeProperties {
@@ -29,5 +29,5 @@ export enum AttributeProperties {
     Parent = 'attribute.parent',
     Description = 'attribute.description',
     DataType = 'attribute.dataType',
-    IsArray = 'attribute.isArray',
+    IsArray = 'attribute.isArray'
 }

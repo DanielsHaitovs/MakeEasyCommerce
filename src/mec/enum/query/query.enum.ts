@@ -1,16 +1,17 @@
 export enum OrderType {
     YES = 'true',
-    NO = 'false',
+    NO = 'false'
 }
 
 export enum OrderDirection {
+    None = 'none',
     ASC = 'ASC',
-    DESC = 'DESC',
+    DESC = 'DESC'
 }
 
 export enum QueryConditions {
     OR = 'or',
     AND = 'and',
     LIKE = 'like',
-    SELECT = 'select',
+    SELECT = 'select'
 }

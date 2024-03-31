@@ -1,379 +1,126 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    Query,
-    ParseIntPipe,
-} from '@nestjs/common';
-import {
-    ApiBody,
-    ApiOkResponse,
-    ApiOperation,
-    ApiParam,
-    ApiQuery,
-    ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, ValidationPipe } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { RuleService } from '../service/rule.service';
 import { CreateRuleDto } from '../dto/create-rule.dto';
-import { UpdateRuleDto, UpdateRuleTypeDto } from '../dto/update-rule.dto';
-import { GetRuleDto } from '../dto/get-rule.dto';
-import {
-    RuleSelectDto,
-    RuleWhereDto,
-} from '@src/rule/dto/filter/rule-filter.dto';
-
-import { RuleResponseI } from '../interface/get-rule.interface';
-
-import { AttributeRuleService } from '../service/rule.service';
-import { RuleSelect, RuleType, RuleWhere } from '@src/rule/enum/rule.enum';
-import { OrderDirection } from '@src/mec/enum/query/query.enum';
-import { FilterByIdsDto } from '@src/mec/dto/filter/query-filter.dto';
-import { DataHelperService } from '@src/utils/data-help.service';
+import { RuleResponseDto } from '../dto/get-rule.dto';
+import { RuleShortSelect } from '../enum/rule.enum';
+import { PaginationDto } from '@src/mec/dto/query/filter.dto';
+import { UpdateRuleDto } from '../dto/update-rule.dto';
+import { RuleQueryDto } from '../dto/filter.dto';
 
 @ApiTags('Attribute Rule')
-@Controller('attribute-rule')
-export class AttributeRuleController {
-    constructor(
-        private readonly attributeRuleService: AttributeRuleService,
-        private readonly dataHelper: DataHelperService,
-    ) {}
+@Controller('rule')
+export class RuleController {
+    constructor(private readonly ruleService: RuleService) {}
 
-    @Post('new/:id')
+    @Post()
     @ApiOperation({
         summary: 'Create Attribute Rule',
-        description: 'Creates record (specifically) for rule attribute entity',
+        description: 'Creates record (specifically) for rule attribute entity'
     })
     @ApiBody({
         type: CreateRuleDto,
         description: 'Create Attribute Rule',
-        required: false,
+        required: false
     })
-    async create(
-        @Body() createAttributeRule: CreateRuleDto,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.create({
-            createAttributeRule,
-        });
+    async create(@Body() createRule: CreateRuleDto): Promise<RuleResponseDto> {
+        return await this.ruleService.createRule({ rule: createRule });
     }
 
-    @Get('get')
+    @Get()
     @ApiOperation({
-        summary: 'Advanced Rule Filter Query',
-        description:
-            'Provides all available rule properties to select for query. You can return list of specific Rule properties.',
-    })
-    @ApiQuery({
-        name: 'ids',
-        description:
-            'If id(s) are mentioned then rest filtering will be based on this array of ids',
-        required: false,
-        type: FilterByIdsDto,
-    })
-    @ApiQuery({
-        name: 'queryPage',
-        description: 'Rule Query Page',
-        type: Number,
-        required: false,
-        example: 0,
-    })
-    @ApiQuery({
-        name: 'queryLimit',
-        description: 'Rule Query Page Limit',
-        type: Number,
-        required: false,
-        example: 0,
-    })
-    @ApiQuery({
-        name: 'selectWhereQuery',
-        description:
-            'Select one or many records from rule property list if you want to filter by this property value (true | false) -> "filterValue"',
-        type: [RuleWhereDto],
-        enum: RuleWhere,
-        isArray: true,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'filterValue',
-        description:
-            'This value is used in "selectWhereQuery" filter to determine if the value is true or false',
-        type: Boolean,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'selectForQuery',
-        required: false,
-        description:
-            'Select one or many records from rule property list if you want to return only these properties',
-        type: [RuleSelectDto],
-        enum: RuleSelect,
-        example: [RuleSelect.Id],
-        isArray: true,
-    })
-    @ApiQuery({
-        name: 'orderQueryBy',
-        description: 'Order Rule By rule property',
-        type: String,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'orderQueryDirection',
-        description: 'Rule Query Order Direction -> ASC | DESC',
-        enum: OrderDirection,
-        required: false,
+        summary: 'Get All rules',
+        description: 'Get Attribute Rules with option to paginate'
     })
     @ApiOkResponse({
-        description: 'Specific Rule Rule and its details',
-        type: [GetRuleDto],
+        description: 'Attributes Rule Page',
+        type: RuleResponseDto
     })
-    async find(
-        @Query('ids') ruleIds: number[],
-        @Query('queryPage') page: number,
-        @Query('queryLimit') limit: number,
-        @Query('selectWhereQuery') selectWhere: RuleWhere[],
-        @Query('filterValue') whereValue: boolean,
-        @Query('selectForQuery') selectProp: RuleSelect[],
-        @Query('orderQueryBy') by: string,
-        @Query('orderQueryDirection') direction: OrderDirection,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.findRuleQuery({
-            ruleQuery: {
-                page,
-                limit,
-                by,
-                direction,
-                selectProp,
-                selectWhere,
-                whereValue,
-                ruleIds,
-            },
-        });
+    async getAllRules(
+        @Query(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true } })) paginate: PaginationDto
+    ): Promise<RuleResponseDto> {
+        return await this.ruleService.getRules({ pagination: paginate });
     }
 
-    @Get('get/all')
+    @Post('filter')
     @ApiOperation({
-        summary: 'Advanced Rule Filter Query',
-        description:
-            'Provides all available rule properties to select for query. You can return list of specific Rule properties.',
+        summary: 'Filter Through Rules',
+        description: 'Filter through rules'
     })
-    @ApiQuery({
-        name: 'queryPage',
-        description: 'Rule Query Page',
-        type: Number,
-        required: false,
-        example: 0,
-    })
-    @ApiQuery({
-        name: 'queryLimit',
-        description: 'Rule Query Page Limit',
-        type: Number,
-        required: false,
-        example: 0,
-    })
-    @ApiQuery({
-        name: 'selectWhereQuery',
-        description:
-            'Select one or many records from rule property list if you want to filter by this property value (true | false) -> "filterValue"',
-        type: [RuleWhereDto],
-        enum: RuleWhere,
-        isArray: true,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'filterValue',
-        description:
-            'This value is used in "selectWhereQuery" filter to determine if the value is true or false',
-        type: Boolean,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'selectForQuery',
-        required: false,
-        description:
-            'Select one or many records from rule property list if you want to return only these properties',
-        type: [RuleSelectDto],
-        enum: RuleSelect,
-        example: [RuleSelect.Id],
-        isArray: true,
-    })
-    @ApiQuery({
-        name: 'orderQueryBy',
-        description: 'Order Rule By rule property',
-        type: String,
-        required: false,
-    })
-    @ApiQuery({
-        name: 'orderQueryDirection',
-        description: 'Rule Query Order Direction -> ASC | DESC',
-        enum: OrderDirection,
-        required: false,
+    @ApiBody({
+        type: RuleQueryDto,
+        description: 'Filter Rule',
+        required: true
     })
     @ApiOkResponse({
-        description: 'Specific Rule Rule and its details',
-        type: [GetRuleDto],
+        description: 'Attributes Rule Filtered Result',
+        type: RuleResponseDto
     })
-    async findAll(
-        @Query('queryPage') page: number,
-        @Query('queryLimit') limit: number,
-        @Query('selectWhereQuery') selectWhere: RuleWhere[],
-        @Query('filterValue') whereValue: boolean,
-        @Query('selectForQuery') selectProp: RuleSelect[],
-        @Query('orderQueryBy') by: string,
-        @Query('orderQueryDirection') direction: OrderDirection,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.findRuleQuery({
-            ruleQuery: {
-                page,
-                limit,
-                by,
-                direction,
-                selectProp,
-                selectWhere,
-                whereValue,
-                ruleIds: undefined,
-            },
-        });
+    async filterRules(@Body() ruleQuery: RuleQueryDto): Promise<RuleResponseDto> {
+        return await this.ruleService.ruleQuery({ filters: ruleQuery });
     }
 
-    @Get('get/by/:id')
+    @Get(':id')
     @ApiOperation({
-        summary: 'Advanced Rule Filter Query',
-        description:
-            'Provides all available rule properties to select for query. You can return list of specific Rule properties.',
+        summary: 'Get Attribute Rule By ID',
+        description: 'Get specific rule by its id (Attribute)'
     })
     @ApiParam({ name: 'id', description: 'Rule id (Attribute)' })
     @ApiOkResponse({
-        description: 'Specific Rule Rule and its details',
-        type: [GetRuleDto],
+        description: 'Specific Rule and its details',
+        type: RuleResponseDto
     })
-    async findOne(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.findRuleQuery({
-            ruleQuery: {
-                page: null,
-                limit: null,
-                by: null,
-                direction: null,
-                selectProp: null,
-                selectWhere: null,
-                whereValue: null,
-                ruleIds: [id],
-            },
-        });
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<RuleResponseDto> {
+        return await this.ruleService.getRuleById({ id });
     }
 
-    @Get('get/filtered/:id')
+    @Patch(':id')
     @ApiOperation({
-        summary: 'Advanced Rule Filter Query',
-        description:
-            'Provides all available rule properties to select for query. You can return list of specific Rule properties.',
+        summary: 'Update Attribute Rule',
+        description: 'Update specific rule by its id (Attribute)'
     })
-    @ApiParam({ name: 'id', description: 'Rule id (Attribute)' })
-    @ApiQuery({
-        name: 'selectForQuery',
-        required: false,
-        description:
-            'Select one or many records from rule property list if you want to return only these properties',
-        type: [RuleSelectDto],
-        enum: RuleSelect,
-        example: [RuleSelect.Id],
-        isArray: true,
-    })
-    @ApiOkResponse({
-        description: 'Specific Rule Rule and its details',
-        type: [GetRuleDto],
-    })
-    async findOneById(
-        @Param('id', ParseIntPipe) id: number,
-        @Query('selectForQuery') selectProp: RuleSelect[],
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.findRuleQuery({
-            ruleQuery: {
-                page: null,
-                limit: null,
-                by: null,
-                direction: null,
-                selectProp,
-                selectWhere: null,
-                whereValue: null,
-                ruleIds: [id],
-            },
-        });
-    }
-
-    @Patch('update/:id')
-    @ApiOperation({
-        summary: 'Update Rule by ID',
-        description: 'Update specifically rule data by id',
-    })
+    @ApiParam({ name: 'id', description: 'Rule id (Attribute)', type: Number })
     @ApiBody({
         type: UpdateRuleDto,
-        description: 'Attribute Rule',
+        description: 'Update Attribute Rule',
         required: true,
+        isArray: false
     })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateRuleDto: UpdateRuleDto,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.update({
-            id: id,
-            rule: updateRuleDto,
-        });
-    }
-
-    @Patch('update/front/:id')
-    @ApiOperation({
-        summary: 'Update specific rule setting by ID',
-        description: 'Update specifically front rule property(s) by id.',
-    })
-    @ApiBody({
-        type: UpdateRuleTypeDto,
-        description: 'Attribute Rule',
-        required: true,
-    })
-    async updateFrontRule(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateRuleDto: UpdateRuleTypeDto,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.updateType({
-            id: id,
-            type: RuleType.Front,
-            rule: updateRuleDto,
-        });
-    }
-
-    @Patch('update/back/:id')
-    @ApiOperation({
-        summary: 'Update specific rule setting by ID',
-        description: 'Update specifically front rule property(s) by id.',
-    })
-    @ApiBody({
-        type: UpdateRuleTypeDto,
-        description: 'Attribute Rule',
-        required: true,
-    })
-    async updateBackRule(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateRuleDto: UpdateRuleTypeDto,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.updateType({
-            id: id,
-            type: RuleType.Back,
-            rule: updateRuleDto,
-        });
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateRule: UpdateRuleDto): Promise<RuleResponseDto> {
+        return await this.ruleService.updateRule({ id, rule: updateRule });
     }
 
     @Delete(':id')
     @ApiOperation({
-        summary: 'Delete Rule by ID',
-        description: 'Delete specifically rule data by id',
+        summary: 'Delete Attribute Rule',
+        description: 'Delete specific rule by its id (Attribute)'
     })
-    async removeRule(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<RuleResponseI> {
-        return await this.attributeRuleService.remove({ id });
+    @ApiParam({ name: 'id', description: 'Rule id (Attribute)', type: Number })
+    @ApiOkResponse({
+        description: 'Delete Rule',
+        type: RuleResponseDto
+    })
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<RuleResponseDto> {
+        return await this.ruleService.deleteRule({ id });
+    }
+
+    @Get('type/by/:id')
+    @ApiOperation({
+        summary: 'Get Attribute Rule By ID',
+        description: 'Get specific rule by its id (Attribute)'
+    })
+    @ApiParam({ name: 'id', description: 'Rule id (Attribute)' })
+    @ApiQuery({
+        name: 'type',
+        required: true,
+        enum: RuleShortSelect,
+        description: 'Simple Property select for Rule'
+    })
+    @ApiOkResponse({
+        description: 'Specific Rule and its details',
+        type: RuleResponseDto
+    })
+    async findOneType(@Param('id', ParseIntPipe) id: number, @Query('type') type: RuleShortSelect): Promise<RuleResponseDto> {
+        return await this.ruleService.getRuleType({ id, type });
     }
 }

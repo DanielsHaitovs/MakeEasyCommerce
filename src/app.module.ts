@@ -23,20 +23,20 @@ import { AttributeOption } from './option/entities/option.entity';
                 // Attribute ->
                 Attribute,
                 AttributeRule,
-                AttributeOption,
+                AttributeOption
                 // <- Attribute
             ],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
-            synchronize: true, // never use TRUE in production!
+            synchronize: true // never use TRUE in production!
         }),
         MecModule,
         AttributeModule,
         AttributeRuleModule,
-        AttributeOptionModule,
+        AttributeOptionModule
     ],
     controllers: [],
-    providers: [],
+    providers: []
 })
 export class AppModule {}

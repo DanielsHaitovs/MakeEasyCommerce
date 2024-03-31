@@ -1,13 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    IsBoolean,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { AttributeProperties } from '@src/attribute/enum/attribute.enum';
-import { FilterRequestDto } from '@src/mec/dto/filter/query-filter.dto';
+import { QueryFilterDto } from '@src/mec/dto/query/filter.dto';
 
 export class AttributeSelectDto {
     @ApiProperty({
@@ -15,7 +9,7 @@ export class AttributeSelectDto {
         enum: AttributeProperties,
         isArray: true,
         default: AttributeProperties.Id,
-        required: false,
+        required: false
     })
     @IsOptional()
     @ValidateNested({ each: true })
@@ -25,13 +19,12 @@ export class AttributeSelectDto {
 export class AttributeWhereDto {
     @ApiProperty({
         title: 'Where Rule Properties',
-        description:
-            'Option to include more then 1 of existing rule properties into filtering using same boolean from "whereValue"',
+        description: 'Option to include more then 1 of existing rule properties into filtering using same boolean from "whereValue"',
         nullable: false,
         enum: AttributeProperties,
-        default: '',
+        default: AttributeProperties.Id,
         isArray: true,
-        required: false,
+        required: false
     })
     @IsOptional()
     @ValidateNested({ each: true })
@@ -43,7 +36,7 @@ export class AttributeRelationSelectDto {
         title: 'Join Options Relation for Attribute Query',
         nullable: false,
         default: false,
-        required: true,
+        required: true
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -53,31 +46,33 @@ export class AttributeRelationSelectDto {
         title: 'Join Rule Relation for Attribute Query',
         nullable: false,
         default: false,
-        required: true,
+        required: true
     })
     @IsNotEmpty()
     @IsBoolean()
     joinRule: boolean;
 }
 
-export class AttributeQueryFilterDto extends FilterRequestDto {
+export class AttributeQueryFilterDto extends QueryFilterDto {
     @ApiProperty({
         title: 'Attribute ID(s)',
-        type: [Number],
+        type: Number,
+        isArray: true,
         nullable: true,
-        default: null,
-        required: false,
+        required: false
     })
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { each: true })
     valueIds: number[];
 
     @ApiProperty({
         title: 'Select Attribute Properties',
-        isArray: true,
         enum: AttributeProperties,
+        isArray: true,
+        nullable: true,
+        required: false
     })
-    @IsNotEmpty()
+    @IsOptional()
     @ValidateNested({ each: true })
     selectProp: AttributeProperties[];
 
@@ -85,7 +80,7 @@ export class AttributeQueryFilterDto extends FilterRequestDto {
         title: 'Join Options Relation for Attribute Query',
         nullable: false,
         default: false,
-        required: false,
+        required: false
     })
     @IsOptional()
     @IsBoolean()
@@ -95,7 +90,7 @@ export class AttributeQueryFilterDto extends FilterRequestDto {
         title: 'Join Rule Relation for Attribute Query',
         nullable: false,
         default: false,
-        required: false,
+        required: false
     })
     @IsOptional()
     @IsBoolean()
@@ -104,7 +99,7 @@ export class AttributeQueryFilterDto extends FilterRequestDto {
     @ApiProperty({
         title: 'Is Active',
         nullable: true,
-        required: false,
+        required: false
     })
     @IsOptional()
     @IsBoolean()
@@ -113,7 +108,7 @@ export class AttributeQueryFilterDto extends FilterRequestDto {
     @ApiProperty({
         title: 'Is Required',
         nullable: true,
-        required: false,
+        required: false
     })
     @IsOptional()
     @IsBoolean()

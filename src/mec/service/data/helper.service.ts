@@ -21,18 +21,6 @@ export class DataHelperService {
         return undefined;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    toObject({ response }: { response: QueryResponseI }): any {
-        if (response.result != undefined && response.result != null)
-            return response;
-
-        if (Array.isArray(response.result) && response.result.length === 1) {
-            return response.result[0];
-        }
-
-        return response.result;
-    }
-
     isNumber(value: unknown): boolean {
         console.log('you decided to use function I did not test');
         console.log('SURPRISE :D');
@@ -80,5 +68,35 @@ export class DataHelperService {
         }
 
         return false;
+    }
+
+    /**
+     * This method is used to retrieve a single rule from a response.
+     *
+     * @param {Object} response - An object of type RuleResponseI containing the response to parse.
+     *
+     * @returns {GetRuleI} - Returns an object of type GetRuleI.
+     * If the response contains an array of results, the method returns the first result in the array.
+     * If the response contains a single result, the method returns the result.
+     * If an error occurs while parsing the response, the method returns null.
+     */
+    toSingle<T>({ response }: { response: QueryResponseI<T> }): T {
+        if (response.result === undefined) return null;
+
+        try {
+            // Extract the result from the response
+            const { result } = response;
+
+            // If the result is an array, return the first element in the array
+            if (result != undefined && Array.isArray(result)) {
+                return result.shift();
+            }
+
+            // If the result is not an array, return the result
+            return result as T;
+        } catch {
+            // If an error occurs, return null
+            return null;
+        }
     }
 }
