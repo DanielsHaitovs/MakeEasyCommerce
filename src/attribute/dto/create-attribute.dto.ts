@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { AttributeType } from '../enum/attribute.enum';
 import { CreateRuleDto } from '@src/rule/dto/create-rule.dto';
-import { ValidateNested } from '@nestjs/class-validator';
+import { IsNumber, ValidateNested } from '@nestjs/class-validator';
 import { Type } from '@nestjs/class-transformer';
 
 export class AttributeBaseDto {
@@ -75,6 +75,30 @@ export class AttributeBaseDto {
 }
 
 export class CreateAttributeDto extends AttributeBaseDto {
+    @ApiProperty({
+        title: 'Attribute Rule',
+        type: CreateRuleDto,
+        nullable: false,
+        required: true,
+        isArray: false
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => CreateRuleDto)
+    rule: CreateRuleDto;
+}
+
+export class CreateAttributeRuleDto {
+    @ApiProperty({
+        title: 'Attribute Id',
+        type: Number,
+        nullable: false,
+        required: true
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    id: number;
+
     @ApiProperty({
         title: 'Attribute Rule',
         type: CreateRuleDto,

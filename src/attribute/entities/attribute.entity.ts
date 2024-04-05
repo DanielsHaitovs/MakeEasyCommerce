@@ -1,15 +1,18 @@
-import { Entity, Index, JoinColumn, ManyToOne, OneToOne, Unique } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { AttributesBase } from './base.entity';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
 
-export const AttributeAlias = 'attribute';
-export const AttributeRelationsAlias = ['options', 'rule'];
-export const AttributesIndex = 'ik_attribute_index';
-export const AttributesUnique = 'uk_attribute_index';
+export const AttributesIndex = {
+    isActive: 'ik_attribute_active',
+    code: 'ik_attribute_code'
+};
+
+export const AttributesUnique = {
+    name: 'uk_attribute_name',
+    code: 'uk_attribute_code'
+};
 
 @Entity('eav_attribute_index')
-@Index('ik_attribute_index', ['id', 'code', 'isActive', 'isRequired'])
-@Unique('uk_attribute_index', ['code', 'name'])
 export class Attribute extends AttributesBase {
     @ManyToOne(() => Attribute, { cascade: false })
     @JoinColumn({
@@ -17,10 +20,11 @@ export class Attribute extends AttributesBase {
     })
     parent: Attribute;
 
-    @OneToOne(() => AttributeRule, (rule) => rule.id, {
+    @OneToOne(() => AttributeRule, {
         cascade: true,
         nullable: false
     })
+    @JoinColumn()
     rule: AttributeRule;
 }
 

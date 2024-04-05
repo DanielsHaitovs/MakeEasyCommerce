@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
@@ -9,6 +9,7 @@ import { Attribute, AttributesUnique } from '../entities/attribute.entity';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
 import { UpdateAttributeDto } from '../dto/update-attribute.dto';
+import { AttributeRule } from '@src/rule/entities/rule.entity';
 
 @Injectable()
 export class AttributeService {
@@ -35,13 +36,12 @@ export class AttributeService {
             const attribute = this.attributeHelper.prepareAttribute({ createAttribute: createAttribute });
 
             // Check if the attribute is defined
-            if (attribute != null && attribute.result != undefined) {
-                const { result } = attribute;
+            if (attribute != null) {
                 // Save the attribute and return the result with a success status
                 // The 'as CreateAttributeI' is a type assertion, telling TypeScript to treat 'result' as 'CreateAttributeI' type
                 return {
                     status: '200',
-                    result: await this.entityManager.save(Attribute, result as CreateAttributeDto)
+                    result: await this.entityManager.save(Attribute, attribute)
                 };
             }
 
@@ -50,9 +50,16 @@ export class AttributeService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            if (e.message.includes(AttributesUnique)) {
+            let where = '';
+            Object.keys(AttributesUnique).forEach((key) => {
+                if (e.message.includes(AttributesUnique[key] as string)) {
+                    where = key;
+                }
+            });
+
+            if (where != '') {
                 return this.handlerService.handleWarning<GetAttributeDto>({
-                    message: 'Attribute With Such Name or Code Already Exists',
+                    message: `Attribute with such ${where} already exists`,
                     where: 'Attribute Service -> createAttribute',
                     status: '409'
                 });
@@ -62,10 +69,73 @@ export class AttributeService {
                 e,
                 message: 'Could Not Create Attribute',
                 where: 'Attribute Service -> createAttribute',
-                status: '666',
                 log: {
                     path: 'attribute/error.log',
                     action: 'Create Attribute',
+                    name: 'Attribute Service'
+                }
+            });
+        }
+    }
+
+    /**
+     * Retrieves a paginated list of attributes with optional relations.
+     *
+     * @param {Object} pagination - The pagination parameters.
+     * @param {PaginationDto} pagination.pagination - The pagination data transfer object.
+     * @param {AttributeRelationSelectDto} pagination.relations - The relations to be retrieved with the attributes.
+     *
+     * @returns {Promise<AttributeResponseDto>} A promise that resolves to the response object containing the status and the retrieved attributes, or null if the attributes could not be retrieved.
+     *
+     * @throws Will throw an error if the attribute retrieval fails.
+     */
+    async getAttributes({
+        pagination,
+        relations
+    }: {
+        pagination: PaginationDto;
+        relations: AttributeRelationSelectDto;
+    }): Promise<AttributeResponseDto> {
+        try {
+            // Create a query to fetch the attributes, skipping and taking according to the pagination parameters.
+            const query = this.entityManager.getRepository(Attribute).createQueryBuilder('attribute');
+
+            // If the relations are defined, add them to the query
+            if (relations != undefined && (relations.joinRule != undefined || relations.joinOptions != undefined)) {
+                if (relations.joinRule === true) query.leftJoinAndSelect('attribute.rule', 'rule');
+                if (relations.joinOptions === true) query.leftJoinAndSelect('attribute.options', 'options');
+            }
+
+            pagination = this.paginateAttribute({ pagination });
+            if (pagination != null) {
+                query.skip(pagination.page).take(pagination.limit);
+            }
+
+            // Execute the query and get the result
+            const result: GetAttributeDto[] = await query.getMany();
+
+            // Check if the result is defined and not empty
+            if (result != undefined && result.length > 0 && Object.keys(result[0]).length > 0) {
+                // If the operation is successful, return the result with a success status
+                return {
+                    status: '200',
+                    result
+                };
+            }
+
+            // If the result is undefined or empty, return null
+            return null;
+        } catch (error) {
+            // If an error occurs, handle it and return the error response
+            const e = error as Error;
+            return this.handlerService.handleError<GetAttributeDto>({
+                e,
+                message: 'Could Not Get Attributes',
+                where: 'Attribute Service -> getAttributes',
+
+                log: {
+                    path: 'attribute/error.log',
+                    action: 'Get Attributes',
                     name: 'Attribute Service'
                 }
             });
@@ -99,7 +169,7 @@ export class AttributeService {
 
             // If the relations are defined, add them to the query
             if (relations != undefined && (relations.joinRule != undefined || relations.joinOptions != undefined)) {
-                if (relations.joinRule === true) query.leftJoinAndSelect('attribute.rules', 'rules');
+                if (relations.joinRule === true) query.leftJoinAndSelect('attribute.rule', 'rule');
                 if (relations.joinOptions === true) query.leftJoinAndSelect('attribute.options', 'options');
             }
 
@@ -124,78 +194,10 @@ export class AttributeService {
                 e,
                 message: 'Could Not Get Attribute',
                 where: 'Attribute Service -> getAttributeById',
-                status: '666',
+
                 log: {
                     path: 'attribute/error.log',
                     action: 'Get Attribute',
-                    name: 'Attribute Service'
-                }
-            });
-        }
-    }
-
-    /**
-     * Retrieves a paginated list of attributes with optional relations.
-     *
-     * @param {Object} pagination - The pagination parameters.
-     * @param {PaginationDto} pagination.pagination - The pagination data transfer object.
-     * @param {AttributeRelationSelectDto} pagination.relations - The relations to be retrieved with the attributes.
-     *
-     * @returns {Promise<AttributeResponseDto>} A promise that resolves to the response object containing the status and the retrieved attributes, or null if the attributes could not be retrieved.
-     *
-     * @throws Will throw an error if the attribute retrieval fails.
-     */
-    async getAttributes({
-        pagination,
-        relations
-    }: {
-        pagination: PaginationDto;
-        relations: AttributeRelationSelectDto;
-    }): Promise<AttributeResponseDto> {
-        try {
-            // If the limit or page is not defined in the pagination object, set them to 0.
-            if (pagination.limit == undefined || pagination.page == undefined) {
-                pagination.limit = 0;
-                pagination.page = 0;
-            }
-
-            // Create a query to fetch the attributes, skipping and taking according to the pagination parameters.
-            const query = this.entityManager
-                .createQueryBuilder(Attribute, 'attribute')
-                .skip((Number(pagination.page) - 1) * Number(pagination.limit))
-                .take(Number(pagination.limit));
-
-            // If the relations are defined, add them to the query
-            if (relations != undefined && (relations.joinRule != undefined || relations.joinOptions != undefined)) {
-                if (relations.joinRule === true) query.leftJoinAndSelect('attribute.rules', 'rules');
-                if (relations.joinOptions === true) query.leftJoinAndSelect('attribute.options', 'options');
-            }
-
-            // Execute the query and get the result
-            const result: GetAttributeDto[] = await query.getMany();
-
-            // Check if the result is defined and not empty
-            if (result != undefined && Object.keys(result[0]).length > 0) {
-                // If the operation is successful, return the result with a success status
-                return {
-                    status: '200',
-                    result
-                };
-            }
-
-            // If the result is undefined or empty, return null
-            return null;
-        } catch (error) {
-            // If an error occurs, handle it and return the error response
-            const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
-                e,
-                message: 'Could Not Get Attributes',
-                where: 'Attribute Service -> getAttributes',
-                status: '666',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Get Attributes',
                     name: 'Attribute Service'
                 }
             });
@@ -227,10 +229,10 @@ export class AttributeService {
             // Check if the preloaded attribute is defined and its ID matches the provided ID
             if (preload != undefined && preload.id === id) {
                 // Update the attribute
-                const update = await this.entityManager.update(Attribute, id, preload);
+                const update = await this.entityManager.update(Attribute, id, updateAttribute);
 
                 // Check if the update affected one row
-                if (update.affected === 1) {
+                if (update.affected > 0) {
                     // If the operation is successful, return the updated attribute with a success status
                     return {
                         status: '200',
@@ -257,7 +259,7 @@ export class AttributeService {
                 e,
                 message: 'Could Not Update Attribute',
                 where: 'Attribute Service -> updateAttribute',
-                status: '666',
+
                 log: {
                     path: 'attribute/error.log',
                     action: 'Update Attribute',
@@ -267,30 +269,83 @@ export class AttributeService {
         }
     }
 
+    /**
+     * Deletes an Attribute and its related AttributeRule.
+     *
+     * @param {Object} param0 - An object.
+     * @param {number} param0.id - The ID of the Attribute to delete.
+     *
+     * @returns {Promise<AttributeResponseDto>} - A promise that resolves to an AttributeResponseDto.
+     * If the Attribute is successfully deleted, the status is '200'.
+     * If an error occurs, the promise resolves to null and the error is handled by the handlerService.
+     */
     async deleteAttribute({ id }: { id: number }): Promise<AttributeResponseDto> {
         try {
-            const attribute = await this.getAttributeById({ id, relations: { joinRule: true, joinOptions: false } });
+            // Get the full Attribute entity, including its related AttributeRule
+            const attributeEntity = await this.entityManager.findOne(Attribute, { where: { id }, relations: ['rule'] });
 
-            if (attribute != null && attribute.result != undefined && attribute.status === '200') {
-                await this.entityManager.remove(attribute);
+            // Remove the Attribute from the database
+            const deletedAttribute = await this.entityManager.remove(Attribute, attributeEntity);
+            if (deletedAttribute.id === undefined) {
+                // Remove the related AttributeRule from the database
+                const deletedRule = await this.entityManager.remove(AttributeRule, attributeEntity.rule);
 
-                return { status: '200' };
+                if (deletedRule.id === undefined) {
+                    return { status: '200' };
+                }
+
+                throw new ConflictException(
+                    `Could Not Delete Attribute Rule with id: ${attributeEntity.rule.id}, but Attribute with ${attributeEntity.id} was Deleted`
+                );
             }
+
+            return { status: '400' };
         } catch (error) {
+            // If an error occurs, cast it to an Error object
             const e = error as Error;
-            this.handlerService.handleError<GetAttributeDto>({
+
+            // Handle the error with the handlerService
+            return this.handlerService.handleError<GetAttributeDto>({
                 e,
                 message: 'Could Not Delete Attribute',
                 where: 'Attribute Service -> deleteAttribute',
-                status: '666',
                 log: {
                     path: 'attribute/error.log',
                     action: 'Delete Attribute',
                     name: 'Attribute Service'
                 }
             });
-
-            return null;
         }
+    }
+
+    private paginateAttribute({ pagination }: { pagination: PaginationDto }): PaginationDto {
+        if (pagination.limit === undefined || pagination.page === undefined) {
+            return {
+                limit: 0,
+                page: 0
+            };
+        }
+
+        if (!isNaN(Number(pagination.limit))) {
+            pagination.limit = Number(pagination.limit);
+        } else {
+            return {
+                limit: 0,
+                page: 0
+            };
+        }
+
+        if (!isNaN(Number(pagination.page))) {
+            pagination.page = Number(pagination.page);
+        } else {
+            return {
+                limit: 0,
+                page: 0
+            };
+        }
+
+        pagination.page = (pagination.page - 1) * pagination.limit;
+
+        return pagination;
     }
 }

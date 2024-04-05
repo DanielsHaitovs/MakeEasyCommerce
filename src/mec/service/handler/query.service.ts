@@ -1,18 +1,25 @@
 import { QueryResponseI } from '@src/mec/interface/query/query.interface';
 import * as fs from 'fs';
 
+export const errorStatuses = {
+    '400': 'Bad Request',
+    '401': 'Unauthorized',
+    '403': 'Forbidden',
+    '404': 'Not Found',
+    '409': 'Conflict',
+    '500': 'Internal Server Error'
+};
+
 export class HandlerService {
     handleError<T>({
         e,
         message,
         where,
-        status,
         log
     }: {
         e: Error;
         message: string;
         where: string;
-        status: string;
         log?: {
             path: string;
             action: string;
@@ -20,6 +27,19 @@ export class HandlerService {
         };
     }): QueryResponseI<T> {
         console.log(e);
+        let status = '';
+
+        if (e.message.includes('violates foreign key constraint')) {
+            status = '400';
+        } else if (e.message.includes('violates not-null constraint')) {
+            status = '400';
+        } else if (e.message.includes('not find any entity') || e.name === 'EntityNotFoundError') {
+            status = '404';
+        } else if (e.message.includes('duplicate key') || e.name === 'ConflictException') {
+            status = '409';
+        } else {
+            status = '500';
+        }
 
         if (log != undefined && log.path != undefined && log.action != undefined && log.name != undefined) {
             const currentDate = new Date();

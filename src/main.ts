@@ -16,7 +16,7 @@ async function bootstrap() {
     // );
 
     // Automatically validate data on every request
-    // app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    // app.useGlobalPipes();
 
     const config = new DocumentBuilder()
         .setTitle('MakeEasyCommerce')

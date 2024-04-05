@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { AttributeProperties } from '@src/attribute/enum/attribute.enum';
 import { QueryFilterDto } from '@src/mec/dto/query/filter.dto';
 
@@ -35,21 +35,17 @@ export class AttributeRelationSelectDto {
     @ApiProperty({
         title: 'Join Options Relation for Attribute Query',
         nullable: false,
-        default: false,
-        required: true
+        required: false,
+        default: false
     })
-    @IsNotEmpty()
-    @IsBoolean()
     joinOptions: boolean;
 
     @ApiProperty({
         title: 'Join Rule Relation for Attribute Query',
         nullable: false,
         default: false,
-        required: true
+        required: false
     })
-    @IsNotEmpty()
-    @IsBoolean()
     joinRule: boolean;
 }
 

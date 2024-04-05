@@ -34,13 +34,12 @@ export class RuleService {
         try {
             const newRule = this.ruleHelper.prepareRule({ createRule: rule });
 
-            if (newRule != null && newRule.result != undefined) {
-                const { result } = newRule;
+            if (newRule != null && (newRule.front != undefined || newRule.back != undefined)) {
                 // Attempt to save the new rule using the entity manager.
                 // If successful, return a response with status 200 and a success message.
                 return {
                     status: '200',
-                    result: await this.entityManager.save(AttributeRule, result as CreateRuleDto)
+                    result: await this.entityManager.save(AttributeRule, newRule)
                 };
             }
 
@@ -53,7 +52,7 @@ export class RuleService {
                 e,
                 message: 'Could not save Rule',
                 where: 'Rule Service this.entityManager.save',
-                status: '666',
+
                 log: {
                     path: 'rule/error.log',
                     action: 'Create Rule',
@@ -95,8 +94,7 @@ export class RuleService {
             return this.handlerService.handleError<GetRuleDto>({
                 e,
                 message: 'Could not find Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne',
-                status: '404'
+                where: 'Rule Service this.entityManager.findOne'
             });
         }
     }
@@ -150,8 +148,7 @@ export class RuleService {
             return this.handlerService.handleError<GetRuleDto>({
                 e,
                 message: 'Could not find Rule by given Type',
-                where: 'Rule Service this.entityManager.find',
-                status: '666'
+                where: 'Rule Service this.entityManager.find'
             });
         }
     }
@@ -195,8 +192,7 @@ export class RuleService {
             return this.handlerService.handleError<GetRuleDto>({
                 e,
                 message: 'Could not find any Rules',
-                where: 'Rule Service this.entityManager.find',
-                status: '666'
+                where: 'Rule Service this.entityManager.find'
             });
         }
     }
@@ -224,7 +220,6 @@ export class RuleService {
                 e,
                 message: 'Could not find any Rules',
                 where: 'Rule Service this.ruleHelper.filterQuery',
-                status: '404',
                 log: {
                     path: 'rule/error.log',
                     action: 'Rule Query',
@@ -264,8 +259,7 @@ export class RuleService {
             return this.handlerService.handleError<GetRuleDto>({
                 e,
                 message: 'Could not update Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne',
-                status: '404'
+                where: 'Rule Service this.entityManager.findOne'
             });
         }
     }
@@ -296,8 +290,7 @@ export class RuleService {
             return this.handlerService.handleError<GetRuleDto>({
                 e,
                 message: 'Could not delete Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne',
-                status: '404'
+                where: 'Rule Service this.entityManager.findOne'
             });
         }
     }

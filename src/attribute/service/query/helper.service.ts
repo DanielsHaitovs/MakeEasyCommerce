@@ -4,7 +4,6 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { CreateAttributeDto } from '@src/attribute/dto/create-attribute.dto';
-import { AttributeResponseI } from '@src/attribute/interface/attribute.interface';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
 
 @Injectable()
@@ -25,17 +24,16 @@ export class AttributeHelperService {
      *
      * @throws Will throw an error if the attribute preparation fails.
      */
-    prepareAttribute({ createAttribute }: { createAttribute: CreateAttributeDto }): AttributeResponseI<CreateAttributeDto> {
+    prepareAttribute({ createAttribute }: { createAttribute: CreateAttributeDto }): CreateAttributeDto {
         try {
             // Create a new attribute instance with the provided data
-            const attribute = this.entityManager.create(Attribute, createAttribute);
+            const attribute = this.entityManager.create(Attribute);
+
+            const merged = this.entityManager.merge(Attribute, attribute, createAttribute);
             // Check if the attribute is defined and not empty
-            if (attribute != undefined && Object.keys(attribute).length > 0) {
+            if (merged != undefined && Object.keys(merged).length > 0) {
                 // Return the prepared attribute with a success status
-                return {
-                    status: '200',
-                    result: attribute
-                };
+                return merged;
             }
 
             // If the attribute is undefined or empty, return null
@@ -43,17 +41,19 @@ export class AttributeHelperService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError({
+            this.handlerService.handleError({
                 e,
                 message: 'Could Not Prepare Attribute before save',
                 where: 'Attribute Helper -> prepareAttribute',
-                status: '666',
+
                 log: {
                     path: 'attribute/error.log',
                     action: 'Prepare Attribute',
                     name: 'Attribute Helper'
                 }
             });
+
+            return null;
         }
     }
 }

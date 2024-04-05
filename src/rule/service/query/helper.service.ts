@@ -32,17 +32,16 @@ export class RuleHelperService {
      *
      * @throws {Error} - Throws an error if the rule cannot be prepared.
      */
-    prepareRule({ createRule }: { createRule: CreateRuleDto }): RuleResponseI<CreateRuleDto> {
+    prepareRule({ createRule }: { createRule: CreateRuleDto }): CreateRuleDto {
         try {
             // Attempt to create the rule
-            const result = this.entityManager.create(AttributeRule, createRule);
+            const rule = this.entityManager.create(AttributeRule);
+
+            const merged = this.entityManager.merge(AttributeRule, rule, createRule);
 
             // If the rule is successfully created and either the front or back is defined, return the rule
-            if (result != undefined && Object.keys(result).length > 0) {
-                return {
-                    status: '200',
-                    result
-                };
+            if (merged != undefined && Object.keys(merged).length > 0) {
+                return merged;
             }
 
             // If the rule cannot be created, return null
@@ -51,17 +50,19 @@ export class RuleHelperService {
             // If an error occurs, cast it to an Error object
             const e = error as Error;
             // Handle the error using the handler service
-            return this.handlerService.handleError({
+            this.handlerService.handleError({
                 e,
                 message: 'Could Not Prepare Rule before save',
                 where: 'Rule Helper -> prepareRule',
-                status: '666',
+
                 log: {
                     path: 'rule/error.log',
                     action: 'Prepare Rule',
                     name: 'Rule Helper'
                 }
             });
+
+            return null;
         }
     }
 
@@ -127,7 +128,7 @@ export class RuleHelperService {
                     e,
                     message: 'Could not filter Query',
                     where: 'Rule Helper -> filterQuery',
-                    status: '666',
+
                     log: {
                         path: 'rule/query/error.log',
                         action: 'Filter Query',

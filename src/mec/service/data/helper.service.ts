@@ -7,11 +7,10 @@ import { QueryResponseI } from '@src/mec/interface/query/query.interface';
 export class DataHelperService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     valueToBoolean({ value }: { value: any }): boolean {
-        if (value === undefined || value === null) return undefined;
+        // if (value === undefined || value === null) return undefined;
         if (typeof value === 'boolean') {
             return value;
         }
-
         if (['true', 'on', 'yes', '1'].includes(value.toLowerCase())) {
             return true;
         }
@@ -19,6 +18,26 @@ export class DataHelperService {
             return false;
         }
         return undefined;
+    }
+
+    objectValuesToBoolean<T>({ dto }: { dto: T }): T {
+        Object.keys(dto).forEach((key) => {
+            if (dto[key] === undefined || dto[key] === null) return undefined;
+
+            if (typeof dto[key] === 'boolean') {
+                dto[key] = dto[key] as boolean;
+            }
+
+            if (['true', 'on', 'yes', '1'].includes(dto[key].toString().toLowerCase())) {
+                dto[key] = true;
+            }
+
+            if (['false', 'off', 'no', '0'].includes(dto[key].toString().toLowerCase())) {
+                dto[key] = false;
+            }
+        });
+
+        return dto;
     }
 
     isNumber(value: unknown): boolean {
