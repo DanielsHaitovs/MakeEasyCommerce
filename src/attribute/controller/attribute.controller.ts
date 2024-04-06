@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { AttributeService } from '../service/attribute.service';
 import { CreateAttributeDto } from '../dto/create-attribute.dto';
@@ -7,7 +7,7 @@ import { AttributeResponseDto } from '../dto/get-attribute.dto';
 import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
 import { AttributeRelationSelectPipe } from '../pipes/attribute-relation-select.pipe';
 import { PaginationPipe } from '@src/pipes/pagination.pipe';
-import { UpdateAttributeDto } from '../dto/update-attribute.dto';
+import { UpdateAttributeDto, UpdateAttributeRuleDto } from '../dto/update-attribute.dto';
 
 @ApiTags('Attribute')
 @Controller('attribute')
@@ -84,9 +84,9 @@ export class AttributeController {
     })
     async updateAttribute(
         @Param('id', ParseIntPipe) id: number,
-        @Body() updateRule: UpdateAttributeDto
+        @Body() updateAttribute: UpdateAttributeDto
     ): Promise<AttributeResponseDto> {
-        return await this.attributeService.updateAttribute({ id, updateAttribute: updateRule });
+        return await this.attributeService.updateAttribute({ id, updateAttribute });
     }
 
     @Delete(':id')
@@ -102,5 +102,19 @@ export class AttributeController {
     })
     async deleteAttribute(@Param('id', ParseIntPipe) id: number): Promise<AttributeResponseDto> {
         return await this.attributeService.deleteAttribute({ id });
+    }
+
+    @Patch()
+    @ApiOperation({
+        summary: 'Update Attribute Rule By Attribute ID or Rule ID',
+        description: 'Update Attribute Rule relation by Attribute ID or Rule ID, Rule ID is faster'
+    })
+    @ApiBody({
+        type: UpdateAttributeRuleDto,
+        description: 'Update Attribute Rule',
+        required: false
+    })
+    async updateAttributeRule(@Body() updateRule: UpdateAttributeRuleDto): Promise<AttributeResponseDto> {
+        return await this.attributeService.updateAttributeRule({ id: updateRule.id, ruleId: updateRule.ruleId, rule: updateRule });
     }
 }

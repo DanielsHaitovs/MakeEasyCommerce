@@ -5,13 +5,17 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { CreateAttributeDto } from '@src/attribute/dto/create-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
+import { AttributeRuleService } from '../rule/attribute-rule.service';
+import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
+import { AttributeResponseDto } from '@src/attribute/dto/get-attribute.dto';
 
 @Injectable()
 export class AttributeHelperService {
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
-        private readonly handlerService: HandlerService // private readonly queryService: RuleQueryService,
+        private readonly handlerService: HandlerService,
+        private readonly attributeRuleService: AttributeRuleService
     ) {}
 
     /**
@@ -54,5 +58,17 @@ export class AttributeHelperService {
 
             return null;
         }
+    }
+
+    async updateRule({
+        rule,
+        ruleId,
+        attributeId
+    }: {
+        rule: UpdateAttributeRuleDto;
+        ruleId?: number;
+        attributeId?: number;
+    }): Promise<AttributeResponseDto> {
+        return await this.attributeRuleService.updateAttributeRule({ rule, ruleId, attributeId });
     }
 }

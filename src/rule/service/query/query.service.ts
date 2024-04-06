@@ -33,11 +33,11 @@ export class RuleQueryService extends QueryService {
         try {
             let ruleQuery = this.entityManager.getRepository(AttributeRule).createQueryBuilder(alias);
 
-            if (filters.ruleIds != undefined) {
-                if (filters.ruleIds.length === 1) many = false;
+            if (filters.ids != undefined) {
+                if (filters.ids.length === 1) many = false;
 
                 ruleQuery = this.whereIdsQuery({
-                    ids: filters.ruleIds,
+                    ids: filters.ids,
                     alias: alias,
                     query: ruleQuery,
                     entity: AttributeRule
@@ -101,12 +101,12 @@ export class RuleQueryService extends QueryService {
             filters.findByValue = undefined;
         }
 
-        if (filters.ruleIds != undefined) {
-            const { ruleIds } = filters;
-            if (!Array.isArray(ruleIds) && IsNumber(ruleIds)) {
-                filters.ruleIds = [ruleIds];
+        if (filters.ids != undefined) {
+            const { ids } = filters;
+            if (!Array.isArray(ids) && IsNumber(ids)) {
+                filters.ids = [ids];
             } else {
-                filters.ruleIds = undefined;
+                filters.ids = undefined;
             }
         }
 

@@ -104,4 +104,16 @@ export class QueryFilterDto {
     @IsNotEmpty()
     @ValidateNested({ each: true })
     order: OrderDto;
+
+    @ApiProperty({
+        title: 'Filter by ID(s)',
+        description: 'We can specify with which entity ids we need to work with, by providing array of ids',
+        type: Number,
+        nullable: true,
+        required: false,
+        isArray: true
+    })
+    @IsOptional()
+    @IsNumber({}, { each: true })
+    ids: number[];
 }

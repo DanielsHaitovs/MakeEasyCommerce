@@ -51,17 +51,6 @@ export class AttributeRelationSelectDto {
 
 export class AttributeQueryFilterDto extends QueryFilterDto {
     @ApiProperty({
-        title: 'Attribute ID(s)',
-        type: Number,
-        isArray: true,
-        nullable: true,
-        required: false
-    })
-    @IsOptional()
-    @IsNumber({}, { each: true })
-    valueIds: number[];
-
-    @ApiProperty({
         title: 'Select Attribute Properties',
         enum: AttributeProperties,
         isArray: true,

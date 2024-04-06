@@ -2,11 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MecModule } from './mec/mec.module';
 import { AttributeModule } from './attribute/attribute.module';
-import { Attribute } from './attribute/entities/attribute.entity';
 import { AttributeRuleModule } from './rule/rule.module';
-import { AttributeRule } from './rule/entities/rule.entity';
 import { AttributeOptionModule } from './option/option.module';
-import { AttributeOption } from './option/entities/option.entity';
 
 @Module({
     imports: [
@@ -17,18 +14,11 @@ import { AttributeOption } from './option/entities/option.entity';
             database: process.env.TYPEORM_DATABASE,
             username: process.env.TYPEORM_USERNAME,
             password: process.env.TYPEORM_PASSWORD,
-            entities: [
-                // Store ->
-                // <- Store
-                // Attribute ->
-                Attribute,
-                AttributeRule,
-                AttributeOption
-                // <- Attribute
-            ],
+            //entities: ['dist/**/*.entity{.ts,.js}'],
             migrations: ['dist/migrations/*.{ts,js}'],
             migrationsTableName: 'typeorm_migrations',
             logger: 'file',
+            autoLoadEntities: true,
             synchronize: true // never use TRUE in production!
         }),
         MecModule,

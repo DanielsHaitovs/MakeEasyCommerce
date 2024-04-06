@@ -1,14 +1,14 @@
+import { IsBoolean, IsNotEmpty } from '@nestjs/class-validator';
 import { MecBaseEntity } from '@src/mec/entities/mec.entity';
 import { Column, Entity, Index } from 'typeorm';
 
-export const OptionAlias = 'AttributeOption';
-export const OptionIndex = 'ik_attribute_index_option';
-export const OptionIndexKeys: string[] = ['data'];
-@Entity('eav_attribute_option')
-@Index(OptionIndex, OptionIndexKeys)
-export class AttributeOption extends MecBaseEntity {
-    @Column('jsonb', { nullable: false })
-    data: string | number | boolean | Date | JSON;
+@Entity('eav_attribute_boolean')
+export class AttributeOptionBoolean extends MecBaseEntity {
+    @Column({ nullable: false })
+    @Index('ik_option_boolean')
+    @IsNotEmpty()
+    @IsBoolean()
+    data: boolean;
 
     // @ManyToOne(() => Attribute, (attribute) => attribute.id, {
     //     cascade: false,

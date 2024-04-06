@@ -7,6 +7,7 @@ import { AttributeResponseDto, GetAttributeDto } from '@src/attribute/dto/get-at
 import { Attribute } from '@src/attribute/entities/attribute.entity';
 import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
 import { RuleProperties } from '@src/rule/enum/rule.enum';
+import { GetRuleDto } from '@src/rule/dto/get-rule.dto';
 
 @Injectable()
 export class AttributeRuleService {
@@ -34,13 +35,12 @@ export class AttributeRuleService {
             const attributeRuleQuery = this.entityManager
                 .createQueryBuilder(Attribute, 'attribute')
                 .where('attribute.id = :id', { id })
-                .leftJoinAndSelect('attribute.rules', 'rule');
+                .leftJoinAndSelect('attribute.rule', 'rule');
 
             // Define the properties to select
             const propToSelect = Object.values(RuleProperties) as string[];
             propToSelect.unshift('attribute.id');
 
-            // Execute the query and return the result
             return {
                 status: '200',
                 result: await attributeRuleQuery.select(propToSelect).getOneOrFail()
@@ -50,8 +50,8 @@ export class AttributeRuleService {
             const e = error as Error;
             return this.handlerService.handleError<GetAttributeDto>({
                 e,
-                message: 'Could not find Attribute Rule by given Type',
-                where: 'Attribute Rule Service this.entityManager.find'
+                message: 'Could not find Attribute Rule',
+                where: 'Attribute Rule Service this.findByAttributeId'
             });
         }
     }
@@ -70,7 +70,15 @@ export class AttributeRuleService {
      *
      * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
      */
-    async updateAttributeRule({ rule, ruleId, attributeId }: { rule: UpdateAttributeRuleDto; ruleId?: number; attributeId?: number }) {
+    async updateAttributeRule({
+        rule,
+        ruleId,
+        attributeId
+    }: {
+        rule: UpdateAttributeRuleDto;
+        ruleId?: number;
+        attributeId?: number;
+    }): Promise<AttributeResponseDto> {
         // If both ruleId and attributeId are undefined, return null
         if (ruleId == undefined && attributeId == undefined) {
             return null;
@@ -79,7 +87,33 @@ export class AttributeRuleService {
         try {
             // If ruleId is defined, update the rule by its ID
             if (ruleId != undefined) {
-                return this.ruleHelper.update({ id: ruleId, rule });
+                const updated = await this.ruleHelper.update({ id: ruleId, rule });
+
+                if (updated.status != '200') {
+                    return {
+                        status: updated.status,
+                        message: updated.message,
+                        error: {
+                            message: updated.error.message,
+                            in: updated.error.in
+                        }
+                    };
+                } else {
+                    return {
+                        status: '200',
+                        result: {
+                            id: attributeId,
+                            isActive: null,
+                            isRequired: null,
+                            name: null,
+                            code: null,
+                            isArray: null,
+                            description: null,
+                            dataType: null,
+                            rule: updated.result as GetRuleDto
+                        }
+                    };
+                }
             }
 
             // If attributeId is defined, find the attribute by its ID and update its rule
@@ -88,9 +122,35 @@ export class AttributeRuleService {
 
                 if (attributeRule.status === '200' && attributeRule.result != undefined) {
                     const result = attributeRule.result as GetAttributeDto;
-                    return this.ruleHelper.update({ id: result.id, rule });
+                    const updated = await this.ruleHelper.update({ id: result.rule.id, rule });
+
+                    if (updated.status != '200') {
+                        return {
+                            status: updated.status,
+                            message: updated.message,
+                            error: {
+                                message: updated.error.message,
+                                in: updated.error.in
+                            }
+                        };
+                    } else {
+                        return {
+                            status: '200',
+                            result: {
+                                id: result.id,
+                                isActive: result.isActive,
+                                isRequired: result.isRequired,
+                                name: result.name,
+                                code: result.code,
+                                isArray: result.isArray,
+                                description: result.description,
+                                dataType: result.dataType,
+                                rule: updated.result as GetRuleDto
+                            }
+                        };
+                    }
                 } else {
-                    throw new NotFoundException('Could not find Attribute Rule by given attribute ID');
+                    throw new Error(attributeRule.error.message);
                 }
             }
         } catch (error) {

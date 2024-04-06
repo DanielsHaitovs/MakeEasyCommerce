@@ -8,7 +8,7 @@ import { AttributeResponseDto, GetAttributeDto } from '../dto/get-attribute.dto'
 import { Attribute, AttributesUnique } from '../entities/attribute.entity';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
-import { UpdateAttributeDto } from '../dto/update-attribute.dto';
+import { UpdateAttributeDto, UpdateAttributeRuleDto } from '../dto/update-attribute.dto';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
 
 @Injectable()
@@ -274,6 +274,29 @@ export class AttributeService {
     }
 
     /**
+     * This method updates an attribute rule.
+     *
+     * @param {Object} params - An object containing the parameters for the update operation.
+     * @param {number} params.id - The ID of the attribute. This is optional.
+     * @param {number} params.ruleId - The ID of the rule to be updated. This is optional.
+     * @param {UpdateAttributeRuleDto} params.rule - The new rule data to be updated.
+     *
+     * @returns {Promise<AttributeResponseDto>} - Returns a promise that resolves with the updated attribute response data transfer object.
+     */
+    async updateAttributeRule({
+        id,
+        ruleId,
+        rule
+    }: {
+        id?: number;
+        ruleId?: number;
+        rule: UpdateAttributeRuleDto;
+    }): Promise<AttributeResponseDto> {
+        // Call the attribute helper's updateRule method with the provided parameters
+        return await this.attributeHelper.updateRule({ rule, ruleId, attributeId: id });
+    }
+
+    /**
      * Deletes an Attribute and its related AttributeRule.
      *
      * @param {Object} param0 - An object.
@@ -303,7 +326,7 @@ export class AttributeService {
                 );
             }
 
-            return { status: '400' };
+            throw new ConflictException(`Could Not Delete Attribute with id: ${attributeEntity.id}`);
         } catch (error) {
             // If an error occurs, cast it to an Error object
             const e = error as Error;

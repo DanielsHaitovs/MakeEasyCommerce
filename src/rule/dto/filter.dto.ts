@@ -55,22 +55,10 @@ export class RuleWhereValueDto {
 
 export class RuleQueryDto extends QueryFilterDto {
     @ApiProperty({
-        title: 'Filter Rule by ID(s)',
-        description: 'We can specify with which rule(s) we need to work, by providing list of rule ids',
-        type: Number,
-        nullable: true,
-        required: false,
-        isArray: true
-    })
-    @IsOptional()
-    @IsNumber({}, { each: true })
-    ruleIds: number[];
-
-    @ApiProperty({
         title: 'Where Rule Properties',
         description: 'Option to include more then 1 of existing rule properties into filtering using value from "findByValue"',
         isArray: true,
-        type: [String],
+        type: String,
         required: false,
         nullable: true
     })
