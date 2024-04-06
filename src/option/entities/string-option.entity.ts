@@ -5,9 +5,9 @@ import { Column, Entity, Index } from 'typeorm';
 export const OptionAlias = 'AttributeOption';
 export const OptionIndex = 'ik_attribute_index_option';
 export const OptionIndexKeys: string[] = ['data'];
-@Entity('eav_attribute_option')
+@Entity('eav_attribute_string')
 export class AttributeOptionString extends MecBaseEntity {
-    @Column({ nullable: false })
+    @Column()
     @Index('ik_option_string')
     @IsNotEmpty()
     @IsString()

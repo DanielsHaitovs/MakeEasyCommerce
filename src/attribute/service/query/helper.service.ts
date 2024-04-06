@@ -5,7 +5,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { CreateAttributeDto } from '@src/attribute/dto/create-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
-import { AttributeRuleService } from '../rule/attribute-rule.service';
+import { AttributeRuleService } from '../relations/rule/attribute-rule.service';
 import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
 import { AttributeResponseDto } from '@src/attribute/dto/get-attribute.dto';
 

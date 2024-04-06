@@ -52,7 +52,6 @@ export class RuleService {
                 e,
                 message: 'Could not save Rule',
                 where: 'Rule Service this.entityManager.save',
-
                 log: {
                     path: 'rule/error.log',
                     action: 'Create Rule',

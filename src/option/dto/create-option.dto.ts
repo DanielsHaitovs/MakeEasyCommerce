@@ -1,8 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { CreateRuleDto } from '@src/rule/dto/create-rule.dto';
-import { IsBoolean, IsJSON, IsNumber, IsString, ValidateNested } from '@nestjs/class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsString, ValidateNested } from '@nestjs/class-validator';
+import { OptionType } from '../enum/option.enum';
 import { Type } from '@nestjs/class-transformer';
+
+export class OptionTypeDto {
+    @ApiProperty({
+        title: 'Attribute Option Type',
+        enum: OptionType,
+        nullable: false,
+        required: true,
+        isArray: false
+    })
+    @IsNotEmpty()
+    @IsEnum(OptionType)
+    type: OptionType;
+}
 
 export class CreateStringOptionDto {
     @ApiProperty({
@@ -13,7 +26,7 @@ export class CreateStringOptionDto {
         isArray: false
     })
     @IsNotEmpty()
-    @IsString({ each: true })
+    @IsString()
     data: string;
 }
 
@@ -43,15 +56,16 @@ export class CreateBooleanOptionDto {
     data: boolean;
 }
 
-export class CreateArrayOptionDto {
+export class CreateOptionDto {
     @ApiProperty({
-        title: 'Attribute Array Option',
-        type: JSON,
+        title: 'Attribute Option Data',
+        type: String || Number || Boolean,
         nullable: false,
         required: true,
-        isArray: true
+        isArray: false
     })
     @IsNotEmpty()
-    @IsJSON({ each: true })
-    data: JSON[];
+    @ValidateNested()
+    @Type(() => String || Number || Boolean)
+    data: string | number | boolean;
 }

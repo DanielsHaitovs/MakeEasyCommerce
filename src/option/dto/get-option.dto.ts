@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { CreateArrayOptionDto } from './create-option.dto';
+import { CreateBooleanOptionDto, CreateNumberOptionDto, CreateStringOptionDto } from './create-option.dto';
+import { QueryResponseDto } from '@src/mec/dto/query/response.dto';
+import { IsOptional, ValidateNested } from '@nestjs/class-validator';
+import { Type } from '@nestjs/class-transformer';
 
-export class GetStringOptionDto extends CreateArrayOptionDto {
+export class GetStringOptionDto extends CreateStringOptionDto {
     @ApiProperty({
         title: 'Attribute String Option ID',
         type: Number,
@@ -15,7 +18,7 @@ export class GetStringOptionDto extends CreateArrayOptionDto {
     id: number;
 }
 
-export class GetNumberOptionDto extends CreateArrayOptionDto {
+export class GetNumberOptionDto extends CreateNumberOptionDto {
     @ApiProperty({
         title: 'Attribute Number Option ID',
         type: Number,
@@ -28,7 +31,7 @@ export class GetNumberOptionDto extends CreateArrayOptionDto {
     id: number;
 }
 
-export class GetBooleanOptionDto extends CreateArrayOptionDto {
+export class GetBooleanOptionDto extends CreateBooleanOptionDto {
     @ApiProperty({
         title: 'Attribute Boolean Option ID',
         type: Number,
@@ -41,15 +44,24 @@ export class GetBooleanOptionDto extends CreateArrayOptionDto {
     id: number;
 }
 
-export class GetArrayOptionDto extends CreateArrayOptionDto {
+export class GetArrayOptionDto {
     @ApiProperty({
-        title: 'Attribute Array Option ID',
-        type: Number,
+        title: 'Attribute Option ID',
+        type: GetStringOptionDto || GetNumberOptionDto || GetBooleanOptionDto,
         nullable: false,
         required: true,
-        isArray: false
+        isArray: true
     })
-    @IsNotEmpty()
-    @IsNumber()
-    id: number;
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => GetStringOptionDto || GetNumberOptionDto || GetBooleanOptionDto)
+    data: GetStringOptionDto[] | GetNumberOptionDto[] | GetBooleanOptionDto[];
+}
+
+export class OptionResponseDto extends QueryResponseDto {
+    @ApiProperty()
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => GetStringOptionDto || GetNumberOptionDto || GetBooleanOptionDto || GetArrayOptionDto)
+    result?: GetStringOptionDto | GetNumberOptionDto | GetBooleanOptionDto | GetArrayOptionDto;
 }
