@@ -45,7 +45,6 @@ export class AttributeHelperService {
                 e,
                 message: 'Could Not Prepare Attribute before save',
                 where: 'Attribute Helper -> prepareAttribute',
-
                 log: {
                     path: 'attribute/error.log',
                     action: 'Prepare Attribute',

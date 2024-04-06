@@ -11,6 +11,8 @@ import { CreateRuleDto } from '@src/rule/dto/create-rule.dto';
 import { RuleQueryService } from './query.service';
 import { RuleQueryDto } from '@src/rule/dto/filter.dto';
 import { HandlerService } from '@src/mec/service/handler/query.service';
+import { GetRuleDto, RuleResponseDto } from '@src/rule/dto/get-rule.dto';
+import { UpdateRuleDto } from '@src/rule/dto/update-rule.dto';
 
 @Injectable()
 export class RuleHelperService {
@@ -143,5 +145,109 @@ export class RuleHelperService {
             status: '404',
             message: ruleQuery.message
         };
+    }
+
+    /**
+     * Updates a rule with the given id and new rule data.
+     *
+     * @param {Object} params - The parameters for updating a rule.
+     * @param {number} params.id - The id of the rule to update.
+     * @param {UpdateRuleDto} params.rule - The new rule data.
+     *
+     * @returns {Promise<RuleResponseDto>} A Promise that resolves to an object containing the status of the operation and the updated rule.
+     * If the rule cannot be updated, a warning message is returned with status '404'.
+     * If an error occurs during the operation, it is caught and handled by the `handlerService`.
+     *
+     * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
+     */
+    async update({ id, rule }: { id: number; rule: UpdateRuleDto }): Promise<RuleResponseDto> {
+        try {
+            // Preload the rule to be updated
+            const preload: GetRuleDto = await this.entityManager.preload(AttributeRule, { id, ...rule });
+
+            // Check if the rule exists and the id matches
+            if (preload != undefined && preload.id === id) {
+                // Update the rule
+                const update = await this.entityManager.update(AttributeRule, id, preload);
+
+                // Check if the update was successful
+                if (update.affected === 1) {
+                    return {
+                        status: '200',
+                        result: preload
+                    };
+                }
+            }
+
+            // Handle the case where the rule could not be updated
+            return this.handlerService.handleWarning<GetRuleDto>({
+                message: 'Could not update Rule by given ID',
+                where: 'Rule Service updateRule this.entityManager.preload',
+                status: '404',
+                log: {
+                    path: 'rule/warning.log',
+                    action: 'Update Rule',
+                    name: 'Rule Service'
+                }
+            });
+        } catch (error) {
+            // Handle any errors that occur during the operation
+            const e = error as Error;
+            return this.handlerService.handleError<GetRuleDto>({
+                e,
+                message: 'Could not update Rule by given ID',
+                where: 'Rule Service this.entityManager.findOne'
+            });
+        }
+    }
+
+    /**
+     * Deletes a rule with the given id.
+     *
+     * @param {Object} params - The parameters for deleting a rule.
+     * @param {number} params.id - The id of the rule to delete.
+     *
+     * @returns {Promise<RuleResponseDto>} A Promise that resolves to an object containing the status of the operation.
+     * If the rule cannot be deleted, a warning message is returned with status '404'.
+     * If an error occurs during the operation, it is caught and handled by the `handlerService`.
+     *
+     * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
+     */
+    async remove({ id }: { id: number }): Promise<RuleResponseDto> {
+        try {
+            // Preload the rule to be deleted
+            const rule: GetRuleDto = await this.entityManager.preload(AttributeRule, { id });
+
+            // Check if the rule exists and the id matches
+            if (rule != undefined && rule.id != undefined && rule.id === id) {
+                // Delete the rule
+                const result = await this.entityManager.delete(AttributeRule, rule);
+
+                // Check if the deletion was successful
+                if (result.affected === 1) {
+                    return { status: '200' };
+                }
+            }
+
+            // Handle the case where the rule could not be deleted
+            return this.handlerService.handleWarning<GetRuleDto>({
+                message: 'Could not delete Rule by given ID',
+                where: 'Rule Service deleteRule this.entityManager.findOne',
+                status: '404',
+                log: {
+                    path: 'rule/warning.log',
+                    action: 'Delete Rule',
+                    name: 'Rule Service'
+                }
+            });
+        } catch (error) {
+            // Handle any errors that occur during the operation
+            const e = error as Error;
+            return this.handlerService.handleError<GetRuleDto>({
+                e,
+                message: 'Could not delete Rule by given ID',
+                where: 'Rule Service this.entityManager.findOne'
+            });
+        }
     }
 }

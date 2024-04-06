@@ -32,6 +32,10 @@ export class AttributeService {
      */
     async createAttribute({ createAttribute }: { createAttribute: CreateAttributeDto }): Promise<AttributeResponseDto> {
         try {
+            if (createAttribute.rule == undefined) {
+                throw new TypeError('Rule is required');
+            }
+
             // Prepare the attribute for saving
             const attribute = this.attributeHelper.prepareAttribute({ createAttribute: createAttribute });
 

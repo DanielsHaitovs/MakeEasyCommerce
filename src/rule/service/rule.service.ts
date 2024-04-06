@@ -229,69 +229,30 @@ export class RuleService {
         }
     }
 
+    /**
+     * Updates a rule with the given id and rule data.
+     *
+     * @param {Object} params - The parameters for updating a rule.
+     * @param {number} params.id - The id of the rule to update.
+     * @param {UpdateRuleDto} params.rule - The data to update the rule with.
+     *
+     * @returns {Promise<RuleResponseDto>} A Promise that resolves to an object containing the status, message, and result of the operation.
+     * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
+     */
     async updateRule({ id, rule }: { id: number; rule: UpdateRuleDto }): Promise<RuleResponseDto> {
-        try {
-            const preload: GetRuleDto = await this.entityManager.preload(AttributeRule, { id, ...rule });
-
-            if (preload != undefined && preload.id === id) {
-                const update = await this.entityManager.update(AttributeRule, id, preload);
-
-                if (update.affected === 1) {
-                    return {
-                        status: '200',
-                        result: preload
-                    };
-                }
-            }
-
-            return this.handlerService.handleWarning<GetRuleDto>({
-                message: 'Could not update Rule by given ID',
-                where: 'Rule Service updateRule this.entityManager.preload',
-                status: '404',
-                log: {
-                    path: 'rule/warning.log',
-                    action: 'Update Rule',
-                    name: 'Rule Service'
-                }
-            });
-        } catch (error) {
-            const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
-                e,
-                message: 'Could not update Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne'
-            });
-        }
+        return await this.ruleHelper.update({ id, rule });
     }
 
+    /**
+     * Deletes a rule with the given id.
+     *
+     * @param {Object} params - The parameters for deleting a rule.
+     * @param {number} params.id - The id of the rule to delete.
+     *
+     * @returns {Promise<RuleResponseDto>} A Promise that resolves to an object containing the status, message, and result of the operation.
+     * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
+     */
     async deleteRule({ id }: { id: number }): Promise<RuleResponseDto> {
-        try {
-            const rule = await this.getRuleType({ id, type: RuleShortSelect.Id });
-
-            if (rule != null && rule.result != undefined && rule.status === '200') {
-                const result = await this.entityManager.delete(AttributeRule, id);
-                if (result.affected === 1) {
-                    return { status: '200' };
-                }
-            }
-
-            return this.handlerService.handleWarning<GetRuleDto>({
-                message: 'Could not delete Rule by given ID',
-                where: 'Rule Service deleteRule this.entityManager.findOne',
-                status: '404',
-                log: {
-                    path: 'rule/warning.log',
-                    action: 'Delete Rule',
-                    name: 'Rule Service'
-                }
-            });
-        } catch (error) {
-            const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
-                e,
-                message: 'Could not delete Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne'
-            });
-        }
+        return await this.ruleHelper.remove({ id });
     }
 }

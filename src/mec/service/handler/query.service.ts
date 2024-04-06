@@ -1,5 +1,6 @@
 import { QueryResponseI } from '@src/mec/interface/query/query.interface';
 import * as fs from 'fs';
+import * as path from 'path';
 
 export const errorStatuses = {
     '400': 'Bad Request',
@@ -26,38 +27,7 @@ export class HandlerService {
             name: string;
         };
     }): QueryResponseI<T> {
-        console.log(e);
-        let status = '';
-
-        if (e.message.includes('violates foreign key constraint')) {
-            status = '400';
-        } else if (e.message.includes('violates not-null constraint')) {
-            status = '400';
-        } else if (e.message.includes('not find any entity') || e.name === 'EntityNotFoundError') {
-            status = '404';
-        } else if (e.message.includes('duplicate key') || e.name === 'ConflictException') {
-            status = '409';
-        } else {
-            status = '500';
-        }
-
-        if (log != undefined && log.path != undefined && log.action != undefined && log.name != undefined) {
-            const currentDate = new Date();
-            const logMessage = `Date: ${currentDate.toString()}
-            \nAction: ${log.action} Name:${log.name} Where: ${where}
-            \nDescription: ${message}
-            \nStatus: ${status}
-            \nName: ${e.name}
-            \nMessage: ${e.message}
-            \nStack: ${e.stack}`;
-
-            console.log('Error:', logMessage);
-            fs.appendFile(`./log/error/${log.path}`, logMessage, (err) => {
-                if (err) {
-                    console.error('Failed to write to log file:', err);
-                }
-            });
-        }
+        const status = this.buildResponseObject({ e, message, where, type: 'error', log });
 
         return {
             status,
@@ -84,20 +54,13 @@ export class HandlerService {
             name: string;
         };
     }): QueryResponseI<T> {
-        if (log != undefined && log.path != undefined && log.action != undefined && log.name != undefined) {
-            const currentDate = new Date();
-            const logMessage = `Date: ${currentDate.toString()}
-                \nAction: ${log.action}
-                \nName:${log.name}
-                \nWhere: ${where}
-                \nDescription: ${message}
-                \nStatus: ${status}
-                \n`;
+        this.buildResponseObject({ message, where, type: 'warning', log });
 
-            console.log('Error:', logMessage);
-            fs.appendFile(`./log/warning/${log.path}`, logMessage, (err) => {
-                if (err) {
-                    console.error('Failed to write to log file:', err);
+        if (status == undefined) {
+            status = this.buildResponseStatus({
+                e: {
+                    message,
+                    name: 'Warning'
                 }
             });
         }
@@ -109,5 +72,82 @@ export class HandlerService {
                 in: where
             }
         };
+    }
+
+    private buildResponseObject({
+        e,
+        message,
+        where,
+        type,
+        status,
+        log
+    }: {
+        e?: Error;
+        message: string;
+        where: string;
+        type: 'error' | 'warning';
+        status?: string;
+        log?: {
+            path: string;
+            action: string;
+            name: string;
+        };
+    }): string {
+        const currentDate = new Date();
+        let logMessage: string;
+
+        if (status == undefined) {
+            status = this.buildResponseStatus({ e });
+        }
+
+        if (log != undefined && log.path != undefined && log.action != undefined && log.name != undefined) {
+            if (e != undefined) {
+                logMessage = `Date: ${currentDate.toString()}
+                \nAction: ${log.action} in ${log.name}, Where: ${where}
+                \nDescription: ${message}
+                \nStatus: ${status}
+                \nName: ${e.name}
+                \nMessage: ${e.message}
+                \nStack: ${e.stack}`;
+            } else {
+                logMessage = `Date: ${currentDate.toString()}
+                \nAction: ${log.action} in ${log.name}, Where: ${where}
+                \nDescription: ${message}
+                \nStatus: ${status}`;
+            }
+
+            console.log('HANDLER: buildResponseObject:', logMessage);
+
+            const logPath = `./log/${type}/${log.path}`;
+            const dir = path.dirname(logPath);
+
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+
+            fs.appendFile(logPath, logMessage, (err) => {
+                if (err) {
+                    console.error('Failed to write to log file:', err);
+                }
+            });
+        }
+
+        return status;
+    }
+
+    private buildResponseStatus({ e }: { e: Error }): string {
+        if (e.message.includes('violates not-null constraint') || e.name === 'TypeError') {
+            return '400';
+        } else if (e.message.includes('violates foreign key constraint')) {
+            if (e.message.includes('eav_attribute_index')) {
+                return '400-Attribute Index';
+            }
+        } else if (e.message.includes('not find any entity') || e.name === 'EntityNotFoundError') {
+            return '404';
+        } else if (e.message.includes('duplicate key') || e.message.includes('already exists') || e.name === 'ConflictException') {
+            return '409';
+        } else {
+            return '500';
+        }
     }
 }

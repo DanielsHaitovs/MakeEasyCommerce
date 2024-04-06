@@ -4,6 +4,6 @@ RUN mkdir /code
 WORKDIR /code
 
 COPY . /code/
-RUN npm install --production
+RUN npm install
 
 CMD ["npm", "start"]

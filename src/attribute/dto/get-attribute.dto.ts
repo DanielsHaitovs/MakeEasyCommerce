@@ -32,7 +32,7 @@ export class GetAttributeDto extends CreateAttributeDto {
 export class AttributeResponseDto extends QueryResponseDto {
     @ApiProperty()
     @IsOptional()
-    @ValidateNested()
+    @ValidateNested({ each: true })
     @Type(() => GetAttributeDto)
     result?: GetAttributeDto | GetAttributeDto[];
 }

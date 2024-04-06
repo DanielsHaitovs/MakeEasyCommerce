@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { RuleHelperService } from '@src/rule/service/query/helper.service';
-import { CreateAttributeRuleDto } from '@src/attribute/dto/create-attribute.dto';
 import { AttributeResponseDto, GetAttributeDto } from '@src/attribute/dto/get-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
+import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
+import { RuleProperties } from '@src/rule/enum/rule.enum';
 
 @Injectable()
 export class AttributeRuleService {
@@ -17,43 +18,92 @@ export class AttributeRuleService {
     ) {}
 
     /**
-     * This method is used to create an attribute rule.
-     * @param {CreateAttributeRuleDto} createAttributeRule - The data transfer object containing the details of the attribute rule to be created.
-     * @returns {Promise<AttributeResponseDto>} - A promise that resolves to an AttributeResponseDto.
+     * Finds an attribute by its ID.
+     *
+     * @param {Object} params - The parameters for finding an attribute.
+     * @param {number} params.id - The id of the attribute to find.
+     *
+     * @returns {Promise<AttributeResponseDto>} A Promise that resolves to an object containing the status of the operation and the found attribute.
+     * If the attribute cannot be found, an error message is returned with status '666'.
+     *
+     * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
      */
-    async createAttributeRule({
-        createAttributeRule
-    }: {
-        createAttributeRule: CreateAttributeRuleDto;
-    }): Promise<AttributeResponseDto> {
+    async findByAttributeId({ id }: { id: number }): Promise<AttributeResponseDto> {
         try {
-            // Prepare the rule using the helper function
-            const attributeRule = this.ruleHelper.prepareRule({ createRule: createAttributeRule.rule });
+            // Create a query to find the attribute by its ID and join with its rules
+            const attributeRuleQuery = this.entityManager
+                .createQueryBuilder(Attribute, 'attribute')
+                .where('attribute.id = :id', { id })
+                .leftJoinAndSelect('attribute.rules', 'rule');
 
-            // If the attribute rule is not null, save the attribute with the new rule
-            if (!attributeRule != null) {
-                return {
-                    status: '200',
-                    result: await this.entityManager.save(Attribute, {
-                        id: createAttributeRule.id,
-                        rule: attributeRule
-                    })
-                };
-            }
+            // Define the properties to select
+            const propToSelect = Object.values(RuleProperties) as string[];
+            propToSelect.unshift('attribute.id');
 
-            // If the attribute rule is null, return null
-            return null;
+            // Execute the query and return the result
+            return {
+                status: '200',
+                result: await attributeRuleQuery.select(propToSelect).getOneOrFail()
+            };
         } catch (error) {
-            // If an error occurs, handle it and return the error response
+            // Handle any errors that occur during the operation
             const e = error as Error;
             return this.handlerService.handleError<GetAttributeDto>({
                 e,
-                message: 'Could Not Create Attribute',
-                where: 'Attribute Service -> createAttribute',
+                message: 'Could not find Attribute Rule by given Type',
+                where: 'Attribute Rule Service this.entityManager.find'
+            });
+        }
+    }
+
+    /**
+     * Updates an attribute rule by its rule ID or attribute ID.
+     *
+     * @param {Object} params - The parameters for updating an attribute rule.
+     * @param {UpdateAttributeRuleDto} params.rule - The new rule data.
+     * @param {number} [params.ruleId] - The id of the rule to update.
+     * @param {number} [params.attributeId] - The id of the attribute whose rule to update.
+     *
+     * @returns {Promise<AttributeResponseDto | null>} A Promise that resolves to an object containing the status of the operation and the updated attribute rule.
+     * If the attribute rule cannot be updated, an error message is returned with status '666'.
+     * If both ruleId and attributeId are undefined, null is returned.
+     *
+     * @throws {Error} If there's an error during the operation, it will be caught and handled by the `handlerService`.
+     */
+    async updateAttributeRule({ rule, ruleId, attributeId }: { rule: UpdateAttributeRuleDto; ruleId?: number; attributeId?: number }) {
+        // If both ruleId and attributeId are undefined, return null
+        if (ruleId == undefined && attributeId == undefined) {
+            return null;
+        }
+
+        try {
+            // If ruleId is defined, update the rule by its ID
+            if (ruleId != undefined) {
+                return this.ruleHelper.update({ id: ruleId, rule });
+            }
+
+            // If attributeId is defined, find the attribute by its ID and update its rule
+            if (attributeId != undefined) {
+                const attributeRule = await this.findByAttributeId({ id: attributeId });
+
+                if (attributeRule.status === '200' && attributeRule.result != undefined) {
+                    const result = attributeRule.result as GetAttributeDto;
+                    return this.ruleHelper.update({ id: result.id, rule });
+                } else {
+                    throw new NotFoundException('Could not find Attribute Rule by given attribute ID');
+                }
+            }
+        } catch (error) {
+            // Handle any errors that occur during the operation
+            const e = error as Error;
+            return this.handlerService.handleError<GetAttributeDto>({
+                e,
+                message: 'Could not update Attribute Rule',
+                where: 'Attribute Rule Service this.ruleHelper.update',
                 log: {
                     path: 'attribute/error.log',
-                    action: 'Create Attribute',
-                    name: 'Attribute Service'
+                    action: 'update',
+                    name: 'Attribute Rule Update'
                 }
             });
         }
