@@ -1,6 +1,8 @@
-import { Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, RelationId } from 'typeorm';
 import { AttributesBase } from './base.entity';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
+import { AttributeOptionString } from './options/string-option.entity';
+import { AttributeOptionNumber } from './options/number-option.entity';
 
 export const AttributesIndex = {
     isActive: 'ik_attribute_active',
@@ -26,16 +28,14 @@ export class Attribute extends AttributesBase {
     })
     @JoinColumn()
     rule: AttributeRule;
-}
 
-// @OneToMany(() => Value, (values) => values.attributeId, {
-//     cascade: false,
-//     eager: false,
-//     nullable: true,
-// })
-// @JoinColumn({
-//     foreignKeyConstraintName: 'fk_attribute_index_values',
-// })
-// values: Value[];
-// @RelationId((attribute: Attribute) => attribute.values)
-// valuesIds: number[];
+    @OneToMany(() => AttributeOptionString, (options) => options.attribute, {})
+    stringOptions: AttributeOptionString[];
+    @RelationId((options: Attribute) => options.stringOptions)
+    stringOptionsIds: number[];
+
+    @OneToMany(() => AttributeOptionNumber, (options) => options.attribute, {})
+    numberOptions: AttributeOptionNumber[];
+    @RelationId((options: Attribute) => options.numberOptions)
+    numberOptionsIds: number[];
+}

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, ValidateNested, IsBoolean, IsString } from '@nestjs/class-validator';
+import { IsOptional, ValidateNested, IsBoolean, IsString } from '@nestjs/class-validator';
 import { RuleType, RuleProperties } from '@src/rule/enum/rule.enum';
 import { QueryFilterDto } from '@src/mec/dto/query/filter.dto';
 

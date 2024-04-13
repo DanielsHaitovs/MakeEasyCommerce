@@ -1,20 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { IsBoolean, IsEnum, IsNumber, IsString, ValidateNested } from '@nestjs/class-validator';
-import { OptionType } from '../enum/option.enum';
+import { IsEnum, IsNumber, IsString, ValidateNested } from '@nestjs/class-validator';
 import { Type } from '@nestjs/class-transformer';
+import { AttributeType } from '@src/attribute/enum/attribute.enum';
 
 export class OptionTypeDto {
     @ApiProperty({
         title: 'Attribute Option Type',
-        enum: OptionType,
+        enum: AttributeType,
         nullable: false,
         required: true,
         isArray: false
     })
     @IsNotEmpty()
-    @IsEnum(OptionType)
-    type: OptionType;
+    @IsEnum(AttributeType)
+    type: AttributeType;
 }
 
 export class CreateStringOptionDto {
@@ -43,29 +43,28 @@ export class CreateNumberOptionDto {
     data: number;
 }
 
-export class CreateBooleanOptionDto {
-    @ApiProperty({
-        title: 'Attribute Boolean Option',
-        type: Boolean,
-        nullable: false,
-        required: true,
-        isArray: false
-    })
-    @IsNotEmpty()
-    @IsBoolean()
-    data: boolean;
-}
-
 export class CreateOptionDto {
     @ApiProperty({
-        title: 'Attribute Option Data',
-        type: String || Number || Boolean,
-        nullable: false,
+        title: 'Attribute Option String Data',
+        type: CreateStringOptionDto,
         required: true,
-        isArray: false
+        nullable: false,
+        isArray: true
     })
     @IsNotEmpty()
-    @ValidateNested()
-    @Type(() => String || Number || Boolean)
-    data: string | number | boolean;
+    @ValidateNested({ each: true })
+    @Type(() => CreateStringOptionDto)
+    stringOptions: CreateStringOptionDto[];
+
+    @ApiProperty({
+        title: 'Attribute Option Number Data',
+        type: CreateNumberOptionDto,
+        required: true,
+        nullable: false,
+        isArray: true
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => CreateNumberOptionDto)
+    numberOptions: CreateNumberOptionDto[];
 }

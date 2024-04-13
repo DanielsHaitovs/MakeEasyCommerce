@@ -3,7 +3,7 @@ import { OrderDirection } from '@src/mec/enum/query/query.enum';
 export interface QueryResponseI<T> {
     status: string;
     message?: string;
-    result?: T | T[];
+    result?: T[];
     error?: {
         message: string;
         in: string;
@@ -29,4 +29,10 @@ export interface QueryFilterI {
         by: string;
         direction: OrderDirection;
     };
+}
+
+export interface LogI {
+    path: string;
+    action: string;
+    name: string;
 }

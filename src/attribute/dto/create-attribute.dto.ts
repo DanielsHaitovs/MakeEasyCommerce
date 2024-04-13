@@ -4,6 +4,7 @@ import { AttributeType } from '../enum/attribute.enum';
 import { CreateRuleDto } from '@src/rule/dto/create-rule.dto';
 import { IsNumber, ValidateNested } from '@nestjs/class-validator';
 import { Type } from '@nestjs/class-transformer';
+import { CreateNumberOptionDto, CreateOptionDto, CreateStringOptionDto } from './options/create-option.dto';
 
 export class AttributeBaseDto {
     @ApiProperty({
@@ -55,9 +56,9 @@ export class AttributeBaseDto {
 
     @ApiProperty({
         title: 'Attribute Type',
-        type: String,
         nullable: false,
-        enum: AttributeType
+        enum: AttributeType,
+        default: AttributeType.String
     })
     @IsNotEmpty()
     @IsEnum(AttributeType)
@@ -86,7 +87,33 @@ export class CreateAttributeDto extends AttributeBaseDto {
     @ValidateNested({ each: true })
     @Type(() => CreateRuleDto)
     rule: CreateRuleDto;
+
+    @ApiProperty({
+        title: 'Attribute Option String Data',
+        type: CreateStringOptionDto,
+        required: true,
+        nullable: false,
+        isArray: true
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => CreateStringOptionDto)
+    stringOptions: CreateStringOptionDto[];
+
+    @ApiProperty({
+        title: 'Attribute Option Number Data',
+        type: CreateNumberOptionDto,
+        required: true,
+        nullable: false,
+        isArray: true
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => CreateNumberOptionDto)
+    numberOptions: CreateNumberOptionDto[];
 }
+
+export class CreateAttributeOptionDto extends CreateOptionDto {}
 
 export class CreateAttributeRuleDto {
     @ApiProperty({

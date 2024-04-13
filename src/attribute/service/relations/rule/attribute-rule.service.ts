@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
@@ -7,7 +7,6 @@ import { AttributeResponseDto, GetAttributeDto } from '@src/attribute/dto/get-at
 import { Attribute } from '@src/attribute/entities/attribute.entity';
 import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
 import { RuleProperties } from '@src/rule/enum/rule.enum';
-import { GetRuleDto } from '@src/rule/dto/get-rule.dto';
 
 @Injectable()
 export class AttributeRuleService {
@@ -43,7 +42,7 @@ export class AttributeRuleService {
 
             return {
                 status: '200',
-                result: await attributeRuleQuery.select(propToSelect).getOneOrFail()
+                result: [await attributeRuleQuery.select(propToSelect).getOneOrFail()]
             };
         } catch (error) {
             // Handle any errors that occur during the operation
@@ -89,28 +88,32 @@ export class AttributeRuleService {
             if (ruleId != undefined) {
                 const updated = await this.ruleHelper.update({ id: ruleId, rule });
 
-                if (updated.status != '200') {
+                if (updated.status === '200' && updated.result != undefined) {
+                    return {
+                        status: '200',
+                        result: [
+                            {
+                                id: attributeId,
+                                isActive: null,
+                                isRequired: null,
+                                name: null,
+                                code: null,
+                                isArray: null,
+                                description: null,
+                                dataType: null,
+                                stringOptions: null,
+                                numberOptions: null,
+                                rule: updated.result.shift()
+                            }
+                        ]
+                    };
+                } else {
                     return {
                         status: updated.status,
                         message: updated.message,
                         error: {
                             message: updated.error.message,
                             in: updated.error.in
-                        }
-                    };
-                } else {
-                    return {
-                        status: '200',
-                        result: {
-                            id: attributeId,
-                            isActive: null,
-                            isRequired: null,
-                            name: null,
-                            code: null,
-                            isArray: null,
-                            description: null,
-                            dataType: null,
-                            rule: updated.result as GetRuleDto
                         }
                     };
                 }
@@ -121,31 +124,35 @@ export class AttributeRuleService {
                 const attributeRule = await this.findByAttributeId({ id: attributeId });
 
                 if (attributeRule.status === '200' && attributeRule.result != undefined) {
-                    const result = attributeRule.result as GetAttributeDto;
+                    const result = attributeRule.result.shift();
                     const updated = await this.ruleHelper.update({ id: result.rule.id, rule });
 
-                    if (updated.status != '200') {
+                    if (updated.status === '200' && updated.result != undefined) {
+                        return {
+                            status: '200',
+                            result: [
+                                {
+                                    id: result.id,
+                                    isActive: result.isActive,
+                                    isRequired: result.isRequired,
+                                    name: result.name,
+                                    code: result.code,
+                                    isArray: result.isArray,
+                                    description: result.description,
+                                    dataType: result.dataType,
+                                    stringOptions: null,
+                                    numberOptions: null,
+                                    rule: updated.result.shift()
+                                }
+                            ]
+                        };
+                    } else {
                         return {
                             status: updated.status,
                             message: updated.message,
                             error: {
                                 message: updated.error.message,
                                 in: updated.error.in
-                            }
-                        };
-                    } else {
-                        return {
-                            status: '200',
-                            result: {
-                                id: result.id,
-                                isActive: result.isActive,
-                                isRequired: result.isRequired,
-                                name: result.name,
-                                code: result.code,
-                                isArray: result.isArray,
-                                description: result.description,
-                                dataType: result.dataType,
-                                rule: updated.result as GetRuleDto
                             }
                         };
                     }

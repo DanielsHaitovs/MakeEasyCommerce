@@ -30,6 +30,9 @@ export class AttributeHelperService {
      */
     prepareAttribute({ createAttribute }: { createAttribute: CreateAttributeDto }): CreateAttributeDto {
         try {
+            delete createAttribute.stringOptions;
+            delete createAttribute.numberOptions;
+
             // Create a new attribute instance with the provided data
             const attribute = this.entityManager.create(Attribute);
 
@@ -71,4 +74,73 @@ export class AttributeHelperService {
     }): Promise<AttributeResponseDto> {
         return await this.attributeRuleService.updateAttributeRule({ rule, ruleId, attributeId });
     }
+
+    // private async handleCreateAttributePromise({
+    //     stringOptions,
+    //     numberOptions
+    // }: {
+    //     stringOptions: SelectQueryBuilder<AttributeOptionString>;
+    //     numberOptions: SelectQueryBuilder<AttributeOptionNumber>;
+    // }): Promise<OptionResponseDto> {
+    //     try {
+    //         // If both stringOptions and numberOptions are provided, retrieve both types of options
+    //         if (stringOptions && numberOptions) {
+    //             // Order is important here, as the results are returned in the same order as the queries
+    //             const [stringOptionsResult, numberOptionsResult] = (await Promise.all([
+    //                 stringOptions.getMany(),
+    //                 numberOptions.getMany()
+    //             ])) as [GetStringOptionDto[], GetNumberOptionDto[]];
+
+    //             return {
+    //                 status: '200',
+    //                 result: [
+    //                     {
+    //                         stringOptions: stringOptionsResult,
+    //                         numberOptions: numberOptionsResult
+    //                     }
+    //                 ]
+    //             };
+    //         }
+
+    //         // If only stringOptions is provided, retrieve only the string options
+    //         if (stringOptions) {
+    //             return {
+    //                 status: '200',
+    //                 result: [
+    //                     {
+    //                         stringOptions: await stringOptions.getMany(),
+    //                         numberOptions: undefined
+    //                     }
+    //                 ]
+    //             };
+    //         }
+
+    //         // If only numberOptions is provided, retrieve only the number options
+    //         if (numberOptions) {
+    //             return {
+    //                 status: '200',
+    //                 result: [
+    //                     {
+    //                         stringOptions: undefined,
+    //                         numberOptions: await numberOptions.getMany()
+    //                     }
+    //                 ]
+    //             };
+    //         }
+    //     } catch (error) {
+    //         const e = error as Error;
+
+    //         // If an error occurs, handle it using the handlerService
+    //         return this.handlerService.handleError<GetOptionDto>({
+    //             e,
+    //             message: 'Could Not Handle Attributes Options',
+    //             where: 'Attribute Option Service -> handleOptionsAwait',
+    //             log: {
+    //                 path: 'attribute/options/error.log',
+    //                 action: 'Handle Attributes Options',
+    //                 name: 'Attribute Option Service'
+    //             }
+    //         });
+    //     }
+    // }
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
@@ -10,6 +10,9 @@ import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
 import { UpdateAttributeDto, UpdateAttributeRuleDto } from '../dto/update-attribute.dto';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
+import { AttributeOptionsService } from './relations/options/attribute-option.service';
+import { CreateOptionDto } from '../dto/options/create-option.dto';
+import { AttributeType } from '../enum/attribute.enum';
 
 @Injectable()
 export class AttributeService {
@@ -17,7 +20,8 @@ export class AttributeService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         private readonly handlerService: HandlerService,
-        private readonly attributeHelper: AttributeHelperService
+        private readonly attributeHelper: AttributeHelperService,
+        private readonly optionService: AttributeOptionsService
     ) {}
 
     /**
@@ -36,21 +40,63 @@ export class AttributeService {
                 throw new TypeError('Rule is required');
             }
 
-            // Prepare the attribute for saving
-            const attribute = this.attributeHelper.prepareAttribute({ createAttribute: createAttribute });
+            const createOptions: CreateOptionDto = {
+                stringOptions: createAttribute.stringOptions,
+                numberOptions: createAttribute.numberOptions
+            };
 
-            // Check if the attribute is defined
-            if (attribute != null) {
-                // Save the attribute and return the result with a success status
-                // The 'as CreateAttributeI' is a type assertion, telling TypeScript to treat 'result' as 'CreateAttributeI' type
-                return {
-                    status: '200',
-                    result: await this.entityManager.save(Attribute, attribute)
-                };
+            if (createAttribute.numberOptions != undefined && createAttribute.stringOptions != undefined) {
+                throw new BadRequestException('Invalid Option Body, received both string and number');
             }
 
-            // If the attribute is undefined, return null
-            return null;
+            // Prepare the attribute for saving
+            const preparedAttribute = this.attributeHelper.prepareAttribute({ createAttribute });
+
+            const attribute = await this.entityManager.save(Attribute, preparedAttribute);
+
+            if (createAttribute.numberOptions == undefined && !createAttribute.stringOptions == undefined) {
+                // Check if the attribute is defined
+                if (attribute != undefined && attribute.id != undefined) {
+                    // Save the attribute and return the result with a success status
+                    // The 'as CreateAttributeI' is a type assertion, telling TypeScript to treat 'result' as 'CreateAttributeI' type
+                    return {
+                        status: '200',
+                        result: [
+                            {
+                                stringOptions: null,
+                                numberOptions: null,
+                                ...attribute
+                            }
+                        ]
+                    };
+                }
+
+                return null;
+            } else {
+                const options = await this.optionService.create({
+                    id: attribute.id,
+                    createOptions
+                });
+
+                if (options.result != undefined && options.status === '200') {
+                    return {
+                        status: '200',
+                        result: [
+                            {
+                                ...attribute,
+                                ...options.result.shift()
+                            }
+                        ]
+                    };
+                }
+
+                return {
+                    status: options.status,
+                    result: [attribute],
+                    error: options.error,
+                    message: 'Could Not Create Options after Attribute was Created'
+                };
+            }
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
@@ -69,6 +115,18 @@ export class AttributeService {
                 });
             }
 
+            if (e.message.includes('Could Not Create Options after Attribute was Created')) {
+                this.handlerService.handleWarning<GetAttributeDto>({
+                    message: 'Could Not Create Options after Attribute was Created',
+                    where: 'Attribute Service -> createAttribute',
+                    status: '409',
+                    log: {
+                        path: 'attribute/warning.log',
+                        action: 'Create Attribute',
+                        name: 'Attribute Service'
+                    }
+                });
+            }
             return this.handlerService.handleError<GetAttributeDto>({
                 e,
                 message: 'Could Not Create Attribute',
@@ -107,7 +165,10 @@ export class AttributeService {
             // If the relations are defined, add them to the query
             if (relations != undefined && (relations.joinRule != undefined || relations.joinOptions != undefined)) {
                 if (relations.joinRule === true) query.leftJoinAndSelect('attribute.rule', 'rule');
-                if (relations.joinOptions === true) query.leftJoinAndSelect('attribute.options', 'options');
+                if (relations.joinOptions === true) {
+                    query.leftJoinAndSelect('attribute.stringOptions', 'stringOption');
+                    query.leftJoinAndSelect('attribute.numberOptions', 'numberOption');
+                }
             }
 
             pagination = this.paginateAttribute({ pagination });
@@ -136,7 +197,6 @@ export class AttributeService {
                 e,
                 message: 'Could Not Get Attributes',
                 where: 'Attribute Service -> getAttributes',
-
                 log: {
                     path: 'attribute/error.log',
                     action: 'Get Attributes',
@@ -169,16 +229,19 @@ export class AttributeService {
             }
 
             // Create a query to fetch the attribute by its ID
-            const query = this.entityManager.createQueryBuilder(Attribute, 'attribute').where('attribute.id = :id', { id });
+            const query = this.entityManager.createQueryBuilder(Attribute, 'attribute');
 
             // If the relations are defined, add them to the query
             if (relations != undefined && (relations.joinRule != undefined || relations.joinOptions != undefined)) {
                 if (relations.joinRule === true) query.leftJoinAndSelect('attribute.rule', 'rule');
-                if (relations.joinOptions === true) query.leftJoinAndSelect('attribute.options', 'options');
+                if (relations.joinOptions === true) {
+                    query.leftJoinAndSelect('attribute.stringOptions', 'stringOption');
+                    query.leftJoinAndSelect('attribute.numberOptions', 'numberOption');
+                }
             }
 
             // Execute the query and get the result
-            const result: GetAttributeDto = await query.getOneOrFail();
+            const result: GetAttributeDto[] = [await query.where('attribute.id = :id', { id }).getOneOrFail()];
 
             // Check if the result is defined and not empty
             if (result != undefined && Object.keys(result).length > 0) {
@@ -240,7 +303,7 @@ export class AttributeService {
                     // If the operation is successful, return the updated attribute with a success status
                     return {
                         status: '200',
-                        result: preload
+                        result: [preload]
                     };
                 }
             }
@@ -343,6 +406,10 @@ export class AttributeService {
                 }
             });
         }
+    }
+
+    async findAttributeOptions({ id, type }: { id: number; type: AttributeType }): Promise<AttributeResponseDto> {
+        return await this.optionService.findByAttributeId({ id, type });
     }
 
     private paginateAttribute({ pagination }: { pagination: PaginationDto }): PaginationDto {

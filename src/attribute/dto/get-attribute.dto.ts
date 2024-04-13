@@ -5,6 +5,7 @@ import { QueryResponseDto } from '@src/mec/dto/query/response.dto';
 import { IsOptional, ValidateNested } from '@nestjs/class-validator';
 import { Type } from '@nestjs/class-transformer';
 import { GetRuleDto } from '@src/rule/dto/get-rule.dto';
+import { GetNumberOptionDto, GetStringOptionDto } from './options/get-option.dto';
 
 export class GetAttributeDto extends CreateAttributeDto {
     @ApiProperty({
@@ -27,6 +28,30 @@ export class GetAttributeDto extends CreateAttributeDto {
     @ValidateNested()
     @Type(() => GetRuleDto)
     rule: GetRuleDto;
+
+    @ApiProperty({
+        title: 'Attribute Option String Data',
+        type: GetStringOptionDto,
+        required: true,
+        nullable: false,
+        isArray: true
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => GetStringOptionDto)
+    stringOptions: GetStringOptionDto[];
+
+    @ApiProperty({
+        title: 'Attribute Option Number Data',
+        type: GetNumberOptionDto,
+        required: true,
+        nullable: false,
+        isArray: true
+    })
+    @IsNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => GetNumberOptionDto)
+    numberOptions: GetNumberOptionDto[];
 }
 
 export class AttributeResponseDto extends QueryResponseDto {
@@ -34,5 +59,5 @@ export class AttributeResponseDto extends QueryResponseDto {
     @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => GetAttributeDto)
-    result?: GetAttributeDto | GetAttributeDto[];
+    result?: GetAttributeDto[];
 }

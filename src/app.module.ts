@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MecModule } from './mec/mec.module';
 import { AttributeModule } from './attribute/attribute.module';
 import { AttributeRuleModule } from './rule/rule.module';
-import { AttributeOptionModule } from './option/option.module';
 
 @Module({
     imports: [
@@ -23,8 +22,7 @@ import { AttributeOptionModule } from './option/option.module';
         }),
         MecModule,
         AttributeModule,
-        AttributeRuleModule,
-        AttributeOptionModule
+        AttributeRuleModule
     ],
     controllers: [],
     providers: []

@@ -1,4 +1,4 @@
-import { QueryResponseI } from '@src/mec/interface/query/query.interface';
+import { LogI, QueryResponseI } from '@src/mec/interface/query/query.interface';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -12,21 +12,7 @@ export const errorStatuses = {
 };
 
 export class HandlerService {
-    handleError<T>({
-        e,
-        message,
-        where,
-        log
-    }: {
-        e: Error;
-        message: string;
-        where: string;
-        log?: {
-            path: string;
-            action: string;
-            name: string;
-        };
-    }): QueryResponseI<T> {
+    handleError<T>({ e, message, where, log }: { e: Error; message: string; where: string; log?: LogI }): QueryResponseI<T> {
         const status = this.buildResponseObject({ e, message, where, type: 'error', log });
 
         return {
@@ -127,7 +113,8 @@ export class HandlerService {
 
             fs.appendFile(logPath, logMessage, (err) => {
                 if (err) {
-                    console.error('Failed to write to log file:', err);
+                    console.error('Failed to write to log file:');
+                    throw err;
                 }
             });
         }
@@ -136,6 +123,7 @@ export class HandlerService {
     }
 
     private buildResponseStatus({ e }: { e: Error }): string {
+        if (e === undefined) return '500';
         if (e.message.includes('violates not-null constraint') || e.name === 'TypeError') {
             return '400';
         } else if (e.message.includes('violates foreign key constraint')) {

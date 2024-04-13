@@ -28,7 +28,7 @@ export class GetRuleTypeDto extends RuleBaseDto {
 export class RuleResponseDto extends QueryResponseDto {
     @ApiProperty()
     @IsOptional()
-    @ValidateNested()
+    @ValidateNested({ each: true })
     @Type(() => GetRuleDto)
-    result?: GetRuleDto | GetRuleDto[];
+    result?: GetRuleDto[];
 }

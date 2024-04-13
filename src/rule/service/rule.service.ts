@@ -39,7 +39,7 @@ export class RuleService {
                 // If successful, return a response with status 200 and a success message.
                 return {
                     status: '200',
-                    result: await this.entityManager.save(AttributeRule, newRule)
+                    result: [await this.entityManager.save(AttributeRule, newRule)]
                 };
             }
 
@@ -80,7 +80,7 @@ export class RuleService {
                 // If successful, return a response with status 200 and a success message.
                 return {
                     status: '200',
-                    result
+                    result: [result]
                 };
             }
 
@@ -118,7 +118,7 @@ export class RuleService {
                     const frontRule = Object.values(FrontRuleSelect);
                     return {
                         status: '200',
-                        result: await ruleQuery.select(frontRule).getOneOrFail()
+                        result: [await ruleQuery.select(frontRule).getOneOrFail()]
                     };
                 }
 
@@ -127,7 +127,7 @@ export class RuleService {
 
                     return {
                         status: '200',
-                        result: await ruleQuery.select(backRule).getOneOrFail()
+                        result: [await ruleQuery.select(backRule).getOneOrFail()]
                     };
                 }
 
@@ -135,7 +135,7 @@ export class RuleService {
                 // If successful, return a response with status 200 and a success message.
                 return {
                     status: '200',
-                    result: await ruleQuery.select(`rule.${type}`).getOneOrFail()
+                    result: [await ruleQuery.select(`rule.${type}`).getOneOrFail()]
                 };
             }
 

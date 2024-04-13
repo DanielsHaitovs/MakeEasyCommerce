@@ -1,10 +1,8 @@
 export enum AttributeType {
-    String = 'String',
-    Boolean = 'Boolean',
-    Number = 'Number',
-    JSON = 'JSON',
-    Date = 'Date',
-    Config = 'Config'
+    String = 'stringOptions',
+    Boolean = 'stringOptions',
+    Number = 'numberOptions',
+    Date = 'stringOptions'
 }
 
 export enum JoinAttributeRelations {

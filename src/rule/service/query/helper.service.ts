@@ -104,20 +104,6 @@ export class RuleHelperService {
                             result: rules
                         };
                     }
-
-                    // If the query does not return a result, return null
-                    return null;
-                }
-
-                // If the query filter is not set to return many results, attempt to get one result
-                const rule: GetRuleI = await Promise.resolve(ruleQuery.query.getOne());
-
-                // If the query returns a result, return the result
-                if (rule != undefined && rule.id != undefined) {
-                    return {
-                        status: '200',
-                        result: rule
-                    };
                 }
 
                 // If the query does not return a result, return null
@@ -174,7 +160,7 @@ export class RuleHelperService {
                 if (update.affected === 1) {
                     return {
                         status: '200',
-                        result: preload
+                        result: [preload]
                     };
                 }
             }
