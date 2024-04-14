@@ -52,7 +52,6 @@ export class OptionUpdateService {
     async updateStringOption(updateOption: UpdateStringOptionDto[]): Promise<OptionResponseDto> {
         try {
             const promises = updateOption.map((option) => {
-                console.log(option.data);
                 return this.entityManager
                     .createQueryBuilder()
                     .update(AttributeOptionString)
@@ -85,7 +84,6 @@ export class OptionUpdateService {
     async updateNumberOption(updateOption: UpdateNumberOptionDto[]): Promise<OptionResponseDto> {
         try {
             const promises = updateOption.map((option) => {
-                console.log(option.data);
                 return this.entityManager
                     .createQueryBuilder()
                     .update(AttributeOptionNumber)

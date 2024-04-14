@@ -134,7 +134,6 @@ export class AttributeController {
         required: false
     })
     async updateOptions(@Body() updateOptions: UpdateOptionDto): Promise<OptionResponseDto> {
-        console.log(updateOptions)
         return await this.attributeService.updateAttributeOption({ updateOptions });
     }
 
