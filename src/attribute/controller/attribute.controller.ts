@@ -8,7 +8,7 @@ import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
 import { AttributeRelationSelectPipe } from '../pipes/attribute-relation-select.pipe';
 import { PaginationPipe } from '@src/pipes/pagination.pipe';
 import { UpdateAttributeDto, UpdateAttributeRuleDto } from '../dto/update-attribute.dto';
-import { UpdateOptionDto, UpdateStringOptionDto } from '../dto/options/update-option.dto';
+import { UpdateOptionDto } from '../dto/options/update-option.dto';
 import { OptionResponseDto } from '../dto/options/get-option.dto';
 import { AttributeType } from '../enum/attribute.enum';
 import { IdsFilterPipe } from '@src/pipes/ids-filter-pipe.pipe';

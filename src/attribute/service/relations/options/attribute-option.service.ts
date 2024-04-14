@@ -14,7 +14,6 @@ import { OptionCreateService } from './create/create-option.service';
 import { AttributeType } from '@src/attribute/enum/attribute.enum';
 import { UpdateNumberOptionDto, UpdateOptionDto, UpdateStringOptionDto } from '@src/attribute/dto/options/update-option.dto';
 import { OptionUpdateService } from './update/update-option.service';
-import { threadId } from 'worker_threads';
 
 @Injectable()
 export class AttributeOptionsService {
