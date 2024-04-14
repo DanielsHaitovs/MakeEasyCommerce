@@ -13,6 +13,8 @@ import { AttributeRule } from '@src/rule/entities/rule.entity';
 import { AttributeOptionsService } from './relations/options/attribute-option.service';
 import { CreateOptionDto } from '../dto/options/create-option.dto';
 import { AttributeType } from '../enum/attribute.enum';
+import { UpdateOptionDto } from '../dto/options/update-option.dto';
+import { OptionResponseDto } from '../dto/options/get-option.dto';
 
 @Injectable()
 export class AttributeService {
@@ -359,6 +361,16 @@ export class AttributeService {
         return await this.attributeHelper.updateRule({ rule, ruleId, attributeId: id });
     }
 
+    async updateAttributeOption({
+        type,
+        updateOptions
+    }: {
+        type?: AttributeType;
+        updateOptions: UpdateOptionDto;
+    }): Promise<OptionResponseDto> {
+        return await this.optionService.updateOptions({ type, updateOptions });
+    }
+
     /**
      * Deletes an Attribute and its related AttributeRule.
      *
@@ -408,8 +420,8 @@ export class AttributeService {
         }
     }
 
-    async findAttributeOptions({ id, type }: { id: number; type: AttributeType }): Promise<AttributeResponseDto> {
-        return await this.optionService.findByAttributeId({ id, type });
+    async deleteAttributeOption({ ids, type }: { ids: number[]; type: AttributeType }): Promise<OptionResponseDto> {
+        return await this.optionService.deleteOptions({ ids, type });
     }
 
     private paginateAttribute({ pagination }: { pagination: PaginationDto }): PaginationDto {

@@ -13,7 +13,7 @@ export class AttributeOptionNumber extends MecBaseEntity {
 
     @ManyToOne(() => Attribute, (attribute) => attribute.numberOptions, {})
     @JoinColumn({
-        name: 'attributeId',
+        name: 'attribute',
         referencedColumnName: 'id'
     })
     attribute: Attribute;

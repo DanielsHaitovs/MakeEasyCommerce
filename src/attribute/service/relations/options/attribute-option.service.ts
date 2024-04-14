@@ -12,6 +12,9 @@ import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { LogI } from '@src/mec/interface/query/query.interface';
 import { OptionCreateService } from './create/create-option.service';
 import { AttributeType } from '@src/attribute/enum/attribute.enum';
+import { UpdateNumberOptionDto, UpdateOptionDto, UpdateStringOptionDto } from '@src/attribute/dto/options/update-option.dto';
+import { OptionUpdateService } from './update/update-option.service';
+import { threadId } from 'worker_threads';
 
 @Injectable()
 export class AttributeOptionsService {
@@ -19,7 +22,8 @@ export class AttributeOptionsService {
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         private readonly handlerService: HandlerService,
-        private readonly createService: OptionCreateService
+        private readonly createService: OptionCreateService,
+        private readonly updateService: OptionUpdateService
     ) {}
 
     /**
@@ -345,7 +349,7 @@ export class AttributeOptionsService {
             // If the error message does not include 'Provided Invalid Option Type', set the log
             if (!e.message.includes('Provided Invalid Option Type')) {
                 log = {
-                    path: 'attribute/option/error.log',
+                    path: 'attribute/options/error.log',
                     action: 'Get Attribute Options',
                     name: 'Attribute Option Service'
                 };
@@ -357,6 +361,94 @@ export class AttributeOptionsService {
                 where: 'Attribute Options Service this.findByAttributeId',
                 log
             });
+        }
+    }
+
+    async findAttributeIdByOptionId({ id, type }: { id: number; type: AttributeType }): Promise<AttributeResponseDto> {
+        try {
+            switch (type) {
+                case AttributeType.String:
+                    const stringOption = await this.entityManager
+                        .getRepository(AttributeOptionString)
+                        .createQueryBuilder('stringOption')
+                        .leftJoinAndSelect('stringOption.attribute', 'optionAttribute')
+                        .leftJoinAndSelect('optionAttribute.rule', 'attributeRule')
+                        .where('stringOption.id = :id', { id })
+                        .getOneOrFail();
+
+                    return {
+                        status: '200',
+                        result: [stringOption.attribute]
+                    };
+                case AttributeType.Number:
+                    const numberOption = await this.entityManager
+                        .getRepository(AttributeOptionNumber)
+                        .createQueryBuilder('numberOption')
+                        .leftJoinAndSelect('numberOption.attribute', 'optionAttribute')
+                        .leftJoinAndSelect('optionAttribute.rule', 'attributeRule')
+                        .where('numberOption.id = :id', { id })
+                        .getOneOrFail();
+
+                    return {
+                        status: '200',
+                        result: [numberOption.attribute]
+                    };
+                default:
+                    throw new BadRequestException('Invalid Option Type');
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updateOptions({
+        updateOptions,
+        type
+    }: {
+        type?: AttributeType;
+        updateOptions: UpdateOptionDto;
+    }): Promise<OptionResponseDto> {
+        // If the type is not provided, set it to the default value based on the createOptions
+        if (type === undefined) {
+            if (updateOptions.stringOptions && updateOptions.numberOptions) {
+                throw new BadRequestException('Invalid Option Body, received both string and number');
+            }
+
+            type = updateOptions.stringOptions ? AttributeType.String : AttributeType.Number;
+        }
+
+        return await this.updateService.update({ type, updateOptions });
+    }
+
+    async updateStringOption({ updateOption }: { updateOption: UpdateStringOptionDto[] }): Promise<OptionResponseDto> {
+        return await this.updateService.updateStringOption(updateOption);
+    }
+
+    async updateNumberOption({ updateOption }: { updateOption: UpdateNumberOptionDto[] }): Promise<OptionResponseDto> {
+        return await this.updateService.updateNumberOption(updateOption);
+    }
+
+    async deleteOptions({ ids, type }: { ids: number[]; type: AttributeType }): Promise<OptionResponseDto> {
+        try {
+            const query = this.entityManager.createQueryBuilder().delete();
+            switch (type) {
+                case AttributeType.String:
+                    const stringQuery = await query.from(AttributeOptionString).where('id IN (:...ids)', { ids }).execute();
+                    return {
+                        status: '200',
+                        message: stringQuery.affected.toString()
+                    };
+                case AttributeType.Number:
+                    const numberQuery = await query.from(AttributeOptionNumber).where('id IN (:...ids)', { ids }).execute();
+                    return {
+                        status: '200',
+                        message: numberQuery.affected.toString()
+                    };
+                default:
+                    throw new BadRequestException('Invalid Option Type');
+            }
+        } catch (error) {
+            throw error;
         }
     }
 

@@ -1,6 +1,6 @@
 export enum AttributeType {
     String = 'stringOptions',
-    Boolean = 'stringOptions',
+    Boolean = 'numberOptions',
     Number = 'numberOptions',
     Date = 'stringOptions'
 }

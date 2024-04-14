@@ -3,11 +3,10 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { CreateNumberOptionDto, CreateOptionDto, CreateStringOptionDto } from '@src/attribute/dto/options/create-option.dto';
-import { GetNumberOptionDto, GetStringOptionDto, OptionResponseDto } from '@src/attribute/dto/options/get-option.dto';
+import { OptionResponseDto } from '@src/attribute/dto/options/get-option.dto';
 import { AttributeOptionString } from '@src/attribute/entities/options/string-option.entity';
 import { AttributeOptionNumber } from '@src/attribute/entities/options/number-option.entity';
 import { AttributeType } from '@src/attribute/enum/attribute.enum';
-import { stat } from 'fs';
 
 @Injectable()
 export class OptionCreateService {
@@ -113,7 +112,7 @@ export class OptionCreateService {
                 message: 'Could not save String Option',
                 where: 'Option Service this.createStringOption',
                 log: {
-                    path: 'option/error.log',
+                    path: 'attribute/options/error.log',
                     action: 'Create String Option',
                     name: 'Option Service'
                 }
@@ -159,7 +158,7 @@ export class OptionCreateService {
                 message: 'Could not save Number Option',
                 where: 'Option Service this.createNumberOption',
                 log: {
-                    path: 'option/error.log',
+                    path: 'attribute/options/error.log',
                     action: 'Create Boolean Option',
                     name: 'Option Service'
                 }
