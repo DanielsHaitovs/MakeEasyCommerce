@@ -3,7 +3,6 @@ import { AttributesBase } from './base.entity';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
 import { AttributeOptionString } from './options/string-option.entity';
 import { AttributeOptionNumber } from './options/number-option.entity';
-import { Product } from '@src/product/entities/product.entity';
 
 export const AttributesIndex = {
     isActive: 'ik_attribute_active',
@@ -40,9 +39,9 @@ export class Attribute extends AttributesBase {
     @RelationId((options: Attribute) => options.numberOptions)
     numberOptionsIds: number[];
 
-    @ManyToOne(() => Product, (product) => product.attributes, { cascade: false })
-    @JoinColumn({
-        foreignKeyConstraintName: 'fk_attributes_index_product'
-    })
-    product: Product;
+    // @ManyToOne(() => Product, (product) => product.attributes, { cascade: false })
+    // @JoinColumn({
+    //     foreignKeyConstraintName: 'fk_attributes_index_product'
+    // })
+    // product: Product;
 }

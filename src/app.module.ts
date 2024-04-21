@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MecModule } from './mec/mec.module';
 import { AttributeModule } from './attribute/attribute.module';
 import { AttributeRuleModule } from './rule/rule.module';
-import { ProductModule } from './product/product.module';
 
 @Module({
     imports: [
@@ -24,7 +23,6 @@ import { ProductModule } from './product/product.module';
         MecModule,
         AttributeModule,
         AttributeRuleModule,
-        ProductModule
     ],
     controllers: [],
     providers: []
