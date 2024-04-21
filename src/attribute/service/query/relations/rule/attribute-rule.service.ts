@@ -3,13 +3,14 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { RuleHelperService } from '@src/rule/service/query/helper.service';
-import { AttributeResponseDto, GetAttributeDto } from '@src/attribute/dto/get-attribute.dto';
+import { AttributeResponseDto } from '@src/attribute/dto/get-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
 import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
 import { RuleProperties } from '@src/rule/enum/rule.enum';
 
 @Injectable()
 export class AttributeRuleService {
+    private logPath = 'attribute/error.log';
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -47,10 +48,11 @@ export class AttributeRuleService {
         } catch (error) {
             // Handle any errors that occur during the operation
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not find Attribute Rule',
-                where: 'Attribute Rule Service this.findByAttributeId'
+                where: this.findByAttributeId.name,
+                name: AttributeRuleService.name
             });
         }
     }
@@ -163,15 +165,12 @@ export class AttributeRuleService {
         } catch (error) {
             // Handle any errors that occur during the operation
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not update Attribute Rule',
-                where: 'Attribute Rule Service this.ruleHelper.update',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'update',
-                    name: 'Attribute Rule Update'
-                }
+                where: this.updateAttributeRule.name,
+                name: AttributeRuleService.name,
+                logPath: this.logPath
             });
         }
     }

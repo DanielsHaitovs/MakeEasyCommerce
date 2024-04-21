@@ -34,5 +34,5 @@ export interface QueryFilterI {
 export interface LogI {
     path: string;
     action: string;
-    name: string;
+    // name: string;
 }

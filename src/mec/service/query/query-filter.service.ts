@@ -3,47 +3,58 @@ import { FilterWhereValueDto, QueryFilterDto } from '@src/mec/dto/query/filter.d
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
 export class QueryService {
+    private idsError = false;
     private whereManyIdAlias = '.id IN (:...ids)';
 
+    //To Do
+    // If smth fails then currently initial state of filters is being returned
+    // This is wrong
+    // Also missing preparation for query order filters, feels like this can be done here
     protected prepareFilter({ filters, alias }: { filters: QueryFilterDto; alias: string }): QueryFilterDto {
+        const initialFilter = filters;
+
         try {
             const { pagination } = filters;
-            if (!Number.isInteger(pagination.page) || !Number.isInteger(pagination.limit)) {
+            if (Number(pagination.page) > 0 || Number(pagination.limit) > 0) {
                 filters.pagination = {
-                    page: 0,
-                    limit: 0
+                    page: Number(pagination.page),
+                    limit: Number(pagination.limit)
                 };
-            } else if (pagination.page === 0 || pagination.limit === 0) {
-                filters.pagination = {
-                    page: 0,
-                    limit: 0
-                };
-            }
-
-            filters.pagination = {
-                page: pagination.page,
-                limit: pagination.limit
-            };
-        } catch {
-            filters.pagination = {
-                page: 0,
-                limit: 0
-            };
-        }
-
-        try {
-            const { order } = filters;
-
-            if (order.by != undefined) {
-                filters.order.by = alias + '.' + order.by;
             } else {
-                filters.order = undefined;
+                filters.pagination.limit = undefined;
+                filters.pagination.page = undefined;
             }
+
+            this.idsError = true;
+            const { ids } = filters;
+            if (ids != undefined && ids.length > 0) {
+                if (!Array.isArray(ids) && Number(ids)) {
+                    filters.ids = [Number(ids)];
+                } else {
+                    filters.ids = ids.flatMap((id) => Number(id));
+                }
+            }
+
+            return filters;
         } catch {
-            filters.order = undefined;
+            // if (this.idsError) {}
+
+            return initialFilter;
         }
 
-        return filters;
+        // try {
+        //     const { order } = filters;
+
+        //     if (order.by != undefined) {
+        //         filters.order.by = alias + '.' + order.by;
+        //     } else {
+        //         filters.order = undefined;
+        //     }
+        // } catch {
+        //     filters.order = undefined;
+        // }
+
+        // return filters;
     }
 
     protected whereQuery<Entity>({
@@ -171,6 +182,7 @@ export class QueryService {
         limit: number;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
+        if (page === undefined || limit === undefined) return query;
         if (page === 0 && limit === 0) return query;
 
         query.skip((Number(page) - 1) * Number(limit));

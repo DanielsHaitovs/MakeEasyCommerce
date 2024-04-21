@@ -10,6 +10,8 @@ import { AttributeType } from '@src/attribute/enum/attribute.enum';
 
 @Injectable()
 export class OptionCreateService {
+    private logPath = 'attribute/option/error.log';
+
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -45,7 +47,7 @@ export class OptionCreateService {
 
         // Check if the type is provided
         if (type === undefined) {
-            throw new BadRequestException('Attribute Option Type is missing to create attribute option');
+            throw new BadRequestException('Attribute Option Type is required to create attribute option');
         }
 
         try {
@@ -65,12 +67,9 @@ export class OptionCreateService {
             return this.handlerService.handleError({
                 e,
                 message: 'Could Not Save Attribute Options',
-                where: 'Attribute Helper -> prepareAttribute',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Prepare Attribute',
-                    name: 'Attribute Helper'
-                }
+                where: this.create.name,
+                name: OptionCreateService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -110,12 +109,9 @@ export class OptionCreateService {
             return this.handlerService.handleError({
                 e,
                 message: 'Could not save String Option',
-                where: 'Option Service this.createStringOption',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Create String Option',
-                    name: 'Option Service'
-                }
+                where: this.createStringOption.name,
+                name: OptionCreateService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -156,12 +152,9 @@ export class OptionCreateService {
             return this.handlerService.handleError({
                 e,
                 message: 'Could not save Number Option',
-                where: 'Option Service this.createNumberOption',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Create Boolean Option',
-                    name: 'Option Service'
-                }
+                where: this.createNumberOption.name,
+                name: OptionCreateService.name,
+                logPath: this.logPath
             });
         }
     }

@@ -1,4 +1,4 @@
-import { LogI, QueryResponseI } from '@src/mec/interface/query/query.interface';
+import { QueryResponseDto } from '@src/mec/dto/query/response.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -12,9 +12,20 @@ export const errorStatuses = {
 };
 
 export class HandlerService {
-    handleError<T>({ e, message, where, log }: { e: Error; message: string; where: string; log?: LogI }): QueryResponseI<T> {
-        const status = this.buildResponseObject({ e, message, where, type: 'error', log });
-
+    handleError({
+        e,
+        message,
+        name,
+        where,
+        logPath
+    }: {
+        e: Error;
+        message: string;
+        name: string;
+        where: string;
+        logPath?: string;
+    }): QueryResponseDto {
+        const status = this.buildResponseObject({ e, message, name, where, type: 'error', logPath });
         return {
             status,
             message,
@@ -25,22 +36,20 @@ export class HandlerService {
         };
     }
 
-    handleWarning<T>({
+    handleWarning({
         message,
+        name,
         where,
         status,
-        log
+        logPath
     }: {
         message: string;
+        name: string;
         where: string;
         status: string;
-        log?: {
-            path: string;
-            action: string;
-            name: string;
-        };
-    }): QueryResponseI<T> {
-        this.buildResponseObject({ message, where, type: 'warning', log });
+        logPath?: string;
+    }): QueryResponseDto {
+        this.buildResponseObject({ message, where, name, type: 'warning', logPath });
 
         if (status == undefined) {
             status = this.buildResponseStatus({
@@ -63,21 +72,19 @@ export class HandlerService {
     private buildResponseObject({
         e,
         message,
+        name,
         where,
         type,
         status,
-        log
+        logPath
     }: {
         e?: Error;
         message: string;
+        name: string;
         where: string;
         type: 'error' | 'warning';
         status?: string;
-        log?: {
-            path: string;
-            action: string;
-            name: string;
-        };
+        logPath: string;
     }): string {
         const currentDate = new Date();
         let logMessage: string;
@@ -86,10 +93,10 @@ export class HandlerService {
             status = this.buildResponseStatus({ e });
         }
 
-        if (log != undefined && log.path != undefined && log.action != undefined && log.name != undefined) {
+        if (logPath != undefined) {
             if (e != undefined) {
                 logMessage = `Date: ${currentDate.toString()}
-                \nAction: ${log.action} in ${log.name}, Where: ${where}
+                \nAction: in ${name}, Where: ${where}
                 \nDescription: ${message}
                 \nStatus: ${status}
                 \nName: ${e.name}
@@ -97,15 +104,15 @@ export class HandlerService {
                 \nStack: ${e.stack}`;
             } else {
                 logMessage = `Date: ${currentDate.toString()}
-                \nAction: ${log.action} in ${log.name}, Where: ${where}
+                \nAction: in ${name}, Where: ${where}
                 \nDescription: ${message}
                 \nStatus: ${status}`;
             }
 
             console.log('HANDLER: buildResponseObject:', logMessage);
 
-            const logPath = `./log/${type}/${log.path}`;
-            const dir = path.dirname(logPath);
+            const dirPath = `./log/${type}/${logPath}`;
+            const dir = path.dirname(dirPath);
 
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });

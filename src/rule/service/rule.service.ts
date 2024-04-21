@@ -3,7 +3,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { CreateRuleDto } from '../dto/create-rule.dto';
-import { GetRuleDto, RuleResponseDto } from '../dto/get-rule.dto';
+import { RuleResponseDto } from '../dto/get-rule.dto';
 import { AttributeRule } from '../entities/rule.entity';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { RuleQueryDto } from '../dto/filter.dto';
@@ -13,6 +13,8 @@ import { UpdateRuleDto } from '../dto/update-rule.dto';
 
 @Injectable()
 export class RuleService {
+    private logPath = 'rule/error.log';
+
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -35,7 +37,6 @@ export class RuleService {
             const newRule = this.ruleHelper.prepareRule({ createRule: rule });
 
             if (newRule != null && (newRule.front != undefined || newRule.back != undefined)) {
-                // Attempt to save the new rule using the entity manager.
                 // If successful, return a response with status 200 and a success message.
                 return {
                     status: '200',
@@ -48,15 +49,12 @@ export class RuleService {
             // If there's an error, cast it to an Error object and handle it using the handler service.
             // The handler service will return a response with status 666 and an error message.
             const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not save Rule',
-                where: 'Rule Service this.entityManager.save',
-                log: {
-                    path: 'rule/error.log',
-                    action: 'Create Rule',
-                    name: 'Rule Service'
-                }
+                where: this.createRule.name,
+                name: RuleService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -90,10 +88,11 @@ export class RuleService {
             // The handler service will return a response with status 666 and an error message.
             const e = error as Error;
 
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not find Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne'
+                where: this.getRuleById.name,
+                name: RuleService.name
             });
         }
     }
@@ -144,10 +143,11 @@ export class RuleService {
             // If there's an error, cast it to an Error object and handle it using the handler service.
             // The handler service will return a response with status 666 and an error message.
             const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not find Rule by given Type',
-                where: 'Rule Service this.entityManager.find'
+                where: this.getRuleType.name,
+                name: RuleService.name
             });
         }
     }
@@ -188,10 +188,11 @@ export class RuleService {
         } catch (error) {
             // If there's an error, cast it to an Error object and handle it using the handler service.
             const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not find any Rules',
-                where: 'Rule Service this.entityManager.find'
+                where: this.getRules.name,
+                name: RuleService.name
             });
         }
     }
@@ -215,15 +216,12 @@ export class RuleService {
             // If the query fails, cast the error to an Error object
             const e = error as Error;
             // Handle the error using the handler service
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not find any Rules',
-                where: 'Rule Service this.ruleHelper.filterQuery',
-                log: {
-                    path: 'rule/error.log',
-                    action: 'Rule Query',
-                    name: 'Rule Service'
-                }
+                where: this.ruleQuery.name,
+                name: RuleService.name,
+                logPath: this.logPath
             });
         }
     }

@@ -19,6 +19,7 @@ export abstract class AttributesBase extends MecBaseEntity {
     @IsNotEmpty()
     @IsString()
     @Unique('uk_attribute_name', ['name'])
+    @Index('ik_attribute_name')
     name: string;
 
     @Column()

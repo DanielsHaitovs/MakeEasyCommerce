@@ -3,6 +3,9 @@ import { MecBaseEntity } from '@src/mec/entities/mec.entity';
 import { Column, Entity, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { Attribute } from '../attribute.entity';
 
+export const NumberOptionAlias = 'attributeOptionNumber';
+export const NumberOptionIndex = 'ik_option_number';
+export const NumberOptionIndexKeys: string[] = ['data'];
 @Entity('attribute_option_number')
 export class AttributeOptionNumber extends MecBaseEntity {
     @Column({ nullable: false })

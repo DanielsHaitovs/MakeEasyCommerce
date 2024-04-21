@@ -8,7 +8,7 @@ export class FilterWhereValueDto {
         title: 'Value which should be used in filter',
         nullable: true
     })
-    where: string | number | boolean | Date | JSON;
+    where: string | number | boolean;
 
     // @ApiProperty({
     //     title: 'Property Name Alias for where statement',

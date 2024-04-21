@@ -2,14 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, SelectQueryBuilder } from 'typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
-import { AttributeResponseDto, GetAttributeDto } from '@src/attribute/dto/get-attribute.dto';
+import { AttributeResponseDto } from '@src/attribute/dto/get-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
 import { CreateOptionDto } from '@src/attribute/dto/options/create-option.dto';
-import { GetNumberOptionDto, GetOptionDto, GetStringOptionDto, OptionResponseDto } from '@src/attribute/dto/options/get-option.dto';
+import { GetNumberOptionDto, GetStringOptionDto, OptionResponseDto } from '@src/attribute/dto/options/get-option.dto';
 import { AttributeOptionString } from '@src/attribute/entities/options/string-option.entity';
 import { AttributeOptionNumber } from '@src/attribute/entities/options/number-option.entity';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
-import { LogI } from '@src/mec/interface/query/query.interface';
 import { OptionCreateService } from './create/create-option.service';
 import { AttributeType } from '@src/attribute/enum/attribute.enum';
 import { UpdateNumberOptionDto, UpdateOptionDto, UpdateStringOptionDto } from '@src/attribute/dto/options/update-option.dto';
@@ -17,6 +16,8 @@ import { OptionUpdateService } from './update/update-option.service';
 
 @Injectable()
 export class AttributeOptionsService {
+    private logPath = 'attribute/error.log';
+
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -69,7 +70,7 @@ export class AttributeOptionsService {
             // Execute the query and get the result
             const result: GetStringOptionDto[] = await query.getMany();
 
-            // Check if the result is defined and not empty
+            // Check if the result is defined and that first record of array is not empty
             if (result != undefined && result.length > 0 && Object.keys(result[0]).length > 0) {
                 // If the operation is successful, return the result with a success status
                 return {
@@ -88,15 +89,12 @@ export class AttributeOptionsService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Get String Attribute Options',
-                where: 'Attribute Option Service -> getStringOptions',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Get String Attributes Options',
-                    name: 'Attribute Option Service'
-                }
+                message: 'Could Not Get Attribute String Options',
+                where: this.getStringOptions.name,
+                name: AttributeOptionsService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -132,15 +130,12 @@ export class AttributeOptionsService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Get Number Attribute Options',
-                where: 'Attribute Option Service -> getNumberOptions',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Get Number Attributes Options',
-                    name: 'Attribute Option Service'
-                }
+                message: 'Could Not Get Attribute Number Options',
+                where: this.getNumberOptions.name,
+                name: AttributeOptionsService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -180,15 +175,12 @@ export class AttributeOptionsService {
         } catch (error) {
             // If an error occurs, handle it using the handlerService
             const e = error as Error;
-            return this.handlerService.handleError<GetOptionDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Get Attributes String Options',
-                where: 'Attribute Option Service -> getStringOptions',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Get Attributes String Options',
-                    name: 'Attribute Option Service'
-                }
+                message: 'Could Not Get Attributes String Options By Theirs Ids',
+                where: this.getStringOptionsByIds.name,
+                name: AttributeOptionsService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -228,15 +220,12 @@ export class AttributeOptionsService {
         } catch (error) {
             // If an error occurs, handle it using the handlerService
             const e = error as Error;
-            return this.handlerService.handleError<GetOptionDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Get Attributes Number Options',
-                where: 'Attribute Option Service -> getNumberOptions',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Get Attributes Number Options',
-                    name: 'Attribute Option Service'
-                }
+                message: 'Could Not Get Attributes Number Options By Theirs Ids',
+                where: this.getNumberOptionsByIds.name,
+                name: AttributeOptionsService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -289,15 +278,12 @@ export class AttributeOptionsService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Get Attribute Options',
-                where: 'Attribute Option Service -> getOptionsByIds().handleOptionAwait',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Get Attributes Options',
-                    name: 'Attribute Option Service'
-                }
+                message: 'Could Not Get Attribute String And Number Options By Theirs Ids',
+                where: `${this.getOptionsByIds.name} #Includes Await Resolver#`,
+                name: AttributeOptionsService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -343,27 +329,24 @@ export class AttributeOptionsService {
         } catch (error) {
             // If an error occurs, handle it using the handlerService
             const e = error as Error;
-            let log: LogI;
+            let logPath = '';
 
             // If the error message does not include 'Provided Invalid Option Type', set the log
             if (!e.message.includes('Provided Invalid Option Type')) {
-                log = {
-                    path: 'attribute/options/error.log',
-                    action: 'Get Attribute Options',
-                    name: 'Attribute Option Service'
-                };
+                logPath = this.logPath;
             }
 
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could not find Attribute Options',
-                where: 'Attribute Options Service this.findByAttributeId',
-                log
+                message: 'Could not find Attribute Options By Attribute ID',
+                where: this.findByAttributeId.name,
+                name: AttributeOptionsService.name,
+                logPath
             });
         }
     }
 
-    async findAttributeIdByOptionId({ id, type }: { id: number; type: AttributeType }): Promise<AttributeResponseDto> {
+    async findAttributeByOptionId({ ids, type }: { ids: number[]; type: AttributeType }): Promise<AttributeResponseDto> {
         try {
             switch (type) {
                 case AttributeType.String:
@@ -372,7 +355,7 @@ export class AttributeOptionsService {
                         .createQueryBuilder('stringOption')
                         .leftJoinAndSelect('stringOption.attribute', 'optionAttribute')
                         .leftJoinAndSelect('optionAttribute.rule', 'attributeRule')
-                        .where('stringOption.id = :id', { id })
+                        .whereInIds(ids)
                         .getOneOrFail();
 
                     return {
@@ -385,7 +368,7 @@ export class AttributeOptionsService {
                         .createQueryBuilder('numberOption')
                         .leftJoinAndSelect('numberOption.attribute', 'optionAttribute')
                         .leftJoinAndSelect('optionAttribute.rule', 'attributeRule')
-                        .where('numberOption.id = :id', { id })
+                        .whereInIds(ids)
                         .getOneOrFail();
 
                     return {
@@ -393,10 +376,25 @@ export class AttributeOptionsService {
                         result: [numberOption.attribute]
                     };
                 default:
-                    throw new BadRequestException('Invalid Option Type');
+                    throw new BadRequestException('Provided Invalid Option Type');
             }
         } catch (error) {
-            throw error;
+            // If an error occurs, handle it using the handlerService
+            const e = error as Error;
+            let logPath = '';
+
+            // If the error message does not include 'Provided Invalid Option Type', set the log
+            if (!e.message.includes('Provided Invalid Option Type')) {
+                logPath = this.logPath;
+            }
+
+            return this.handlerService.handleError({
+                e,
+                message: 'Could not find Attribute By Attribute Option ID',
+                where: this.findAttributeByOptionId.name,
+                name: AttributeOptionsService.name,
+                logPath
+            });
         }
     }
 
@@ -409,6 +407,7 @@ export class AttributeOptionsService {
     }): Promise<OptionResponseDto> {
         // If the type is not provided, set it to the default value based on the createOptions
         if (type === undefined) {
+            // Attribute can have only string or only number options
             if (updateOptions.stringOptions && updateOptions.numberOptions) {
                 throw new BadRequestException('Invalid Option Body, received both string and number');
             }
@@ -447,9 +446,78 @@ export class AttributeOptionsService {
                     throw new BadRequestException('Invalid Option Type');
             }
         } catch (error) {
-            throw error;
+            // If an error occurs, handle it using the handlerService
+            const e = error as Error;
+            let logPath = '';
+
+            // If the error message does not include 'Provided Invalid Option Type', set the log
+            if (!e.message.includes('Provided Invalid Option Type')) {
+                logPath = this.logPath;
+            }
+
+            return this.handlerService.handleError({
+                e,
+                message: 'Could not Delete Attribute Options By Type',
+                where: this.deleteOptions.name,
+                name: AttributeOptionsService.name,
+                logPath
+            });
         }
     }
+
+    // async filterQuery({ filters }: { filters: RuleQueryDto }): Promise<RuleResponseI<GetRuleI>> {
+    //     // Create a new query filter using the provided filters
+    //     const ruleQuery: RuleQueryFilterI = this.queryService.queryFilter({
+    //         filters,
+    //         alias: RuleAlias
+    //     });
+
+    //     // If the query filter does not contain a message, attempt to execute the query
+    //     if (ruleQuery.message === undefined) {
+    //         try {
+    //             // Enable caching for the query and set the index to use
+    //             ruleQuery.query.cache(true);
+    //             ruleQuery.query.useIndex(RuleIndex);
+
+    //             // If the query filter is set to return many results, attempt to get many results
+    //             if (ruleQuery.many) {
+    //                 const rules: GetRuleI[] = await Promise.resolve(ruleQuery.query.getMany());
+
+    //                 // If the query returns one or more results, return the results
+    //                 if (rules != undefined && rules != null && rules.length > 0 && Object.keys(rules[0]).length > 0) {
+    //                     return {
+    //                         status: '200',
+    //                         result: rules
+    //                     };
+    //                 }
+    //             }
+
+    //             // If the query does not return a result, return null
+    //             return null;
+    //         } catch (error) {
+    //             // If an error occurs, cast it to an Error object
+    //             const e = error as Error;
+    //             // Handle the error using the handler service
+    //             return this.handlerService.handleError({
+    //                 e,
+    //                 message: 'Could not filter Query',
+    //                 where: 'Rule Helper -> filterQuery',
+
+    //                 log: {
+    //                     path: 'rule/query/error.log',
+    //                     action: 'Filter Query',
+    //                     name: 'Rule Helper'
+    //                 }
+    //             });
+    //         }
+    //     }
+
+    //     // If the query filter contains a message, return not found status with the message
+    //     return {
+    //         status: '404',
+    //         message: ruleQuery.message
+    //     };
+    // }
 
     /**
      * This method is responsible for handling attribute options.
@@ -518,15 +586,12 @@ export class AttributeOptionsService {
             const e = error as Error;
 
             // If an error occurs, handle it using the handlerService
-            return this.handlerService.handleError<GetOptionDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Handle Attributes Options',
-                where: 'Attribute Option Service -> handleOptionsAwait',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Handle Attributes Options',
-                    name: 'Attribute Option Service'
-                }
+                message: 'Could Not Handle Combined Attributes Options Promise',
+                where: this.handleOptionsAwait.name,
+                name: AttributeOptionsService.name,
+                logPath: this.logPath
             });
         }
     }

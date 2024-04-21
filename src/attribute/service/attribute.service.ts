@@ -7,10 +7,10 @@ import { CreateAttributeDto } from '../dto/create-attribute.dto';
 import { AttributeResponseDto, GetAttributeDto } from '../dto/get-attribute.dto';
 import { Attribute, AttributesUnique } from '../entities/attribute.entity';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
-import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
+import { AttributeRelationSelectDto } from '../dto/filter/filter-attribute.dto';
 import { UpdateAttributeDto, UpdateAttributeRuleDto } from '../dto/update-attribute.dto';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
-import { AttributeOptionsService } from './relations/options/attribute-option.service';
+import { AttributeOptionsService } from './query/relations/options/attribute-option.service';
 import { CreateOptionDto } from '../dto/options/create-option.dto';
 import { AttributeType } from '../enum/attribute.enum';
 import { UpdateOptionDto } from '../dto/options/update-option.dto';
@@ -18,6 +18,9 @@ import { OptionResponseDto } from '../dto/options/get-option.dto';
 
 @Injectable()
 export class AttributeService {
+    private readonly logErrorPath = 'attribute/error.log';
+    private readonly logWarningPath = 'attribute/warning.log';
+
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -42,12 +45,16 @@ export class AttributeService {
                 throw new TypeError('Rule is required');
             }
 
+            // They needs to be removed from createAttribute Dto in order to split action
+            // First we will see if we attribute is valid and can be saved
+            // Then we will try to save options for this attribute
             const createOptions: CreateOptionDto = {
                 stringOptions: createAttribute.stringOptions,
                 numberOptions: createAttribute.numberOptions
             };
 
-            if (createAttribute.numberOptions != undefined && createAttribute.stringOptions != undefined) {
+            // Attribute Can Not Have at the same time string and number option values!
+            if (createOptions.numberOptions != undefined && createOptions.stringOptions != undefined) {
                 throw new BadRequestException('Invalid Option Body, received both string and number');
             }
 
@@ -110,34 +117,29 @@ export class AttributeService {
             });
 
             if (where != '') {
-                return this.handlerService.handleWarning<GetAttributeDto>({
+                return this.handlerService.handleWarning({
                     message: `Attribute with such ${where} already exists`,
-                    where: 'Attribute Service -> createAttribute',
+                    where: this.createAttribute.name,
+                    name: AttributeService.name,
                     status: '409'
                 });
             }
 
             if (e.message.includes('Could Not Create Options after Attribute was Created')) {
-                this.handlerService.handleWarning<GetAttributeDto>({
+                this.handlerService.handleWarning({
                     message: 'Could Not Create Options after Attribute was Created',
-                    where: 'Attribute Service -> createAttribute',
+                    where: this.createAttribute.name,
+                    name: AttributeService.name,
                     status: '409',
-                    log: {
-                        path: 'attribute/warning.log',
-                        action: 'Create Attribute',
-                        name: 'Attribute Service'
-                    }
+                    logPath: this.logWarningPath
                 });
             }
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could Not Create Attribute',
-                where: 'Attribute Service -> createAttribute',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Create Attribute',
-                    name: 'Attribute Service'
-                }
+                where: this.createAttribute.name,
+                name: AttributeService.name,
+                logPath: this.logErrorPath
             });
         }
     }
@@ -195,15 +197,12 @@ export class AttributeService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could Not Get Attributes',
-                where: 'Attribute Service -> getAttributes',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Get Attributes',
-                    name: 'Attribute Service'
-                }
+                where: this.getAttributes.name,
+                name: AttributeService.name,
+                logPath: this.logErrorPath
             });
         }
     }
@@ -259,16 +258,12 @@ export class AttributeService {
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
-                message: 'Could Not Get Attribute',
-                where: 'Attribute Service -> getAttributeById',
-
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Get Attribute',
-                    name: 'Attribute Service'
-                }
+                message: 'Could Not Get Attribute By Id',
+                where: this.getAttributeById.name,
+                name: AttributeService.name,
+                logPath: this.logErrorPath
             });
         }
     }
@@ -311,29 +306,22 @@ export class AttributeService {
             }
 
             // If the attribute could not be updated, handle the warning
-            return this.handlerService.handleWarning<GetAttributeDto>({
+            return this.handlerService.handleWarning({
                 message: 'Could Not Update Attribute',
-                where: 'Attribute Service -> updateAttribute',
+                where: this.updateAttribute.name,
+                name: AttributeService.name,
                 status: '404',
-                log: {
-                    path: 'attribute/warning.log',
-                    action: 'Update Attribute',
-                    name: 'Attribute Service'
-                }
+                logPath: this.logWarningPath
             });
         } catch (error) {
             // If an error occurs, handle it and return the error response
             const e = error as Error;
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could Not Update Attribute',
-                where: 'Attribute Service -> updateAttribute',
-
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Update Attribute',
-                    name: 'Attribute Service'
-                }
+                where: this.updateAttribute.name,
+                name: AttributeService.name,
+                logPath: this.logErrorPath
             });
         }
     }
@@ -407,15 +395,12 @@ export class AttributeService {
             const e = error as Error;
 
             // Handle the error with the handlerService
-            return this.handlerService.handleError<GetAttributeDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could Not Delete Attribute',
-                where: 'Attribute Service -> deleteAttribute',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Delete Attribute',
-                    name: 'Attribute Service'
-                }
+                where: this.deleteAttribute.name,
+                name: AttributeService.name,
+                logPath: this.logErrorPath
             });
         }
     }

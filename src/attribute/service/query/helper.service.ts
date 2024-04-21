@@ -5,12 +5,14 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { HandlerService } from '@src/mec/service/handler/query.service';
 import { CreateAttributeDto } from '@src/attribute/dto/create-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
-import { AttributeRuleService } from '../relations/rule/attribute-rule.service';
+import { AttributeRuleService } from './relations/rule/attribute-rule.service';
 import { UpdateAttributeRuleDto } from '@src/attribute/dto/update-attribute.dto';
 import { AttributeResponseDto } from '@src/attribute/dto/get-attribute.dto';
 
 @Injectable()
 export class AttributeHelperService {
+    private logPath = 'attribute/error.log';
+
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -46,17 +48,14 @@ export class AttributeHelperService {
             // If the attribute is undefined or empty, return null
             return null;
         } catch (error) {
-            // If an error occurs, handle it and return the error response
+            // If an error occurs, handle it and log
             const e = error as Error;
             this.handlerService.handleError({
                 e,
                 message: 'Could Not Prepare Attribute before save',
-                where: 'Attribute Helper -> prepareAttribute',
-                log: {
-                    path: 'attribute/error.log',
-                    action: 'Prepare Attribute',
-                    name: 'Attribute Helper'
-                }
+                where: this.prepareAttribute.name,
+                name: AttributeHelperService.name,
+                logPath: this.logPath
             });
 
             return null;
@@ -131,7 +130,7 @@ export class AttributeHelperService {
     //         const e = error as Error;
 
     //         // If an error occurs, handle it using the handlerService
-    //         return this.handlerService.handleError<GetOptionDto>({
+    //         return this.handlerService.handleError({
     //             e,
     //             message: 'Could Not Handle Attributes Options',
     //             where: 'Attribute Option Service -> handleOptionsAwait',

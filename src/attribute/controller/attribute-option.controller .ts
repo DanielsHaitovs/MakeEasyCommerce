@@ -3,7 +3,7 @@ import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } fro
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { CreateAttributeOptionDto } from '../dto/create-attribute.dto';
 import { PaginationPipe } from '@src/pipes/pagination.pipe';
-import { AttributeOptionsService } from '../service/relations/options/attribute-option.service';
+import { AttributeOptionsService } from '../service/query/relations/options/attribute-option.service';
 import { OptionResponseDto } from '../dto/options/get-option.dto';
 import { AttributeResponseDto } from '../dto/get-attribute.dto';
 import { AttributeType } from '../enum/attribute.enum';
@@ -86,21 +86,6 @@ export class AttributeOptionController {
         return await this.optionService.deleteOptions({ ids, type: AttributeType.String });
     }
 
-    @Get('stringOption/:id')
-    @ApiParam({
-        name: 'id',
-        type: Number,
-        required: true,
-        description: 'Attribute ID'
-    })
-    @ApiOkResponse({
-        description: 'Attribute From Option ID',
-        type: AttributeResponseDto
-    })
-    async getAttributeFromStringOptionId(@Param('id', ParseIntPipe) id: number): Promise<AttributeResponseDto> {
-        return await this.optionService.findAttributeIdByOptionId({ id, type: AttributeType.String });
-    }
-
     @Get('stringOptions/ids')
     @ApiQuery({
         name: 'ids',
@@ -123,6 +108,21 @@ export class AttributeOptionController {
         return await this.optionService.getStringOptionsByIds({ ids, pagination });
     }
 
+    @Get('by/stringOption-ids')
+    @ApiQuery({
+        name: 'ids',
+        type: Number,
+        isArray: true,
+        required: true
+    })
+    @ApiOkResponse({
+        description: 'Attribute From Option ID',
+        type: AttributeResponseDto
+    })
+    async getAttributeFromStringOptionId(@Query('numberOptionsIds', IdsFilterPipe) ids: number[]): Promise<AttributeResponseDto> {
+        return await this.optionService.findAttributeByOptionId({ ids, type: AttributeType.String });
+    }
+
     @Get('numberOptions')
     @ApiOperation({
         summary: 'Get Attributes Number Options',
@@ -134,21 +134,6 @@ export class AttributeOptionController {
     })
     async getAllNumberOptions(@Query(PaginationPipe) pagination: PaginationDto): Promise<OptionResponseDto> {
         return await this.optionService.getNumberOptions({ pagination });
-    }
-
-    @Get('numberOptions/:id')
-    @ApiParam({
-        name: 'id',
-        type: Number,
-        required: true,
-        description: 'Attribute ID'
-    })
-    @ApiOkResponse({
-        description: 'Attribute From Option ID',
-        type: AttributeResponseDto
-    })
-    async getAttributeFromNumberOptionId(@Param('id', ParseIntPipe) id: number): Promise<AttributeResponseDto> {
-        return await this.optionService.findAttributeIdByOptionId({ id, type: AttributeType.Number });
     }
 
     @Patch('numberOptions')
@@ -202,6 +187,21 @@ export class AttributeOptionController {
         @Query(PaginationPipe) pagination: PaginationDto
     ): Promise<OptionResponseDto> {
         return await this.optionService.getNumberOptionsByIds({ ids, pagination });
+    }
+
+    @Get('by/numberOptions-ids')
+    @ApiQuery({
+        name: 'ids',
+        type: Number,
+        isArray: true,
+        required: true
+    })
+    @ApiOkResponse({
+        description: 'Attribute From Option ID',
+        type: AttributeResponseDto
+    })
+    async getAttributeFromNumberOptionId(@Query('ids', IdsFilterPipe) ids: number[]): Promise<AttributeResponseDto> {
+        return await this.optionService.findAttributeByOptionId({ ids, type: AttributeType.Number });
     }
 
     @Get('options/ids')

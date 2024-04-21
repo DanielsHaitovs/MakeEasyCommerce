@@ -10,6 +10,8 @@ import { AttributeType } from '@src/attribute/enum/attribute.enum';
 
 @Injectable()
 export class OptionUpdateService {
+    private logPath = 'attribute/options/error.log';
+
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -38,13 +40,10 @@ export class OptionUpdateService {
             // If an error occurs, handle it using the handlerService
             return this.handlerService.handleError({
                 e,
-                message: 'Could Not Update Attribute Options',
-                where: 'Attribute Helper -> prepareAttribute',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'Update Attribute Option',
-                    name: 'OptionUpdateService'
-                }
+                message: 'Could Not Update Attribute Options By Type',
+                where: this.update.name,
+                name: OptionUpdateService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -71,12 +70,9 @@ export class OptionUpdateService {
             return this.handlerService.handleError({
                 e,
                 message: 'Could not update String Option',
-                where: 'Option Service this.updateStringOption',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'update String Option',
-                    name: 'Option Update Service'
-                }
+                where: this.updateStringOption.name,
+                name: OptionUpdateService.name,
+                logPath: this.logPath
             });
         }
     }
@@ -101,18 +97,11 @@ export class OptionUpdateService {
 
             return this.handlerService.handleError({
                 e,
-                message: 'Could not update String Option',
-                where: 'Option Service this.updateStringOption',
-                log: {
-                    path: 'attribute/options/error.log',
-                    action: 'update String Option',
-                    name: 'Option Update Service'
-                }
+                message: 'Could not update Number Option',
+                where: this.updateNumberOption.name,
+                name: OptionUpdateService.name,
+                logPath: this.logPath
             });
         }
     }
-
-    // TO DO
-    // Update Number Option
-    // Update Boolean Option
 }

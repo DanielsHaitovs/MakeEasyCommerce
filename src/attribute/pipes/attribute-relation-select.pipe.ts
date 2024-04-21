@@ -1,5 +1,5 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
-import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
+import { AttributeRelationSelectDto } from '../dto/filter/filter-attribute.dto';
 
 @Injectable()
 export class AttributeRelationSelectPipe implements PipeTransform {

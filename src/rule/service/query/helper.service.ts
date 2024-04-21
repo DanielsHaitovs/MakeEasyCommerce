@@ -16,6 +16,7 @@ import { UpdateRuleDto } from '@src/rule/dto/update-rule.dto';
 
 @Injectable()
 export class RuleHelperService {
+    private logPath = 'rule/error.log';
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
@@ -55,13 +56,9 @@ export class RuleHelperService {
             this.handlerService.handleError({
                 e,
                 message: 'Could Not Prepare Rule before save',
-                where: 'Rule Helper -> prepareRule',
-
-                log: {
-                    path: 'rule/error.log',
-                    action: 'Prepare Rule',
-                    name: 'Rule Helper'
-                }
+                where: this.prepareRule.name,
+                name: RuleHelperService.name,
+                logPath: this.logPath
             });
 
             return null;
@@ -115,13 +112,9 @@ export class RuleHelperService {
                 return this.handlerService.handleError({
                     e,
                     message: 'Could not filter Query',
-                    where: 'Rule Helper -> filterQuery',
-
-                    log: {
-                        path: 'rule/query/error.log',
-                        action: 'Filter Query',
-                        name: 'Rule Helper'
-                    }
+                    where: this.filterQuery.name,
+                    name: RuleHelperService.name,
+                    logPath: this.logPath
                 });
             }
         }
@@ -166,23 +159,21 @@ export class RuleHelperService {
             }
 
             // Handle the case where the rule could not be updated
-            return this.handlerService.handleWarning<GetRuleDto>({
+            return this.handlerService.handleWarning({
                 message: 'Could not update Rule by given ID',
-                where: 'Rule Service updateRule this.entityManager.preload',
+                where: `${this.update.name} -> ${this.entityManager.preload.name}`,
                 status: '404',
-                log: {
-                    path: 'rule/warning.log',
-                    action: 'Update Rule',
-                    name: 'Rule Service'
-                }
+                name: RuleHelperService.name,
+                logPath: this.logPath
             });
         } catch (error) {
             // Handle any errors that occur during the operation
             const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not update Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne'
+                where: this.update.name,
+                name: RuleHelperService.name
             });
         }
     }
@@ -216,23 +207,21 @@ export class RuleHelperService {
             }
 
             // Handle the case where the rule could not be deleted
-            return this.handlerService.handleWarning<GetRuleDto>({
+            return this.handlerService.handleWarning({
                 message: 'Could not delete Rule by given ID',
-                where: 'Rule Service deleteRule this.entityManager.findOne',
+                where: `${this.remove.name} -> ${this.entityManager.findOne.name}`,
                 status: '404',
-                log: {
-                    path: 'rule/warning.log',
-                    action: 'Delete Rule',
-                    name: 'Rule Service'
-                }
+                name: RuleHelperService.name,
+                logPath: this.logPath
             });
         } catch (error) {
             // Handle any errors that occur during the operation
             const e = error as Error;
-            return this.handlerService.handleError<GetRuleDto>({
+            return this.handlerService.handleError({
                 e,
                 message: 'Could not delete Rule by given ID',
-                where: 'Rule Service this.entityManager.findOne'
+                where: this.remove.name,
+                name: RuleHelperService.name
             });
         }
     }

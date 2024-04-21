@@ -4,7 +4,7 @@ import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { AttributeService } from '../service/attribute.service';
 import { CreateAttributeDto } from '../dto/create-attribute.dto';
 import { AttributeResponseDto } from '../dto/get-attribute.dto';
-import { AttributeRelationSelectDto } from '../dto/filter-attribute.dto';
+import { AttributeRelationSelectDto } from '../dto/filter/filter-attribute.dto';
 import { AttributeRelationSelectPipe } from '../pipes/attribute-relation-select.pipe';
 import { PaginationPipe } from '@src/pipes/pagination.pipe';
 import { UpdateAttributeDto, UpdateAttributeRuleDto } from '../dto/update-attribute.dto';
