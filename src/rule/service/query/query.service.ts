@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, SelectQueryBuilder } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { AttributeRule } from '@src/rule/entities/rule.entity';
 
 import { RuleQueryDto } from '@src/rule/dto/filter.dto';
-import { FilterWhereValueDto } from '@src/mec/dto/query/filter.dto';
 import { RuleQueryFilterI } from '@src/rule/interface/rule.interface';
 
 import { QueryService } from '@src/mec/service/query/query-filter.service';
 import { DataHelperService } from '@src/mec/service/data/helper.service';
-import { IsNumber } from '@nestjs/class-validator';
 
 @Injectable()
 export class RuleQueryService extends QueryService {
@@ -23,30 +21,26 @@ export class RuleQueryService extends QueryService {
 
     queryFilter({ filters, alias }: { filters: RuleQueryDto; alias: string }): RuleQueryFilterI {
         filters = this.ruleQueryFilter({ filters });
-        const queryFilter = this.prepareFilter({ filters, alias });
-
-        const selectWhere: FilterWhereValueDto[] = this.prepareRuleWhere({
-            filters
-        });
         let many = true;
 
         try {
-            let ruleQuery = this.entityManager.getRepository(AttributeRule).createQueryBuilder(alias);
+            const queryFilter = this.prepareFilter({ filters, alias: undefined });
 
-            if (filters.ids != undefined) {
-                if (filters.ids.length === 1) many = false;
+            let ruleQuery = this.entityManager.getRepository(AttributeRule).createQueryBuilder(alias);
+            if (queryFilter.ids != undefined) {
+                if (queryFilter.ids.length === 1) many = false;
 
                 ruleQuery = this.whereIdsQuery({
-                    ids: filters.ids,
-                    alias: alias,
+                    ids: queryFilter.ids,
                     query: ruleQuery,
                     entity: AttributeRule
                 });
             }
 
-            if (filters.selectWhere != undefined) {
+            for (const select of filters.selectWhere) {
                 ruleQuery = this.andWhereQuery({
-                    where: selectWhere,
+                    where: [filters.findByValue],
+                    alias: select,
                     query: ruleQuery,
                     entity: AttributeRule
                 });
@@ -71,8 +65,7 @@ export class RuleQueryService extends QueryService {
 
             if (many) {
                 ruleQuery = this.paginateQuery({
-                    page: queryFilter.pagination.page,
-                    limit: queryFilter.pagination.limit,
+                    pagination: queryFilter.pagination,
                     query: ruleQuery,
                     entity: AttributeRule
                 });
@@ -95,19 +88,10 @@ export class RuleQueryService extends QueryService {
     protected ruleQueryFilter({ filters }: { filters: RuleQueryDto }): RuleQueryDto {
         if (filters.selectWhere != undefined && filters.selectWhere.length > 0) {
             if (!Array.isArray(filters.selectWhere)) filters.selectWhere = [filters.selectWhere];
-            filters.findByValue = filters.findByValue ?? true;
+            filters.findByValue = filters.findByValue;
         } else {
             filters.selectWhere = undefined;
             filters.findByValue = undefined;
-        }
-
-        if (filters.ids != undefined) {
-            const { ids } = filters;
-            if (!Array.isArray(ids) && IsNumber(ids)) {
-                filters.ids = [ids];
-            } else {
-                filters.ids = undefined;
-            }
         }
 
         if (filters.selectProp != undefined && filters.selectProp.length < 1) filters.selectProp = undefined;
@@ -115,20 +99,18 @@ export class RuleQueryService extends QueryService {
         return filters;
     }
 
-    private prepareRuleWhere({ filters }: { filters: RuleQueryDto }): FilterWhereValueDto[] {
+    private prepareRuleWhere({
+        filters,
+        query
+    }: {
+        filters: RuleQueryDto;
+        query: SelectQueryBuilder<AttributeRule>;
+    }): SelectQueryBuilder<AttributeRule> {
         if (filters.selectWhere === undefined) return undefined;
+        try {
 
-        const condition: FilterWhereValueDto[] = [];
-        for (const where of filters.selectWhere) {
-            condition.push({
-                alias: where.toString(),
-                where:
-                    this.dataHelper.valueToBoolean({
-                        value: filters.findByValue
-                    }) ?? true
-            });
+        } catch (error) {
+            return query;
         }
-
-        return condition;
     }
 }

@@ -22,7 +22,7 @@ import { AttributeRuleModule } from './rule/rule.module';
         }),
         MecModule,
         AttributeModule,
-        AttributeRuleModule,
+        AttributeRuleModule
     ],
     controllers: [],
     providers: []

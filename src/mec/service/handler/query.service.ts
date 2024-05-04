@@ -110,7 +110,6 @@ export class HandlerService {
             }
 
             console.log('HANDLER: buildResponseObject:', logMessage);
-
             const dirPath = `./log/${type}/${logPath}`;
             const dir = path.dirname(dirPath);
 
@@ -118,7 +117,7 @@ export class HandlerService {
                 fs.mkdirSync(dir, { recursive: true });
             }
 
-            fs.appendFile(logPath, logMessage, (err) => {
+            fs.appendFile(dirPath, logMessage, (err) => {
                 if (err) {
                     console.error('Failed to write to log file:');
                     throw err;

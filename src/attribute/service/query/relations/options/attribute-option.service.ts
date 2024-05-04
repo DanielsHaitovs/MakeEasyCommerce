@@ -6,13 +6,16 @@ import { AttributeResponseDto } from '@src/attribute/dto/get-attribute.dto';
 import { Attribute } from '@src/attribute/entities/attribute.entity';
 import { CreateOptionDto } from '@src/attribute/dto/options/create-option.dto';
 import { GetNumberOptionDto, GetStringOptionDto, OptionResponseDto } from '@src/attribute/dto/options/get-option.dto';
-import { AttributeOptionString } from '@src/attribute/entities/options/string-option.entity';
-import { AttributeOptionNumber } from '@src/attribute/entities/options/number-option.entity';
+import { AttributeOptionString, StringOptionIndex } from '@src/attribute/entities/options/string-option.entity';
+import { AttributeOptionNumber, NumberOptionIndex } from '@src/attribute/entities/options/number-option.entity';
 import { PaginationDto } from '@src/mec/dto/query/filter.dto';
 import { OptionCreateService } from './create/create-option.service';
 import { AttributeType } from '@src/attribute/enum/attribute.enum';
 import { UpdateNumberOptionDto, UpdateOptionDto, UpdateStringOptionDto } from '@src/attribute/dto/options/update-option.dto';
 import { OptionUpdateService } from './update/update-option.service';
+import { OptionQueryDto } from '@src/attribute/dto/filter/filter-option.dto';
+import { OptionQueryFilterI } from '@src/attribute/interface/attribute.interface';
+import { OptionQueryService } from './option-query.service';
 
 @Injectable()
 export class AttributeOptionsService {
@@ -23,7 +26,8 @@ export class AttributeOptionsService {
         private readonly entityManager: EntityManager,
         private readonly handlerService: HandlerService,
         private readonly createService: OptionCreateService,
-        private readonly updateService: OptionUpdateService
+        private readonly updateService: OptionUpdateService,
+        private readonly queryService: OptionQueryService
     ) {}
 
     /**
@@ -265,6 +269,8 @@ export class AttributeOptionsService {
                     .whereInIds(stringOptionIds);
             }
 
+            const test = stringOptions.expressionMap.parameters;
+
             // If numberOptionIds is defined and not empty, create a query to retrieve the number options
             if (numberOptionIds != undefined && numberOptionIds.length > 0) {
                 numberOptions = this.entityManager
@@ -465,59 +471,55 @@ export class AttributeOptionsService {
         }
     }
 
-    // async filterQuery({ filters }: { filters: RuleQueryDto }): Promise<RuleResponseI<GetRuleI>> {
-    //     // Create a new query filter using the provided filters
-    //     const ruleQuery: RuleQueryFilterI = this.queryService.queryFilter({
-    //         filters,
-    //         alias: RuleAlias
-    //     });
+    async filterQuery({ filters }: { filters: OptionQueryDto }): Promise<OptionResponseDto> {
+        // Create a new query filter using the provided filters
+        const optionQuery: OptionQueryFilterI = this.queryService.queryFilter({ filters });
 
-    //     // If the query filter does not contain a message, attempt to execute the query
-    //     if (ruleQuery.message === undefined) {
-    //         try {
-    //             // Enable caching for the query and set the index to use
-    //             ruleQuery.query.cache(true);
-    //             ruleQuery.query.useIndex(RuleIndex);
+        // If the query filter does not contain a message, attempt to execute the query
+        if (optionQuery.message === undefined) {
+            try {
+                if (optionQuery.stringQuery) {
+                    console.log(123);
+                    // Enable caching for the query and set the index to use
+                    optionQuery.stringQuery.cache(true);
+                    optionQuery.stringQuery.useIndex(StringOptionIndex);
+                } else {
+                    optionQuery.stringQuery = undefined;
+                }
 
-    //             // If the query filter is set to return many results, attempt to get many results
-    //             if (ruleQuery.many) {
-    //                 const rules: GetRuleI[] = await Promise.resolve(ruleQuery.query.getMany());
+                if (optionQuery.numberQuery) {
+                    console.log(987);
+                    optionQuery.numberQuery.cache(true);
+                    optionQuery.numberQuery.useIndex(NumberOptionIndex);
+                } else {
+                    optionQuery.numberQuery = undefined;
+                }
 
-    //                 // If the query returns one or more results, return the results
-    //                 if (rules != undefined && rules != null && rules.length > 0 && Object.keys(rules[0]).length > 0) {
-    //                     return {
-    //                         status: '200',
-    //                         result: rules
-    //                     };
-    //                 }
-    //             }
+                // If the query does not return a result, return null
+                return await this.handleOptionsAwait({
+                    stringOptions: optionQuery.stringQuery,
+                    numberOptions: optionQuery.numberQuery
+                });
+            } catch (error) {
+                // If an error occurs, cast it to an Error object
+                const e = error as Error;
+                // Handle the error using the handler service
+                return this.handlerService.handleError({
+                    e,
+                    message: 'Could not Filter Attribute Option ',
+                    where: this.filterQuery.name,
+                    name: AttributeOptionsService.name,
+                    logPath: this.logPath
+                });
+            }
+        }
 
-    //             // If the query does not return a result, return null
-    //             return null;
-    //         } catch (error) {
-    //             // If an error occurs, cast it to an Error object
-    //             const e = error as Error;
-    //             // Handle the error using the handler service
-    //             return this.handlerService.handleError({
-    //                 e,
-    //                 message: 'Could not filter Query',
-    //                 where: 'Rule Helper -> filterQuery',
-
-    //                 log: {
-    //                     path: 'rule/query/error.log',
-    //                     action: 'Filter Query',
-    //                     name: 'Rule Helper'
-    //                 }
-    //             });
-    //         }
-    //     }
-
-    //     // If the query filter contains a message, return not found status with the message
-    //     return {
-    //         status: '404',
-    //         message: ruleQuery.message
-    //     };
-    // }
+        // If the query filter contains a message, return not found status with the message
+        return {
+            status: '404',
+            message: optionQuery.message
+        };
+    }
 
     /**
      * This method is responsible for handling attribute options.
@@ -539,7 +541,7 @@ export class AttributeOptionsService {
     }): Promise<OptionResponseDto> {
         try {
             // If both stringOptions and numberOptions are provided, retrieve both types of options
-            if (stringOptions && numberOptions) {
+            if (stringOptions != undefined && numberOptions != undefined) {
                 // Order is important here, as the results are returned in the same order as the queries
                 const [stringOptionsResult, numberOptionsResult] = (await Promise.all([
                     stringOptions.getMany(),
@@ -558,7 +560,7 @@ export class AttributeOptionsService {
             }
 
             // If only stringOptions is provided, retrieve only the string options
-            if (stringOptions) {
+            if (stringOptions != undefined) {
                 return {
                     status: '200',
                     result: [
@@ -571,7 +573,7 @@ export class AttributeOptionsService {
             }
 
             // If only numberOptions is provided, retrieve only the number options
-            if (numberOptions) {
+            if (numberOptions != undefined) {
                 return {
                     status: '200',
                     result: [

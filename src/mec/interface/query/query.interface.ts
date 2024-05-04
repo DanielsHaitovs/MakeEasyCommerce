@@ -1,5 +1,9 @@
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
+export interface QueryWhere {
+    [key: string]: string | number;
+    alias: string;
+}
 export interface QueryResponseI<T> {
     status: string;
     message?: string;

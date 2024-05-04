@@ -9,11 +9,30 @@ import { AttributeResponseDto } from '../dto/get-attribute.dto';
 import { AttributeType } from '../enum/attribute.enum';
 import { UpdateNumberOptionDto, UpdateStringOptionDto } from '../dto/options/update-option.dto';
 import { IdsFilterPipe } from '@src/pipes/ids-filter-pipe.pipe';
+import { OptionQueryDto } from '../dto/filter/filter-option.dto';
 
 @ApiTags('Attribute Option')
 @Controller('attribute-option')
 export class AttributeOptionController {
     constructor(private readonly optionService: AttributeOptionsService) {}
+
+    @Post('filter')
+    @ApiOperation({
+        summary: 'Filter Through Attribute Options',
+        description: 'Filter through Attribute Options -> String and Number'
+    })
+    @ApiBody({
+        type: OptionQueryDto,
+        description: 'Filter Attribute Options',
+        required: true
+    })
+    @ApiOkResponse({
+        description: 'Attributes Options Filtered Result',
+        type: OptionResponseDto
+    })
+    async filterOption(@Body() optionQuery: OptionQueryDto): Promise<OptionResponseDto> {
+        return await this.optionService.filterQuery({ filters: optionQuery });
+    }
 
     @Post(':id')
     @ApiParam({
@@ -94,7 +113,7 @@ export class AttributeOptionController {
         required: true
     })
     @ApiOperation({
-        summary: 'Get Attributes String Options',
+        summary: 'Get Attributes String Options By Ids',
         description: 'Get Attributes Options by type String with option to paginate'
     })
     @ApiOkResponse({
@@ -108,12 +127,16 @@ export class AttributeOptionController {
         return await this.optionService.getStringOptionsByIds({ ids, pagination });
     }
 
-    @Get('by/stringOption-ids')
+    @Get('stringOptions/attributes')
     @ApiQuery({
         name: 'ids',
         type: Number,
         isArray: true,
         required: true
+    })
+    @ApiOperation({
+        summary: 'Get Attributes Data By String Options Ids',
+        description: 'Get Attributes By String Option Ids'
     })
     @ApiOkResponse({
         description: 'Attribute From Option ID',
@@ -189,15 +212,19 @@ export class AttributeOptionController {
         return await this.optionService.getNumberOptionsByIds({ ids, pagination });
     }
 
-    @Get('by/numberOptions-ids')
+    @Get('numberOptions/attributes')
     @ApiQuery({
         name: 'ids',
         type: Number,
         isArray: true,
         required: true
     })
+    @ApiOperation({
+        summary: 'Get Attributes Data By Number Options Ids',
+        description: 'Get Attributes By Number Option Ids'
+    })
     @ApiOkResponse({
-        description: 'Attribute From Option ID',
+        description: 'Attributes From Option ID',
         type: AttributeResponseDto
     })
     async getAttributeFromNumberOptionId(@Query('ids', IdsFilterPipe) ids: number[]): Promise<AttributeResponseDto> {
@@ -218,8 +245,8 @@ export class AttributeOptionController {
         required: true
     })
     @ApiOperation({
-        summary: 'Get Attributes Options',
-        description: 'Get Attributes Options'
+        summary: 'Get Attribute Options By Theirs Options Ids',
+        description: 'Get Attribute String And(Or) Number Options'
     })
     @ApiOkResponse({
         description: 'Attribute Option page',
@@ -231,18 +258,4 @@ export class AttributeOptionController {
     ): Promise<OptionResponseDto> {
         return await this.optionService.getOptionsByIds({ stringOptionIds, numberOptionIds });
     }
-
-    // @Patch()
-    // @ApiOperation({
-    //     summary: 'Update Attribute Rule By Attribute ID or Rule ID',
-    //     description: 'Update Attribute Rule relation by Attribute ID or Rule ID, Rule ID is faster'
-    // })
-    // @ApiBody({
-    //     type: UpdateAttributeRuleDto,
-    //     description: 'Update Attribute Rule',
-    //     required: false
-    // })
-    // async updateAttributeRule(@Body() updateRule: UpdateAttributeRuleDto): Promise<AttributeResponseDto> {
-    //     return await this.optionService.updateAttributeRule({ id: updateRule.id, ruleId: updateRule.ruleId, rule: updateRule });
-    // }
 }

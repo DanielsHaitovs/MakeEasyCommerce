@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OptionQueryService } from './query.service';
+import { OptionQueryService } from './option-query.service';
 
 describe('OptionQueryService', () => {
     let service: OptionQueryService;

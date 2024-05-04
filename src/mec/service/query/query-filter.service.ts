@@ -1,60 +1,14 @@
 import { EntityTarget, SelectQueryBuilder } from 'typeorm';
-import { FilterWhereValueDto, QueryFilterDto } from '@src/mec/dto/query/filter.dto';
+import { PaginationDto, QueryFilterDto } from '@src/mec/dto/query/filter.dto';
 import { OrderDirection } from '@src/mec/enum/query/query.enum';
 
 export class QueryService {
-    private idsError = false;
-    private whereManyIdAlias = '.id IN (:...ids)';
-
-    //To Do
-    // If smth fails then currently initial state of filters is being returned
-    // This is wrong
-    // Also missing preparation for query order filters, feels like this can be done here
     protected prepareFilter({ filters, alias }: { filters: QueryFilterDto; alias: string }): QueryFilterDto {
-        const initialFilter = filters;
+        filters = this.prepareIdsFilter({ filters });
+        filters = this.preparePagination({ filters });
+        filters = this.prepareOrderFilter({ filters, alias });
 
-        try {
-            const { pagination } = filters;
-            if (Number(pagination.page) > 0 || Number(pagination.limit) > 0) {
-                filters.pagination = {
-                    page: Number(pagination.page),
-                    limit: Number(pagination.limit)
-                };
-            } else {
-                filters.pagination.limit = undefined;
-                filters.pagination.page = undefined;
-            }
-
-            this.idsError = true;
-            const { ids } = filters;
-            if (ids != undefined && ids.length > 0) {
-                if (!Array.isArray(ids) && Number(ids)) {
-                    filters.ids = [Number(ids)];
-                } else {
-                    filters.ids = ids.flatMap((id) => Number(id));
-                }
-            }
-
-            return filters;
-        } catch {
-            // if (this.idsError) {}
-
-            return initialFilter;
-        }
-
-        // try {
-        //     const { order } = filters;
-
-        //     if (order.by != undefined) {
-        //         filters.order.by = alias + '.' + order.by;
-        //     } else {
-        //         filters.order = undefined;
-        //     }
-        // } catch {
-        //     filters.order = undefined;
-        // }
-
-        // return filters;
+        return filters;
     }
 
     protected whereQuery<Entity>({
@@ -62,60 +16,49 @@ export class QueryService {
         data,
         query
     }: {
-        entity: EntityTarget<Entity>;
         alias: string;
-        data: {
-            value: unknown;
-        };
+        entity: EntityTarget<Entity>;
+        data: unknown;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (data.value === undefined || alias === undefined) return query;
-
-        return query.where(alias, data);
+        if (data === undefined || alias === undefined) return query;
+        const propertyName = alias.substring(alias.lastIndexOf('.') + 1);
+        console.log(propertyName);
+        return query.where(alias + '= :' + propertyName, { [propertyName]: data });
     }
 
     protected whereIdsQuery<Entity>({
         ids,
-        alias,
         query
     }: {
         ids: number[];
         entity: EntityTarget<Entity>;
-        alias: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (ids === undefined || alias === undefined) return query;
+        if (ids === undefined) return query;
         if (!Array.isArray(ids)) ids = [ids];
 
-        return query.where(alias + this.whereManyIdAlias, {
-            ids: ids
-        });
+        return query.whereInIds(ids);
     }
 
     protected andWhereQuery<Entity>({
         where,
+        alias,
         query
     }: {
         entity: EntityTarget<Entity>;
-        where: FilterWhereValueDto[];
+        where: string[] | number[] | boolean[];
+        alias: string;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
-        if (where === undefined) return query;
+        if (where == undefined) return query;
         if (!Array.isArray(where)) {
             where = [where];
         }
 
-        for (const condition of where) {
-            if (condition.where != undefined && condition.alias != undefined) {
-                const propertyName = condition.alias.substring(condition.alias.lastIndexOf('.') + 1);
-                const alias = condition.alias + ' = :' + propertyName;
-                query = query.andWhere(alias, {
-                    [propertyName]: condition.where
-                });
-            }
-        }
-
-        return query;
+        const propertyName = alias.substring(alias.lastIndexOf('.') + 1);
+        if (propertyName == undefined) return query;
+        return query.andWhere(`${alias} IN (:...${propertyName})`, { [propertyName]: where });
     }
 
     protected orWhereQuery<Entity>({
@@ -173,20 +116,22 @@ export class QueryService {
     }
 
     protected paginateQuery<Entity>({
-        page,
-        limit,
+        pagination,
         query
     }: {
         entity: EntityTarget<Entity>;
-        page: number;
-        limit: number;
+        pagination: PaginationDto;
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
+        if (pagination == undefined) return query;
+
+        const { page, limit } = pagination;
+
         if (page === undefined || limit === undefined) return query;
         if (page === 0 && limit === 0) return query;
 
-        query.skip((Number(page) - 1) * Number(limit));
-        query.take(Number(limit));
+        query.skip((page - 1) * limit);
+        query.take(limit);
         return query;
     }
 
@@ -216,7 +161,6 @@ export class QueryService {
         query: SelectQueryBuilder<Entity>;
     }): SelectQueryBuilder<Entity> {
         if (by === undefined || direction === undefined || direction === OrderDirection.None) return query;
-
         return query.orderBy(by, direction);
     }
 
@@ -232,5 +176,78 @@ export class QueryService {
     }): SelectQueryBuilder<Entity> {
         if (joinAlias === undefined || relationsAlias === undefined) return query;
         return query.leftJoinAndSelect(joinAlias, relationsAlias);
+    }
+
+    protected prepareIdsFilter({ filters }: { filters: QueryFilterDto }): QueryFilterDto {
+        try {
+            const { ids } = filters;
+
+            if (ids == undefined || ids.length < 1) {
+                return {
+                    ids: undefined,
+                    ...filters
+                };
+            }
+
+            if (!Array.isArray(ids) && Number(ids)) {
+                filters.ids = [Number(ids)];
+            } else {
+                filters.ids = ids.flatMap((id) => Number(id));
+            }
+
+            return filters;
+        } catch {
+            return {
+                ids: undefined,
+                ...filters
+            };
+        }
+    }
+
+    private preparePagination({ filters }: { filters: QueryFilterDto }): QueryFilterDto {
+        try {
+            const { pagination } = filters;
+            if (Number(pagination.page) > 0 || Number(pagination.limit) > 0) {
+                filters.pagination = {
+                    page: Number(pagination.page),
+                    limit: Number(pagination.limit)
+                };
+            } else {
+                filters.pagination = undefined;
+            }
+
+            return filters;
+        } catch {
+            return {
+                pagination: {
+                    page: undefined,
+                    limit: undefined
+                },
+                ...filters
+            };
+        }
+    }
+
+    private prepareOrderFilter({ filters, alias }: { filters: QueryFilterDto; alias: string }): QueryFilterDto {
+        try {
+            if (alias === undefined) {
+                return {
+                    order: undefined,
+                    ...filters
+                };
+            }
+
+            const { order } = filters;
+
+            if (order.by == undefined || order.direction === OrderDirection.None) {
+                filters.order = undefined;
+            }
+            return filters;
+        } catch {
+            return {
+                order: undefined,
+                ...filters
+            };
+        }
     }
 }

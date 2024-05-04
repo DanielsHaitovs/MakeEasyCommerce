@@ -14,6 +14,7 @@ import { AttributeOptionsService } from './service/query/relations/options/attri
 import { OptionCreateService } from './service/query/relations/options/create/create-option.service';
 import { OptionUpdateService } from './service/query/relations/options/update/update-option.service';
 import { AttributeOptionController } from './controller/attribute-option.controller ';
+import { OptionQueryService } from './service/query/relations/options/option-query.service';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Attribute, AttributeOptionString, AttributeOptionNumber]), MecModule, AttributeRuleModule],
@@ -25,6 +26,7 @@ import { AttributeOptionController } from './controller/attribute-option.control
         AttributeOptionsService,
         OptionCreateService,
         OptionUpdateService,
+        OptionQueryService,
         AttributeQueryService
     ],
     exports: [AttributeHelperService]

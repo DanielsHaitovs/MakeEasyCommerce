@@ -3,6 +3,7 @@ import { QueryFilterI, QueryResponseI } from '@src/mec/interface/query/query.int
 import { Attribute } from '../entities/attribute.entity';
 import { AttributeOptionString } from '../entities/options/string-option.entity';
 import { AttributeOptionNumber } from '../entities/options/number-option.entity';
+import { QueryResponseDto } from '@src/mec/dto/query/response.dto';
 
 export type AttributeI = Attribute;
 
@@ -24,7 +25,10 @@ export interface AttributeQueryFilterI extends QueryFilterI {
 }
 
 export interface OptionQueryFilterI {
+    e?: Error;
     message?: string;
+    stringResponse?: QueryResponseDto;
+    numberResponse?: QueryResponseDto;
     stringQuery: SelectQueryBuilder<AttributeOptionString>;
     numberQuery: SelectQueryBuilder<AttributeOptionNumber>;
 }
