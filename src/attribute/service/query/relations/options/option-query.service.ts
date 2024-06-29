@@ -104,7 +104,7 @@ export class OptionQueryService extends QueryService {
                 });
             }
 
-            query = this.andWhereQuery({
+            query = this.andWhereInQuery({
                 where: whereList,
                 alias: `${alias}.data`,
                 query,

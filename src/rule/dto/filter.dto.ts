@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, ValidateNested, IsBoolean, IsString } from '@nestjs/class-validator';
-import { RuleType, RuleProperties } from '@src/rule/enum/rule.enum';
+import { RuleType, RuleProperties, RuleWhereProperties } from '@src/rule/enum/rule.enum';
 import { QueryFilterDto } from '@src/mec/dto/query/filter.dto';
+import { Type } from '@nestjs/class-transformer';
 
 export class RuleFindByType {
     @ApiProperty({
@@ -31,17 +32,17 @@ export class RuleWhereDto {
         title: 'Where Rule Properties',
         description: 'Option to include more then 1 of existing rule properties into filtering using same boolean from "whereValue"',
         nullable: false,
-        enum: RuleProperties,
+        enum: RuleWhereProperties,
         default: '',
-        isArray: true,
+        isArray: false,
         required: false
     })
     @IsOptional()
     @ValidateNested({ each: true })
-    selectWhere: RuleProperties[];
+    property: RuleWhereProperties;
 }
 
-export class RuleWhereValueDto {
+export class RuleWhereFilterDto extends RuleWhereDto {
     @ApiProperty({
         title: 'Where Rule is this boolean value',
         description: 'If "selectWhere" is not provided, this will be ignored! This value is been used in "selectWhere"',
@@ -55,27 +56,17 @@ export class RuleWhereValueDto {
 
 export class RuleQueryDto extends QueryFilterDto {
     @ApiProperty({
-        title: 'Where Rule Properties',
-        description: 'Option to include more then 1 of existing rule properties into filtering using value from "findByValue"',
+        title: 'Find Where Value',
+        description: 'Value to find in "selectWhere" properties',
+        type: RuleWhereFilterDto,
         isArray: true,
-        type: String,
-        required: false,
-        nullable: true
-    })
-    @IsOptional()
-    @IsString({ each: true })
-    selectWhere: string[];
-
-    @ApiProperty({
-        title: 'Where Rule is this boolean value',
-        description: 'If "selectWhere" is not provided, this will be ignored! This value is been used in "selectWhere"',
-        type: Boolean,
-        nullable: true,
+        nullable: false,
         required: false
     })
     @IsOptional()
-    @IsBoolean()
-    findByValue: boolean;
+    @ValidateNested({ each: true })
+    @Type(() => RuleWhereFilterDto)
+    findWhere: RuleWhereFilterDto[];
 
     @ApiProperty({
         title: 'Select Rule Properties',

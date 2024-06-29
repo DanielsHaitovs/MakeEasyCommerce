@@ -63,8 +63,8 @@ export class AttributeOptionController {
 
     @Get('stringOptions')
     @ApiOperation({
-        summary: 'Get Attributes String Options',
-        description: 'Get Attributes Options by type String with option to paginate'
+        summary: 'Get ALL Attribute String Options',
+        description: 'Get ALL Attribute String Options #OPTIMIZED'
     })
     @ApiOkResponse({
         description: 'Attribute String Option page',
@@ -113,8 +113,8 @@ export class AttributeOptionController {
         required: true
     })
     @ApiOperation({
-        summary: 'Get Attributes String Options By Ids',
-        description: 'Get Attributes Options by type String with option to paginate'
+        summary: 'Get Attribute String Options By Ids',
+        description: 'Get All String Options by theirs IDs #OPTIMIZED'
     })
     @ApiOkResponse({
         description: 'Attribute String Option page',
@@ -142,14 +142,14 @@ export class AttributeOptionController {
         description: 'Attribute From Option ID',
         type: AttributeResponseDto
     })
-    async getAttributeFromStringOptionId(@Query('numberOptionsIds', IdsFilterPipe) ids: number[]): Promise<AttributeResponseDto> {
+    async getAttributeFromStringOptionId(@Query('ids', IdsFilterPipe) ids: number[]): Promise<AttributeResponseDto> {
         return await this.optionService.findAttributeByOptionId({ ids, type: AttributeType.String });
     }
 
     @Get('numberOptions')
     @ApiOperation({
-        summary: 'Get Attributes Number Options',
-        description: 'Get Attributes Options by type number with option to paginate'
+        summary: 'Get All Attribute Number Options',
+        description: 'Get ALL Number Options #OPTIMIZED'
     })
     @ApiOkResponse({
         description: 'Attribute Number Options page',
@@ -198,8 +198,8 @@ export class AttributeOptionController {
         required: true
     })
     @ApiOperation({
-        summary: 'Get Attributes Number Options',
-        description: 'Get Attributes Options by type Number with option to paginate'
+        summary: 'Get Attribute Number Options By Ids',
+        description: 'Get All Number Options by theirs IDs #OPTIMIZED'
     })
     @ApiOkResponse({
         description: 'Attribute Number Option page',

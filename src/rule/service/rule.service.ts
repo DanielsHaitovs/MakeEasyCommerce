@@ -13,7 +13,7 @@ import { UpdateRuleDto } from '../dto/update-rule.dto';
 
 @Injectable()
 export class RuleService {
-    private logPath = 'rule/error.log';
+    private readonly logPath = 'rule/error.log';
 
     constructor(
         @InjectEntityManager()

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, SelectQueryBuilder } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { AttributeRule } from '@src/rule/entities/rule.entity';
+import { AttributeRule, RuleAlias } from '@src/rule/entities/rule.entity';
 
 import { RuleQueryDto } from '@src/rule/dto/filter.dto';
 import { RuleQueryFilterI } from '@src/rule/interface/rule.interface';
@@ -20,11 +20,10 @@ export class RuleQueryService extends QueryService {
     }
 
     queryFilter({ filters, alias }: { filters: RuleQueryDto; alias: string }): RuleQueryFilterI {
-        filters = this.ruleQueryFilter({ filters });
         let many = true;
 
         try {
-            const queryFilter = this.prepareFilter({ filters, alias: undefined });
+            const queryFilter = this.ruleQueryFilter({ filters, alias: RuleAlias });
 
             let ruleQuery = this.entityManager.getRepository(AttributeRule).createQueryBuilder(alias);
             if (queryFilter.ids != undefined) {
@@ -37,10 +36,10 @@ export class RuleQueryService extends QueryService {
                 });
             }
 
-            for (const select of filters.selectWhere) {
+            for (const select of filters.findWhere) {
                 ruleQuery = this.andWhereQuery({
-                    where: [filters.findByValue],
-                    alias: select,
+                    where: select.value,
+                    alias: select.property,
                     query: ruleQuery,
                     entity: AttributeRule
                 });
@@ -85,32 +84,16 @@ export class RuleQueryService extends QueryService {
         }
     }
 
-    protected ruleQueryFilter({ filters }: { filters: RuleQueryDto }): RuleQueryDto {
-        if (filters.selectWhere != undefined && filters.selectWhere.length > 0) {
-            if (!Array.isArray(filters.selectWhere)) filters.selectWhere = [filters.selectWhere];
-            filters.findByValue = filters.findByValue;
-        } else {
-            filters.selectWhere = undefined;
-            filters.findByValue = undefined;
-        }
-
+    protected ruleQueryFilter({ filters, alias }: { filters: RuleQueryDto; alias: string }): RuleQueryDto {
+        if (filters.findWhere != undefined && filters.findWhere.length < 1) filters.findWhere = undefined;
         if (filters.selectProp != undefined && filters.selectProp.length < 1) filters.selectProp = undefined;
 
-        return filters;
-    }
-
-    private prepareRuleWhere({
-        filters,
-        query
-    }: {
-        filters: RuleQueryDto;
-        query: SelectQueryBuilder<AttributeRule>;
-    }): SelectQueryBuilder<AttributeRule> {
-        if (filters.selectWhere === undefined) return undefined;
-        try {
-
-        } catch (error) {
-            return query;
+        if (filters.findWhere != undefined) {
+            filters.findWhere.forEach((filter) => {
+                filter.value = this.dataHelper.valueToBoolean({ value: filter.value });
+            });
         }
+
+        return { ...filters, ...this.prepareFilter({ filters, alias }) };
     }
 }

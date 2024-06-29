@@ -41,7 +41,7 @@ export class QueryService {
         return query.whereInIds(ids);
     }
 
-    protected andWhereQuery<Entity>({
+    protected andWhereInQuery<Entity>({
         where,
         alias,
         query
@@ -59,6 +59,23 @@ export class QueryService {
         const propertyName = alias.substring(alias.lastIndexOf('.') + 1);
         if (propertyName == undefined) return query;
         return query.andWhere(`${alias} IN (:...${propertyName})`, { [propertyName]: where });
+    }
+
+    protected andWhereQuery<Entity>({
+        where,
+        alias,
+        query
+    }: {
+        entity: EntityTarget<Entity>;
+        where: string | number | boolean;
+        alias: string;
+        query: SelectQueryBuilder<Entity>;
+    }): SelectQueryBuilder<Entity> {
+        if (where == undefined) return query;
+
+        const propertyName = alias.substring(alias.lastIndexOf('.') + 1);
+        if (propertyName == undefined) return query;
+        return query.andWhere(`${alias} = :${propertyName}`, { [propertyName]: where });
     }
 
     protected orWhereQuery<Entity>({

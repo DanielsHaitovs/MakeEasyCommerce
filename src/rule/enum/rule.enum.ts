@@ -62,6 +62,27 @@ export enum RuleProperties {
     BackUseInReport = 'rule.back.useInReport'
 }
 
+export enum RuleWhereProperties {
+    FrontUseInCatalog = 'rule.front.useInCatalog',
+    FrontUseInListing = 'rule.front.useInListing',
+    FrontUseInLayeredNavigation = 'rule.front.useInLayeredNavigation',
+    FrontUseInFilter = 'rule.front.useInFilter',
+    FrontUseInOptionFilter = 'rule.front.useInOptionFilter',
+    FrontUseInSort = 'rule.front.useInSort',
+    FrontUseInSearch = 'rule.front.useInSearch',
+    FrontUseInPromo = 'rule.front.useInPromo',
+    FrontUseInReport = 'rule.front.useInReport',
+    BackUseInCatalog = 'rule.back.useInCatalog',
+    BackUseInListing = 'rule.back.useInListing',
+    BackUseInLayeredNavigation = 'rule.back.useInLayeredNavigation',
+    BackUseInFilter = 'rule.back.useInFilter',
+    BackUseInOptionFilter = 'rule.back.useInOptionFilter',
+    BackUseInSort = 'rule.back.useInSort',
+    BackUseInSearch = 'rule.back.useInSearch',
+    BackUseInPromo = 'rule.back.useInPromo',
+    BackUseInReport = 'rule.back.useInReport'
+}
+
 // FrontUseInCatalog = 'rule.front.useInCatalog = :value',
 // FrontUseInListing = 'rule.front.useInListing = :value',
 // FrontUseInLayeredNavigation = 'rule.front.useInLayeredNavigation = :value',
